@@ -1,18 +1,12 @@
-interface OllamaMessage {
+interface OpenAiMessage {
 	role: 'system' | 'user';
 	content: string;
 }
 
-interface OllamaRequest {
+interface OpenAIRequest {
 	model: string;
-	messages: OllamaMessage[];
+	messages: OpenAiMessage[];
 	stream: boolean;
-}
-
-interface OllamaResponse {
-	message?: {
-		content: string;
-	};
 }
 
 interface FormatTextRequest {
@@ -28,25 +22,29 @@ interface StreamMessage {
 
 import systemPrompt from '$lib/system-prompt';
 
-async function formatWithOllama(text: string, sender: chrome.runtime.MessageSender): Promise<void> {
+async function formatWithLlm(text: string, sender: chrome.runtime.MessageSender): Promise<void> {
 	try {
-		const response = await fetch('http://localhost:11434/api/chat', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				model: 'qwen2.5-coder:32b',
-				messages: [
-					{ role: 'system', content: systemPrompt },
-					{ role: 'user', content: text }
-				],
-				stream: true
-			} as OllamaRequest)
-		});
+		const response = await fetch(
+			'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+			{
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${import.meta.env.VITE_GOOGLE_AI_STUDIO_API_KEY}`,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					model: 'gemini-2.0-flash',
+					messages: [
+						{ role: 'system', content: systemPrompt },
+						{ role: 'user', content: text }
+					],
+					stream: true
+				} as OpenAIRequest)
+			}
+		);
 
 		if (!response.ok) {
-			throw new Error(`Ollama API error: ${response.status}, ${response.statusText}`);
+			throw new Error(`API error: ${response.status}, ${response.statusText}`);
 		}
 
 		const reader = response.body!.getReader();
@@ -58,18 +56,21 @@ async function formatWithOllama(text: string, sender: chrome.runtime.MessageSend
 			if (done) break;
 
 			buffer += decoder.decode(value, { stream: true });
-
 			const lines = buffer.split('\n');
 			buffer = lines.pop() || '';
 
 			for (const line of lines) {
-				if (line.trim()) {
+				if (line.startsWith('data: ')) {
 					try {
-						const chunk = JSON.parse(line) as OllamaResponse;
-						if (chunk.message?.content) {
+						if (line.includes('[DONE]')) continue;
+
+						const jsonStr = line.replace('data: ', '');
+						const parsed = JSON.parse(jsonStr);
+
+						if (parsed.choices[0].delta?.content) {
 							chrome.tabs.sendMessage(sender.tab!.id!, {
 								action: 'streamUpdate',
-								chunk: chunk.message.content
+								chunk: parsed.choices[0].delta.content
 							} as StreamMessage);
 						}
 					} catch (e) {
@@ -83,15 +84,15 @@ async function formatWithOllama(text: string, sender: chrome.runtime.MessageSend
 			action: 'streamComplete'
 		} as StreamMessage);
 	} catch (error) {
-		console.error('Error in formatWithOllama:', error);
+		console.error('Error in formatWithLlm:', error);
 		throw error;
 	}
 }
 
 chrome.runtime.onMessage.addListener(
-	(request: FormatTextRequest, sender: chrome.runtime.MessageSender, sendResponse: () => void) => {
+	(request: FormatTextRequest, sender: chrome.runtime.MessageSender) => {
 		if (request.action === 'formatText') {
-			formatWithOllama(request.text, sender).catch((error) => {
+			formatWithLlm(request.text, sender).catch((error) => {
 				chrome.tabs.sendMessage(sender.tab!.id!, {
 					action: 'streamError',
 					error: error.message

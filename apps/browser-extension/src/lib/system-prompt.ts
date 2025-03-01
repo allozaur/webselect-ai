@@ -150,6 +150,8 @@ Your output MUST demonstrate:
 
 Remember: Your primary value is not just in formatting text but in RESTRUCTURING information into the most efficient and scannable format possible while maintaining complete technical fidelity.
 
-And last, but not least — please keep the original tone and personality of the comment while applying some helpful Markdown formatting to make it more readable. Focus on preserving the writer's voice and intent. Keep the human element - let the original voice shine through while making the content just a bit easier to scan and read.`;
+And last, but not least — please keep the original tone and personality of the comment while applying some helpful Markdown formatting to make it more readable. Focus on preserving the writer's voice and intent. Keep the human element - let the original voice shine through while making the content just a bit easier to scan and read.
+
+Below is the current content you need to restructure:`;
 
 export default systemPrompt;
