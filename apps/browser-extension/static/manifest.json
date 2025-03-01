@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "MarkMaster",
+  "version": "0.0.1",
+  "description": "MarkDown editor with AI on any website",
+  "icons": {
+    "16": "png/icons/icon16.png",
+    "48": "png/icons/icon48.png",
+    "128": "png/icons/icon128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "http://localhost/*",
+    "http://127.0.0.1/*"
+  ],
+  "action": {
+    "default_icon": {
+      "16": "png/icons/icon16.png",
+      "48": "png/icons/icon48.png",
+      "128": "png/icons/icon128.png"
+    },
+    "default_popup": "index.html",
+    "default_title": "MarkMaster"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5XZLlJWatjl/DBgYE6MHW+u6AFCWiLKupt7+wzLeIO7NhtWkvO2j8vDqet+kYDvf2/opmeg2ASTMbCDLf4jHniRgaB6O7MREC183Q6TC2/gpbWzFYbatR1wfCyCeYVWCZUcGfsRwe4OvCbScB++23iG9sh2+DJkEZBv3pZqqMcGvnNa0A2vzsyxgyOp9u2uCyGyfMhFUe40UWrtDKWdLBw0e9QriujJj6qocZvl+rovtiy/VBy/fH6P/nYkshxAgbklQwDC/EEom62a+h0ZXZ08u0BViMhm8uF3LTE0Wc944VY/SeTXXymzZ+UMIaMg0g9E88NJPnYkTU5VQLQqUgQIDAQAB"
+}
