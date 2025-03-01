@@ -1,5 +1,3 @@
-import type { NotificationType, ChromeMessage } from './types';
-
 (() => {
 	// Track textareas that have already been processed
 	const processedTextareas = new Set<HTMLTextAreaElement>();
@@ -121,6 +119,7 @@ import type { NotificationType, ChromeMessage } from './types';
 
 		try {
 			await sendMessagePromise({
+				// @ts-expect-error - lel
 				action: 'formatText',
 				text: originalContent
 			});
@@ -178,7 +177,7 @@ import type { NotificationType, ChromeMessage } from './types';
 		});
 	}
 
-	function showNotification(message: string, type: NotificationType = 'info'): void {
+	function showNotification(message: string, type = 'info'): void {
 		const notification = document.createElement('div');
 		notification.className = `markmaster-notification markmaster-${type}`;
 		notification.textContent = message;

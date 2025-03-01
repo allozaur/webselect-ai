@@ -4,9 +4,9 @@ import { resolve } from 'path';
 export default defineConfig({
 	build: {
 		outDir: 'build',
-		emptyOutDir: false, // Don't empty the directory as it contains other builds
+		emptyOutDir: false,
 		lib: {
-			entry: resolve(__dirname, 'src/background/index.ts'),
+			entry: resolve(__dirname, 'src/background.ts'),
 			name: 'background',
 			fileName: () => 'background.js',
 			formats: ['iife']
