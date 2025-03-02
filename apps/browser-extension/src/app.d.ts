@@ -29,6 +29,12 @@ declare global {
 		messages: OpenAiMessage[];
 		stream: boolean;
 	}
+
+	interface StreamMessage {
+		action: 'streamUpdate' | 'streamComplete' | 'streamError';
+		chunk?: string;
+		error?: string;
+	}
 }
 
 export {};

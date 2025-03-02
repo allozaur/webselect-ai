@@ -1,9 +1,72 @@
 import FormatButton from '$lib/components/FormatButton.svelte';
+import showNotification from '$lib/show-notification';
 import { mount, unmount } from 'svelte';
 
 (() => {
-	let activeFormatter: HTMLTextAreaElement | null = null;
+	let activeFormattedTextarea: HTMLTextAreaElement | null = null;
 	const processedTextareas = new Map<HTMLTextAreaElement, unknown>();
+
+	function cleanup() {
+		if (activeFormattedTextarea) {
+			activeFormattedTextarea = null;
+		}
+	}
+
+	function findAndProcessTextareas(): void {
+		const textareas = document.querySelectorAll<HTMLTextAreaElement>('textarea');
+
+		textareas.forEach((textarea) => {
+			if (!processedTextareas.has(textarea)) {
+				const container = document.createElement('div');
+				document.body.appendChild(container);
+
+				const component = mount(FormatButton, {
+					target: container,
+					props: { textarea, onClick: () => formatTextarea(textarea) }
+				});
+
+				processedTextareas.set(textarea, component);
+			}
+		});
+	}
+
+	async function formatTextarea(textarea: HTMLTextAreaElement): Promise<void> {
+		if (!textarea.value.trim()) {
+			showNotification('Textarea is empty', 'warning');
+			return;
+		}
+
+		if (activeFormattedTextarea) {
+			showNotification('Formatting already in progress', 'info');
+			return;
+		}
+
+		activeFormattedTextarea = textarea;
+		textarea.classList.add('markmaster-formatting');
+
+		const progressIndicator = document.createElement('div');
+
+		progressIndicator.className = 'markmaster-progress';
+		progressIndicator.innerHTML = '<div class="markmaster-spinner"></div>';
+
+		document.body.appendChild(progressIndicator);
+
+		const originalContent = textarea.value;
+		textarea.value = '';
+
+		try {
+			await sendMessage({
+				// @ts-expect-error - lel
+				action: 'formatText',
+				text: originalContent
+			});
+		} catch (error) {
+			console.error('Error initiating formatting:', error);
+			textarea.value = originalContent;
+			showNotification('Connection error', 'error');
+			cleanup();
+		}
+	}
 
 	function init(): void {
 		findAndProcessTextareas();
@@ -35,67 +98,7 @@ import { mount, unmount } from 'svelte';
 		});
 	}
 
-	function findAndProcessTextareas(): void {
-		const textareas = document.querySelectorAll<HTMLTextAreaElement>('textarea');
-
-		textareas.forEach((textarea) => {
-			if (!processedTextareas.has(textarea)) {
-				const container = document.createElement('div');
-				document.body.appendChild(container);
-
-				const component = mount(FormatButton, {
-					target: container,
-					props: { textarea, onClick: () => formatTextarea(textarea) }
-				});
-
-				processedTextareas.set(textarea, component);
-			}
-		});
-	}
-
-	function cleanup() {
-		if (activeFormatter) {
-			activeFormatter = null;
-		}
-	}
-
-	async function formatTextarea(textarea: HTMLTextAreaElement): Promise<void> {
-		if (!textarea.value.trim()) {
-			showNotification('Textarea is empty', 'warning');
-			return;
-		}
-
-		if (activeFormatter) {
-			showNotification('Formatting already in progress', 'info');
-			return;
-		}
-
-		activeFormatter = textarea;
-		textarea.classList.add('markmaster-formatting');
-
-		const progressIndicator = document.createElement('div');
-		progressIndicator.className = 'markmaster-progress';
-		progressIndicator.innerHTML = '<div class="markmaster-spinner"></div>';
-		document.body.appendChild(progressIndicator);
-
-		const originalContent = textarea.value;
-		textarea.value = '';
-
-		try {
-			await sendMessagePromise({
-				// @ts-expect-error - lel
-				action: 'formatText',
-				text: originalContent
-			});
-		} catch (error) {
-			console.error('Error initiating formatting:', error);
-			textarea.value = originalContent;
-			showNotification('Connection error', 'error');
-			cleanup();
-		}
-	}
-
-	function sendMessagePromise<T = unknown>(message: ChromeMessage): Promise<T> {
+	function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
 		return new Promise((resolve, reject) => {
 			chrome.runtime.sendMessage(message, (response) => {
 				if (chrome.runtime.lastError) {
@@ -107,29 +110,14 @@ import { mount, unmount } from 'svelte';
 		});
 	}
 
-	function showNotification(message: string, type = 'info'): void {
-		const notification = document.createElement('div');
-		notification.className = `markmaster-notification markmaster-${type}`;
-		notification.textContent = message;
-
-		document.body.appendChild(notification);
-
-		setTimeout(() => {
-			notification.classList.add('markmaster-fade-out');
-			setTimeout(() => {
-				notification.remove();
-			}, 500);
-		}, 3000);
-	}
-
 	chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
-		if (!activeFormatter) return;
+		if (!activeFormattedTextarea) return;
 
 		switch (message.action) {
 			case 'streamUpdate':
 				if (message.chunk) {
-					activeFormatter.value += message.chunk;
-					activeFormatter.scrollTop = activeFormatter.scrollHeight;
+					activeFormattedTextarea.value += message.chunk;
+					activeFormattedTextarea.scrollTop = activeFormattedTextarea.scrollHeight;
 				}
 				break;
 
@@ -147,7 +135,7 @@ import { mount, unmount } from 'svelte';
 	window.addEventListener('formatRequest', ((event: Event) => {
 		const customEvent = event as CustomEvent<{ textarea: HTMLTextAreaElement }>;
 		if (customEvent.detail?.textarea) {
-			activeFormatter = customEvent.detail.textarea;
+			activeFormattedTextarea = customEvent.detail.textarea;
 		}
 	}) as EventListener);
 
