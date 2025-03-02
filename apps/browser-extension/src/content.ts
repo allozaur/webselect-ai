@@ -1,7 +1,9 @@
+import FormatButton from '$lib/components/FormatButton.svelte';
+import { mount, unmount } from 'svelte';
+
 (() => {
-	// Track textareas that have already been processed
-	const processedTextareas = new Set<HTMLTextAreaElement>();
 	let activeFormatter: HTMLTextAreaElement | null = null;
+	const processedTextareas = new Map<HTMLTextAreaElement, unknown>();
 
 	function init(): void {
 		findAndProcessTextareas();
@@ -10,6 +12,19 @@
 			mutations.forEach((mutation) => {
 				if (mutation.addedNodes && mutation.addedNodes.length > 0) {
 					findAndProcessTextareas();
+				}
+
+				if (mutation.removedNodes && mutation.removedNodes.length > 0) {
+					mutation.removedNodes.forEach((node) => {
+						if (node instanceof HTMLTextAreaElement) {
+							const component = processedTextareas.get(node);
+
+							if (component) {
+								unmount(component);
+								processedTextareas.delete(node);
+							}
+						}
+					});
 				}
 			});
 		});
@@ -22,77 +37,26 @@
 
 	function findAndProcessTextareas(): void {
 		const textareas = document.querySelectorAll<HTMLTextAreaElement>('textarea');
+
 		textareas.forEach((textarea) => {
 			if (!processedTextareas.has(textarea)) {
-				addFormatButton(textarea);
-				processedTextareas.add(textarea);
+				const container = document.createElement('div');
+				document.body.appendChild(container);
+
+				const component = mount(FormatButton, {
+					target: container,
+					props: { textarea, onClick: () => formatTextarea(textarea) }
+				});
+
+				processedTextareas.set(textarea, component);
 			}
 		});
 	}
 
-	function addFormatButton(textarea: HTMLTextAreaElement): void {
-		const container = document.createElement('div');
-		container.className = 'markmaster-btn-container';
-
-		const button = document.createElement('button');
-		button.className = 'markmaster-btn';
-		button.innerHTML = 'MD';
-		button.title = 'Format to Markdown';
-
-		button.addEventListener('click', () => {
-			formatTextarea(textarea);
-		});
-
-		container.appendChild(button);
-
-		positionContainer(container, textarea);
-		document.body.appendChild(container);
-
-		window.addEventListener('resize', () => {
-			positionContainer(container, textarea);
-		});
-
-		document.addEventListener(
-			'scroll',
-			() => {
-				positionContainer(container, textarea);
-			},
-			true
-		);
-
-		const resizeObserver = new ResizeObserver(() => {
-			positionContainer(container, textarea);
-		});
-
-		resizeObserver.observe(textarea);
-
-		const elementObserver = new MutationObserver((mutations) => {
-			mutations.forEach((mutation) => {
-				if (mutation.type === 'childList' && mutation.removedNodes) {
-					mutation.removedNodes.forEach((node) => {
-						if (node === textarea || (node instanceof Node && node.contains(textarea))) {
-							container.remove();
-							elementObserver.disconnect();
-							resizeObserver.disconnect();
-							processedTextareas.delete(textarea);
-						}
-					});
-				}
-			});
-		});
-
-		elementObserver.observe(document.body, {
-			childList: true,
-			subtree: true
-		});
-	}
-
-	function positionContainer(container: HTMLDivElement, textarea: HTMLTextAreaElement): void {
-		const rect = textarea.getBoundingClientRect();
-		container.style.position = 'absolute';
-		container.style.top = `${window.scrollY + rect.top + 5}px`;
-		container.style.left = `${window.scrollX + rect.right - 30}px`;
-		container.style.zIndex = '9999';
+	function cleanup() {
+		if (activeFormatter) {
+			activeFormatter = null;
+		}
 	}
 
 	async function formatTextarea(textarea: HTMLTextAreaElement): Promise<void> {
@@ -131,40 +95,6 @@
 		}
 	}
 
-	chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
-		if (!activeFormatter) return;
-
-		switch (message.action) {
-			case 'streamUpdate':
-				activeFormatter.value += message.chunk;
-				activeFormatter.scrollTop = activeFormatter.scrollHeight;
-				break;
-
-			case 'streamComplete':
-				showNotification('Formatting complete!', 'success');
-				cleanup();
-				break;
-
-			case 'streamError':
-				showNotification(message.error || 'Formatting failed', 'error');
-				cleanup();
-				break;
-		}
-	});
-
-	function cleanup(): void {
-		if (activeFormatter) {
-			activeFormatter.classList.remove('markmaster-formatting');
-			activeFormatter.dispatchEvent(new Event('input', { bubbles: true }));
-			activeFormatter = null;
-		}
-
-		const progressIndicator = document.querySelector('.markmaster-progress');
-		if (progressIndicator) {
-			progressIndicator.remove();
-		}
-	}
-
 	function sendMessagePromise<T = unknown>(message: ChromeMessage): Promise<T> {
 		return new Promise((resolve, reject) => {
 			chrome.runtime.sendMessage(message, (response) => {
@@ -191,6 +121,35 @@
 			}, 500);
 		}, 3000);
 	}
+
+	chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
+		if (!activeFormatter) return;
+
+		switch (message.action) {
+			case 'streamUpdate':
+				if (message.chunk) {
+					activeFormatter.value += message.chunk;
+					activeFormatter.scrollTop = activeFormatter.scrollHeight;
+				}
+				break;
+
+			case 'streamComplete':
+				cleanup();
+				break;
+
+			case 'streamError':
+				console.error('Stream error:', message.error);
+				cleanup();
+				break;
+		}
+	});
+
+	window.addEventListener('formatRequest', ((event: Event) => {
+		const customEvent = event as CustomEvent<{ textarea: HTMLTextAreaElement }>;
+		if (customEvent.detail?.textarea) {
+			activeFormatter = customEvent.detail.textarea;
+		}
+	}) as EventListener);
 
 	init();
 })();
