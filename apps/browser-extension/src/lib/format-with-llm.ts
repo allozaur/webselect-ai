@@ -1,6 +1,5 @@
-import systemPrompt from './system-prompt';
-
 export default async function formatWithLlm(
+	systemPrompt: string,
 	text: string,
 	sender: chrome.runtime.MessageSender
 ): Promise<void> {

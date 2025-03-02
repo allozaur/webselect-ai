@@ -16,7 +16,7 @@ export default defineConfig({
 		outDir: 'build',
 		emptyOutDir: false,
 		lib: {
-			entry: resolve(__dirname, 'src/content.ts'),
+			entry: resolve(__dirname, 'src/content.svelte.ts'),
 			name: 'content',
 			fileName: () => 'content.js',
 			formats: ['iife']
