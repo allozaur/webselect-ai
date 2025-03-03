@@ -1,0 +1,4 @@
+:root {
+	--bg-body: light-dark(#fafafa, #131111);
+	--c-text: light-dark(#000, #efefef);
+}

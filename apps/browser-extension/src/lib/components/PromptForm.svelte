@@ -1,13 +1,16 @@
 <script lang="ts">
+	import '@selectandprompt/ui/styles/index.css';
+
 	let { onSubmit, response = '' } = $props();
 
 	let prompt = $state('');
+	let selectedText = $state('');
 	let isLoading = $state(false);
 
 	function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
 		isLoading = true;
-		onSubmit(prompt);
+		onSubmit(prompt, selectedText);
 	}
 
 	function copyToClipboard() {
@@ -43,7 +46,8 @@
 <style>
 	.prompt-form {
 		position: relative;
-		background: white;
+		background: var(--bg-body);
+		color: var(--c-text);
 		padding: 12px;
 		border-radius: 8px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -84,7 +88,7 @@
 		padding-top: 12px;
 		border-top: 1px solid #eee;
 		width: 100%;
-		background: white;
+		background: var(--bg-body);
 		border: 2px solid #007bff;
 		padding: 1rem;
 		border-radius: 0.5rem;

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "MarkMaster",
+  "name": "Select & Prompt",
   "version": "0.0.1",
   "description": "MarkDown editor with AI on any website",
   "icons": {
@@ -24,7 +24,7 @@
       "128": "png/icons/icon128.png"
     },
     "default_popup": "index.html",
-    "default_title": "MarkMaster"
+    "default_title": "Select & Prompt"
   },
   "content_scripts": [
     {
