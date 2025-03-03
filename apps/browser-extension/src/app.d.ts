@@ -9,15 +9,15 @@ declare global {
 
 	// Chrome extension message types
 	interface ChromeMessage {
-		action: 'streamUpdate' | 'streamComplete' | 'streamError' | 'formatText';
+		action: 'streamUpdate' | 'streamComplete' | 'streamError' | 'sendPrompt';
 		systemPrompt?: string;
 		userPrompt?: string;
 		chunk?: string;
 		error?: string;
 	}
 
-	interface FormatTextRequest {
-		action: 'formatText';
+	interface SendPromptRequest {
+		action: 'sendPrompt';
 		systemPrompt: string;
 		userPrompt: string;
 	}

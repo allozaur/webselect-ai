@@ -1,4 +1,4 @@
-export default async function formatWithLlm(
+export default async function handleLlmRequest(
 	systemPrompt: string,
 	text: string,
 	sender: chrome.runtime.MessageSender
@@ -59,10 +59,6 @@ export default async function formatWithLlm(
 				}
 			}
 		}
-
-		chrome.tabs.sendMessage(sender.tab!.id!, {
-			action: 'streamComplete'
-		} as StreamMessage);
 	} catch (error) {
 		console.error('Error in formatWithLlm:', error);
 		throw error;

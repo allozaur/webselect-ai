@@ -71,7 +71,7 @@ interface PromptFormProps {
 
 		try {
 			await sendMessage({
-				action: 'formatText',
+				action: 'sendPrompt',
 				systemPrompt: `This is a text which i want you to use for my further instruction: ${selectedText}`,
 				userPrompt: prompt
 			});
