@@ -17,9 +17,8 @@ export default defineConfig({
 		emptyOutDir: false,
 		lib: {
 			entry: resolve(__dirname, 'src/content.svelte.ts'),
-			name: 'content',
-			fileName: () => 'content.js',
-			formats: ['iife']
+			fileName: 'content',
+			name: 'content'
 		},
 		rollupOptions: {
 			output: {

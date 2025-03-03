@@ -26,20 +26,22 @@
 	<form onsubmit={handleSubmit}>
 		<textarea bind:value={prompt} placeholder="Enter your formatting instructions..." rows="3"
 		></textarea>
+
 		<button type="submit" disabled={isLoading}>
-			{isLoading ? 'Processing...' : 'Format Text'}
+			{isLoading ? 'Processing...' : 'Submit'}
 		</button>
 	</form>
 
 	{#if response}
 		<div class="response">
-			<div class="response-text">{response}</div>
+			<div class="response-text">{@html response}</div>
+
 			<button class="copy-button" onclick={copyToClipboard}> Copy to clipboard </button>
 		</div>
 	{/if}
 </div>
 
-<style global>
+<style>
 	.prompt-form {
 		position: relative;
 		background: white;
@@ -50,7 +52,7 @@
 		z-index: 10000;
 	}
 
-	textarea {
+	.prompt-form textarea {
 		width: 100%;
 		padding: 8px;
 		margin-bottom: 8px;
@@ -59,7 +61,7 @@
 		resize: vertical;
 	}
 
-	button {
+	.prompt-form button {
 		padding: 4px 8px;
 		background: #007bff;
 		color: white;
@@ -69,11 +71,11 @@
 		font-size: 12px;
 	}
 
-	button:hover {
+	.prompt-form button:hover {
 		background: #0056b3;
 	}
 
-	button:disabled {
+	.prompt-form button:disabled {
 		background: #cccccc;
 		cursor: not-allowed;
 	}
@@ -82,7 +84,7 @@
 		margin-top: 12px;
 		padding-top: 12px;
 		border-top: 1px solid #eee;
-		max-width: min(80vw, 4rem);
+		width: 100%;
 		background: white;
 		border: 2px solid #007bff;
 		padding: 1rem;
@@ -94,14 +96,16 @@
 	.response-text {
 		margin-bottom: 8px;
 		white-space: pre-wrap;
+		word-wrap: break-word;
+		max-width: 100%;
 	}
 
 	.copy-button {
-		background: #6c757d;
+		background: #6c757d !important;
 		font-size: 11px;
 	}
 
 	.copy-button:hover {
-		background: #545b62;
+		background: #545b62 !important;
 	}
 </style>

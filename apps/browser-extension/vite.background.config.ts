@@ -8,8 +8,7 @@ export default defineConfig({
 		lib: {
 			entry: resolve(__dirname, 'src/background.ts'),
 			name: 'background',
-			fileName: () => 'background.js',
-			formats: ['iife']
+			fileName: 'background'
 		},
 		rollupOptions: {
 			output: {
