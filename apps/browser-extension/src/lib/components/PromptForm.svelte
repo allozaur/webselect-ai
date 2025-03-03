@@ -14,7 +14,6 @@
 		navigator.clipboard.writeText(response);
 	}
 
-	// Reset loading when response changes
 	$effect(() => {
 		if (response) {
 			isLoading = false;

@@ -8,48 +8,51 @@ interface PromptFormProps {
 }
 
 (() => {
-	let responseState = $state('');
-	// eslint-disable-next-line prefer-const
-	let promptFormProps: PromptFormProps = $state({ onSubmit: handleFormat, response: '' });
-
 	let activeFormatting = false;
 	let formComponent: unknown = null;
 	let formContainer: HTMLDivElement | null = null;
-	let selectedText: string | null = null;
 	let highlightOverlay: HTMLDivElement | null = null;
-
-	function resetResponse() {
-		responseState = '';
-		promptFormProps.response = '';
-		activeFormatting = false;
-	}
+	let responseState = $state('');
+	let selectedText: string | null = null;
+	// eslint-disable-next-line prefer-const
+	let promptFormProps: PromptFormProps = $state({ onSubmit: handleFormat, response: '' });
 
 	function cleanup() {
 		resetResponse();
+
 		if (formComponent) {
 			unmount(formComponent);
 			formComponent = null;
 		}
+
 		if (formContainer) {
 			formContainer.remove();
 			formContainer = null;
 		}
+
 		if (highlightOverlay) {
 			highlightOverlay.remove();
 			highlightOverlay = null;
 		}
+
 		selectedText = null;
 	}
 
-	function updateFormPosition(selection: Selection) {
-		if (!formContainer) return;
-
-		const range = selection.getRangeAt(0);
+	function createHighlightOverlay(range: Range) {
 		const rect = range.getBoundingClientRect();
 
-		formContainer.style.position = 'absolute';
-		formContainer.style.left = `${rect.left + window.scrollX}px`;
-		formContainer.style.top = `${rect.bottom + window.scrollY + 10}px`;
+		highlightOverlay = document.createElement('div');
+		highlightOverlay.style.borderRadius = '0.5rem';
+		highlightOverlay.style.position = 'absolute';
+		highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
+		highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
+		highlightOverlay.style.width = `${rect.width}px`;
+		highlightOverlay.style.height = `${rect.height}px`;
+		highlightOverlay.style.backgroundColor = 'rgba(0, 123, 255, 0.2)';
+		highlightOverlay.style.pointerEvents = 'none';
+		highlightOverlay.style.zIndex = '9999';
+
+		document.body.appendChild(highlightOverlay);
 	}
 
 	async function handleFormat(prompt: string): Promise<void> {
@@ -77,34 +80,6 @@ interface PromptFormProps {
 			showNotification('Connection error', 'error');
 			cleanup();
 		}
-	}
-
-	function createHighlightOverlay(range: Range) {
-		const rect = range.getBoundingClientRect();
-
-		highlightOverlay = document.createElement('div');
-		highlightOverlay.style.position = 'absolute';
-		highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
-		highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
-		highlightOverlay.style.width = `${rect.width}px`;
-		highlightOverlay.style.height = `${rect.height}px`;
-		highlightOverlay.style.backgroundColor = 'rgba(0, 123, 255, 0.2)';
-		highlightOverlay.style.pointerEvents = 'none';
-		highlightOverlay.style.zIndex = '9999';
-
-		document.body.appendChild(highlightOverlay);
-	}
-
-	function isFormFocused(): boolean {
-		return formContainer?.contains(document.activeElement) ?? false;
-	}
-
-	function shouldCleanup(): boolean {
-		// Only show confirmation if there's a response
-		if (responseState.trim()) {
-			return window.confirm('Are you sure you want to clear the response and start over?');
-		}
-		return true;
 	}
 
 	function handleSelection() {
@@ -159,6 +134,24 @@ interface PromptFormProps {
 		updateFormPosition(selection);
 	}
 
+	function isFormFocused(): boolean {
+		return formContainer?.contains(document.activeElement) ?? false;
+	}
+
+	function resetResponse() {
+		activeFormatting = false;
+		promptFormProps.response = '';
+		responseState = '';
+	}
+
+	function shouldCleanup(): boolean {
+		// Only show confirmation if there's a response
+		if (responseState.trim()) {
+			return window.confirm('Are you sure you want to clear the response and start over?');
+		}
+		return true;
+	}
+
 	function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
 		return new Promise((resolve, reject) => {
 			chrome.runtime.sendMessage(message, (response) => {
@@ -169,6 +162,17 @@ interface PromptFormProps {
 				}
 			});
 		});
+	}
+
+	function updateFormPosition(selection: Selection) {
+		if (!formContainer) return;
+
+		const range = selection.getRangeAt(0);
+		const rect = range.getBoundingClientRect();
+
+		formContainer.style.position = 'absolute';
+		formContainer.style.left = `${rect.left + window.scrollX}px`;
+		formContainer.style.top = `${rect.bottom + window.scrollY + 10}px`;
 	}
 
 	chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
@@ -218,6 +222,27 @@ interface PromptFormProps {
 				const rect = range.getBoundingClientRect();
 				highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
 				highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
+			}
+		}
+	});
+
+	// Add window resize handler
+	window.addEventListener('resize', () => {
+		if (highlightOverlay && selectedText && formContainer) {
+			const selection = window.getSelection();
+			if (selection && selection.rangeCount > 0) {
+				const range = selection.getRangeAt(0);
+				const rect = range.getBoundingClientRect();
+
+				// Update highlight overlay position
+				highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
+				highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
+				highlightOverlay.style.width = `${rect.width}px`;
+				highlightOverlay.style.height = `${rect.height}px`;
+
+				// Update form position
+				formContainer.style.left = `${rect.left + window.scrollX}px`;
+				formContainer.style.top = `${rect.bottom + window.scrollY + 10}px`;
 			}
 		}
 	});
