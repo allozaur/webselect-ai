@@ -1,8 +1,8 @@
 import PromptForm from '$lib/components/PromptForm.svelte';
 import { mount, unmount } from 'svelte';
-import isFormFocused from './is-form-focused';
-import showNotification from './show-notification';
-import updateFormPosition from './update-form-position';
+import isFormFocused from './is-form-focused.svelte';
+import showNotification from './show-notification.svelte';
+import updateFormPosition from './update-form-position.svelte';
 
 (() => {
 	let formComponent: unknown = null;
