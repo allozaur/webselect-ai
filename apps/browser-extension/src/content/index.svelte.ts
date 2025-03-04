@@ -1,6 +1,7 @@
 import PromptForm from '$lib/components/PromptForm.svelte';
-import showNotification from '$lib/show-notification';
 import { mount, unmount } from 'svelte';
+import isFormFocused from './is-form-focused';
+import showNotification from './show-notification';
 import updateFormPosition from './update-form-position';
 
 (() => {
@@ -9,7 +10,7 @@ import updateFormPosition from './update-form-position';
 	let highlightOverlay: HTMLDivElement | null = $state(null);
 	let isStreamingResponse = $state(false);
 	// eslint-disable-next-line prefer-const
-	let promptFormProps = $state({ onSubmit: handleFormat, response: '' });
+	let promptFormProps = $state({ onSubmit: handleSubmit, response: '' });
 	let responseState = $state('');
 	let selectedText: string | null = $state(null);
 
@@ -51,7 +52,7 @@ import updateFormPosition from './update-form-position';
 		document.body.appendChild(highlightOverlay);
 	}
 
-	async function handleFormat(prompt: string): Promise<void> {
+	async function handleSubmit(prompt: string): Promise<void> {
 		function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
 			return new Promise((resolve, reject) => {
 				chrome.runtime.sendMessage(message, (response) => {
@@ -91,14 +92,14 @@ import updateFormPosition from './update-form-position';
 	}
 
 	function handleSelection() {
-		if (isFormFocused()) {
+		if (isFormFocused(formContainer)) {
 			return;
 		}
 
 		const selection = window.getSelection();
 
 		if (!selection || !selection.toString().trim()) {
-			if (!isFormFocused()) {
+			if (!isFormFocused(formContainer)) {
 				if (shouldCleanup()) {
 					cleanup();
 				}
@@ -136,10 +137,6 @@ import updateFormPosition from './update-form-position';
 		}
 
 		updateFormPosition(selection, formContainer);
-	}
-
-	function isFormFocused(): boolean {
-		return formContainer?.contains(document.activeElement) ?? false;
 	}
 
 	function resetResponse() {
