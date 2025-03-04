@@ -23,9 +23,6 @@ importers:
       '@playwright/test':
         specifier: ^1.45.3
         version: 1.50.1
-      '@selectandprompt/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@sveltejs/adapter-auto':
         specifier: ^3.0.0
         version: 3.3.1(@sveltejs/kit@2.17.2(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.20.4)(vite@5.4.14))(svelte@5.20.4)(vite@5.4.14))
@@ -41,6 +38,9 @@ importers:
       '@types/eslint':
         specifier: ^9.6.0
         version: 9.6.1
+      '@webcursor/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       eslint:
         specifier: ^9.7.0
         version: 9.21.0
@@ -53,6 +53,9 @@ importers:
       globals:
         specifier: ^15.0.0
         version: 15.15.0
+      marked:
+        specifier: ^15.0.7
+        version: 15.0.7
       mdsvex:
         specifier: ^0.11.2
         version: 0.11.2(svelte@5.20.4)
@@ -1698,6 +1701,11 @@ packages:
 
   map-or-similar@1.5.0:
     resolution: {integrity: sha512-0aF7ZmVon1igznGI4VS30yugpduQW3y3GkcgGJOp7d8x8QrizhigUxjI/m2UojsXXto+jLAH3KSz+xOJTiORjg==}
+
+  marked@15.0.7:
+    resolution: {integrity: sha512-dgLIeKGLx5FwziAnsk4ONoGwHwGPJzselimvlVskE9XLN4Orv9u2VA3GWw/lYUqjfA0rUT/6fqKwfZJapP9BEg==}
+    engines: {node: '>= 18'}
+    hasBin: true
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -4026,6 +4034,8 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.5.0
 
   map-or-similar@1.5.0: {}
+
+  marked@15.0.7: {}
 
   math-intrinsics@1.1.0: {}
 

@@ -23,6 +23,10 @@ export default async function handleLlmRequest(
 			}
 		);
 
+		chrome.tabs.sendMessage(sender.tab!.id!, {
+			action: 'streamStart'
+		});
+
 		if (!response.ok) {
 			throw new Error(`API error: ${response.status}, ${response.statusText}`);
 		}

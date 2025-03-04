@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '@selectandprompt/ui/styles/index.css';
+	import '@webcursor/ui/styles/index.css';
 
 	let { onSubmit, response = '' } = $props();
 
@@ -12,10 +12,6 @@
 
 		isLoading = true;
 		onSubmit(prompt, selectedText);
-	}
-
-	function copyToClipboard() {
-		navigator.clipboard.writeText(response);
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -46,14 +42,6 @@
 			{isLoading ? 'Processing...' : 'Submit'}
 		</button>
 	</form>
-
-	{#if response}
-		<div class="response">
-			<div class="response-text">{@html response}</div>
-
-			<button class="copy-button" onclick={copyToClipboard}> Copy to clipboard </button>
-		</div>
-	{/if}
 </div>
 
 <style>

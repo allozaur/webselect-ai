@@ -9,7 +9,7 @@ declare global {
 
 	// Chrome extension message types
 	interface ChromeMessage {
-		action: 'streamUpdate' | 'streamComplete' | 'streamError' | 'sendPrompt';
+		action: 'streamUpdate' | 'streamComplete' | 'streamError' | 'streamStart' | 'sendPrompt';
 		systemPrompt?: string;
 		userPrompt?: string;
 		chunk?: string;

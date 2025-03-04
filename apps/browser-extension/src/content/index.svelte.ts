@@ -3,14 +3,19 @@ import { mount, unmount } from 'svelte';
 import isFormFocused from './is-form-focused.svelte';
 import showNotification from './show-notification.svelte';
 import updateFormPosition from './update-form-position.svelte';
+import LlmMessage from '$lib/components/LlmMessage.svelte';
 
 (() => {
 	let formComponent: unknown = null;
+	let llmMessageComponent: unknown = null;
+	let llmMessageContainer: HTMLDivElement | null = $state(null);
 	let formContainer: HTMLDivElement | null = $state(null);
 	let highlightOverlay: HTMLDivElement | null = $state(null);
 	let isStreamingResponse = $state(false);
 	// eslint-disable-next-line prefer-const
-	let promptFormProps = $state({ onSubmit: handleSubmit, response: '' });
+	let promptFormProps = $state({ onSubmit: handleSubmit });
+	// eslint-disable-next-line prefer-const
+	let llmMessageProps = $state({ content: '' });
 	let responseState = $state('');
 	let selectedText: string | null = $state(null);
 
@@ -22,9 +27,19 @@ import updateFormPosition from './update-form-position.svelte';
 			formComponent = null;
 		}
 
+		if (llmMessageComponent) {
+			unmount(llmMessageComponent);
+			llmMessageComponent = null;
+		}
+
 		if (formContainer) {
 			formContainer.remove();
 			formContainer = null;
+		}
+
+		if (llmMessageContainer) {
+			llmMessageContainer.remove();
+			llmMessageContainer = null;
 		}
 
 		if (highlightOverlay) {
@@ -98,18 +113,12 @@ import updateFormPosition from './update-form-position.svelte';
 
 		const selection = window.getSelection();
 
-		if (!selection || !selection.toString().trim()) {
-			if (!isFormFocused(formContainer)) {
-				if (shouldCleanup()) {
-					cleanup();
-				}
-			}
+		// Ignore selections inside LLM message
+		if (selection && llmMessageContainer?.contains(selection.anchorNode)) {
 			return;
 		}
 
-		if (shouldCleanup()) {
-			resetResponse();
-		} else {
+		if (!selection || !selection.toString().trim()) {
 			return;
 		}
 
@@ -141,25 +150,50 @@ import updateFormPosition from './update-form-position.svelte';
 
 	function resetResponse() {
 		isStreamingResponse = false;
-		promptFormProps.response = '';
+		llmMessageProps.content = '';
 		responseState = '';
 	}
 
 	function shouldCleanup(): boolean {
-		if (responseState.trim()) {
+		// Only prompt for cleanup if there's a response and we're not interacting with the LLM message
+		if (responseState.trim() && !llmMessageContainer?.contains(document.activeElement)) {
 			return window.confirm('Are you sure you want to clear the response and start over?');
 		}
+		// Don't cleanup if we have an active response
+		if (responseState.trim()) {
+			return false;
+		}
 		return true;
+	}
+
+	function mountLlmMessage() {
+		if (!llmMessageContainer) {
+			llmMessageContainer = document.createElement('div');
+			llmMessageContainer.style.position = 'fixed';
+			llmMessageContainer.style.top = '1rem';
+			llmMessageContainer.style.right = '1rem';
+			llmMessageContainer.style.zIndex = '10000';
+			document.body.appendChild(llmMessageContainer);
+
+			llmMessageComponent = mount(LlmMessage, {
+				target: llmMessageContainer,
+				props: llmMessageProps
+			});
+		}
 	}
 
 	chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 		if (!isStreamingResponse) return;
 
 		switch (message.action) {
+			case 'streamStart':
+				mountLlmMessage();
+
+				break;
 			case 'streamUpdate':
 				if (message.chunk) {
 					responseState = responseState + message.chunk;
-					promptFormProps.response = responseState;
+					llmMessageProps.content = responseState;
 				}
 				break;
 
@@ -181,9 +215,12 @@ import updateFormPosition from './update-form-position.svelte';
 		if (
 			formContainer &&
 			!formContainer.contains(e.target as Node) &&
-			!highlightOverlay?.contains(e.target as Node)
+			!highlightOverlay?.contains(e.target as Node) &&
+			!llmMessageContainer?.contains(e.target as Node)
 		) {
-			if (shouldCleanup()) {
+			// Only cleanup if we're clicking outside of all UI elements
+			// and there's no active response
+			if (!responseState.trim() || shouldCleanup()) {
 				cleanup();
 			}
 		}
