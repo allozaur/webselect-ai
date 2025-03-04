@@ -1,11 +1,7 @@
 import PromptForm from '$lib/components/PromptForm.svelte';
 import showNotification from '$lib/show-notification';
 import { mount, unmount } from 'svelte';
-
-interface PromptFormProps {
-	onSubmit: (prompt: string) => Promise<void>;
-	response: string;
-}
+import updateFormPosition from './update-form-position';
 
 (() => {
 	let formComponent: unknown = null;
@@ -13,7 +9,7 @@ interface PromptFormProps {
 	let highlightOverlay: HTMLDivElement | null = $state(null);
 	let isStreamingResponse = $state(false);
 	// eslint-disable-next-line prefer-const
-	let promptFormProps: PromptFormProps = $state({ onSubmit: handleFormat, response: '' });
+	let promptFormProps = $state({ onSubmit: handleFormat, response: '' });
 	let responseState = $state('');
 	let selectedText: string | null = $state(null);
 
@@ -110,11 +106,10 @@ interface PromptFormProps {
 			return;
 		}
 
-		// Only reset if there's no existing response or user confirms
 		if (shouldCleanup()) {
 			resetResponse();
 		} else {
-			return; // Keep existing state if user cancels
+			return;
 		}
 
 		const range = selection.getRangeAt(0);
@@ -123,7 +118,6 @@ interface PromptFormProps {
 		if (!highlightOverlay) {
 			createHighlightOverlay(range);
 		} else {
-			// Update existing highlight position
 			const rect = range.getBoundingClientRect();
 			highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
 			highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
@@ -135,14 +129,13 @@ interface PromptFormProps {
 			formContainer = document.createElement('div');
 			document.body.appendChild(formContainer);
 
-			// Create the PromptForm component with $derived for response
 			formComponent = mount(PromptForm, {
 				target: formContainer,
 				props: promptFormProps
 			});
 		}
 
-		updateFormPosition(selection);
+		updateFormPosition(selection, formContainer);
 	}
 
 	function isFormFocused(): boolean {
@@ -156,22 +149,10 @@ interface PromptFormProps {
 	}
 
 	function shouldCleanup(): boolean {
-		// Only show confirmation if there's a response
 		if (responseState.trim()) {
 			return window.confirm('Are you sure you want to clear the response and start over?');
 		}
 		return true;
-	}
-
-	function updateFormPosition(selection: Selection) {
-		if (!formContainer) return;
-
-		const range = selection.getRangeAt(0);
-		const rect = range.getBoundingClientRect();
-
-		formContainer.style.position = 'absolute';
-		formContainer.style.left = `${rect.left + window.scrollX}px`;
-		formContainer.style.top = `${rect.bottom + window.scrollY + 10}px`;
 	}
 
 	chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
@@ -199,7 +180,6 @@ interface PromptFormProps {
 
 	document.addEventListener('selectionchange', handleSelection);
 
-	// Modify click outside handler
 	document.addEventListener('mousedown', (e) => {
 		if (
 			formContainer &&
@@ -212,10 +192,10 @@ interface PromptFormProps {
 		}
 	});
 
-	// Add these event listeners
 	document.addEventListener('scroll', () => {
 		if (highlightOverlay && selectedText) {
 			const selection = window.getSelection();
+
 			if (selection && selection.rangeCount > 0) {
 				const range = selection.getRangeAt(0);
 				const rect = range.getBoundingClientRect();
@@ -225,21 +205,19 @@ interface PromptFormProps {
 		}
 	});
 
-	// Add window resize handler
 	window.addEventListener('resize', () => {
 		if (highlightOverlay && selectedText && formContainer) {
 			const selection = window.getSelection();
+
 			if (selection && selection.rangeCount > 0) {
 				const range = selection.getRangeAt(0);
 				const rect = range.getBoundingClientRect();
 
-				// Update highlight overlay position
 				highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
 				highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
 				highlightOverlay.style.width = `${rect.width}px`;
 				highlightOverlay.style.height = `${rect.height}px`;
 
-				// Update form position
 				formContainer.style.left = `${rect.left + window.scrollX}px`;
 				formContainer.style.top = `${rect.bottom + window.scrollY + 10}px`;
 			}
