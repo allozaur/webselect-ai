@@ -7,14 +7,23 @@
 	let selectedText = $state('');
 	let isLoading = $state(false);
 
-	function handleSubmit(e: SubmitEvent) {
-		e.preventDefault();
+	function handleSubmit(e?: SubmitEvent) {
+		e?.preventDefault();
+
 		isLoading = true;
 		onSubmit(prompt, selectedText);
 	}
 
 	function copyToClipboard() {
 		navigator.clipboard.writeText(response);
+	}
+
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+
+			handleSubmit();
+		}
 	}
 
 	$effect(() => {
@@ -26,7 +35,11 @@
 
 <div class="prompt-form">
 	<form onsubmit={handleSubmit}>
-		<textarea bind:value={prompt} placeholder="Enter your formatting instructions..." rows="3"
+		<textarea
+			onkeydown={handleKeydown}
+			placeholder="Enter your formatting instructions..."
+			rows="3"
+			bind:value={prompt}
 		></textarea>
 
 		<button type="submit" disabled={isLoading}>
