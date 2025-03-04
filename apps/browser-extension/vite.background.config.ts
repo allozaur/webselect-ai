@@ -6,7 +6,7 @@ export default defineConfig({
 		outDir: 'build',
 		emptyOutDir: false,
 		lib: {
-			entry: resolve(__dirname, 'src/background.ts'),
+			entry: resolve(__dirname, 'src/background/index.ts'),
 			name: 'background',
 			fileName: 'background'
 		},

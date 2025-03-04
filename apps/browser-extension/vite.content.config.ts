@@ -16,7 +16,7 @@ export default defineConfig({
 		outDir: 'build',
 		emptyOutDir: false,
 		lib: {
-			entry: resolve(__dirname, 'src/content.svelte.ts'),
+			entry: resolve(__dirname, 'src/content/index.svelte.ts'),
 			fileName: 'content',
 			name: 'content'
 		},

@@ -1,4 +1,4 @@
-import handleLlmRequest from '$lib/handle-llm-request';
+import handleLlmRequest from './handle-llm-request';
 
 chrome.runtime.onMessage.addListener(
 	(request: SendPromptRequest, sender: chrome.runtime.MessageSender) => {
