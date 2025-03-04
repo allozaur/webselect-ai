@@ -46,6 +46,7 @@
 
 <style>
 	.prompt-form {
+		font-family: 'Space Grotesk', sans-serif;
 		position: relative;
 		background: var(--bg-body);
 		color: var(--c-text);
@@ -57,6 +58,7 @@
 	}
 
 	.prompt-form textarea {
+		font-family: 'Space Grotesk', sans-serif;
 		width: 100%;
 		padding: 8px;
 		margin-bottom: 8px;
@@ -66,6 +68,7 @@
 	}
 
 	.prompt-form button {
+		font-family: 'Space Grotesk', sans-serif;
 		padding: 4px 8px;
 		background: #007bff;
 		color: white;
@@ -82,34 +85,5 @@
 	.prompt-form button:disabled {
 		background: #cccccc;
 		cursor: not-allowed;
-	}
-
-	.response {
-		margin-top: 12px;
-		padding-top: 12px;
-		border-top: 1px solid #eee;
-		width: 100%;
-		background: var(--bg-body);
-		border: 2px solid #007bff;
-		padding: 1rem;
-		border-radius: 0.5rem;
-		display: grid;
-		gap: 1rem;
-	}
-
-	.response-text {
-		margin-bottom: 8px;
-		white-space: pre-wrap;
-		word-wrap: break-word;
-		max-width: 100%;
-	}
-
-	.copy-button {
-		background: #6c757d !important;
-		font-size: 11px;
-	}
-
-	.copy-button:hover {
-		background: #545b62 !important;
 	}
 </style>

@@ -25,4 +25,8 @@
 		background: var(--bg-body);
 		border: var(--c-text);
 	}
+
+	.llm-message :global(:is(h1, h2, h3, h4, h5, h6, ul, ol, li, span)) {
+		font-family: 'Space Grotesk', sans-serif !important;
+	}
 </style>

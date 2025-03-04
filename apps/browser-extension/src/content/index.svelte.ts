@@ -6,6 +6,25 @@ import updateFormPosition from './update-form-position.svelte';
 import LlmMessage from '$lib/components/LlmMessage.svelte';
 
 (() => {
+	function injectFontLinks() {
+		const links = [
+			{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+			{ rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true },
+			{
+				rel: 'stylesheet',
+				href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap'
+			}
+		];
+
+		links.forEach((linkProps) => {
+			const link = document.createElement('link');
+			Object.entries(linkProps).forEach(([key, value]) => {
+				link.setAttribute(key, value);
+			});
+			document.head.appendChild(link);
+		});
+	}
+
 	let formComponent: unknown = null;
 	let llmMessageComponent: unknown = null;
 	let llmMessageContainer: HTMLDivElement | null = $state(null);
@@ -208,6 +227,9 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 				break;
 		}
 	});
+
+	// Call the function to inject font links
+	injectFontLinks();
 
 	document.addEventListener('selectionchange', handleSelection);
 
