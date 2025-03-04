@@ -8,14 +8,14 @@ interface PromptFormProps {
 }
 
 (() => {
-	let activeFormatting = false;
 	let formComponent: unknown = null;
-	let formContainer: HTMLDivElement | null = null;
-	let highlightOverlay: HTMLDivElement | null = null;
-	let responseState = $state('');
-	let selectedText: string | null = null;
+	let formContainer: HTMLDivElement | null = $state(null);
+	let highlightOverlay: HTMLDivElement | null = $state(null);
+	let isStreamingResponse = $state(false);
 	// eslint-disable-next-line prefer-const
 	let promptFormProps: PromptFormProps = $state({ onSubmit: handleFormat, response: '' });
+	let responseState = $state('');
+	let selectedText: string | null = $state(null);
 
 	function cleanup() {
 		resetResponse();
@@ -56,18 +56,30 @@ interface PromptFormProps {
 	}
 
 	async function handleFormat(prompt: string): Promise<void> {
+		function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
+			return new Promise((resolve, reject) => {
+				chrome.runtime.sendMessage(message, (response) => {
+					if (chrome.runtime.lastError) {
+						reject(chrome.runtime.lastError);
+					} else {
+						resolve(response);
+					}
+				});
+			});
+		}
+
 		if (!selectedText) {
 			showNotification('No text selected', 'warning');
 			return;
 		}
 
-		if (activeFormatting) {
-			showNotification('Formatting already in progress', 'info');
+		if (isStreamingResponse) {
+			showNotification('Responding in progress', 'info');
 			return;
 		}
 
-		activeFormatting = true;
-		responseState = ''; // Reset response before starting new formatting
+		isStreamingResponse = true;
+		responseState = '';
 
 		try {
 			await sendMessage({
@@ -83,7 +95,6 @@ interface PromptFormProps {
 	}
 
 	function handleSelection() {
-		// Ignore selection events when form is focused
 		if (isFormFocused()) {
 			return;
 		}
@@ -139,7 +150,7 @@ interface PromptFormProps {
 	}
 
 	function resetResponse() {
-		activeFormatting = false;
+		isStreamingResponse = false;
 		promptFormProps.response = '';
 		responseState = '';
 	}
@@ -150,18 +161,6 @@ interface PromptFormProps {
 			return window.confirm('Are you sure you want to clear the response and start over?');
 		}
 		return true;
-	}
-
-	function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
-		return new Promise((resolve, reject) => {
-			chrome.runtime.sendMessage(message, (response) => {
-				if (chrome.runtime.lastError) {
-					reject(chrome.runtime.lastError);
-				} else {
-					resolve(response);
-				}
-			});
-		});
 	}
 
 	function updateFormPosition(selection: Selection) {
@@ -176,7 +175,7 @@ interface PromptFormProps {
 	}
 
 	chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
-		if (!activeFormatting) return;
+		if (!isStreamingResponse) return;
 
 		switch (message.action) {
 			case 'streamUpdate':
@@ -187,7 +186,7 @@ interface PromptFormProps {
 				break;
 
 			case 'streamComplete':
-				activeFormatting = false;
+				isStreamingResponse = false;
 				break;
 
 			case 'streamError':
