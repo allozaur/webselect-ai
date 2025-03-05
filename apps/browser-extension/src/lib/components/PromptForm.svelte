@@ -33,7 +33,7 @@
 	<form onsubmit={handleSubmit}>
 		<textarea
 			onkeydown={handleKeydown}
-			placeholder="Enter your formatting instructions..."
+			placeholder="What do you want to do with this selection?"
 			rows="3"
 			bind:value={prompt}
 		></textarea>

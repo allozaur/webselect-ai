@@ -155,7 +155,7 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 				userPrompt: `This is a text which i want you to use for my further instruction: ${selectedText}. Now this is my prompt: ${prompt}`
 			});
 		} catch (error) {
-			console.error('Error initiating formatting:', error);
+			console.error('Error initiating LLM message:', error);
 			showNotification('Connection error', 'error');
 			cleanup();
 		}
