@@ -30,6 +30,7 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 	let llmMessageContainer: HTMLDivElement | null = $state(null);
 	let formContainer: HTMLDivElement | null = $state(null);
 	let highlightOverlay: HTMLDivElement | null = $state(null);
+	let tokenCounter: HTMLSpanElement | null = $state(null);
 	let isStreamingResponse = $state(false);
 	// eslint-disable-next-line prefer-const
 	let promptFormProps = $state({ onSubmit: handleSubmit });
@@ -40,6 +41,10 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 
 	function cleanup() {
 		resetResponse();
+
+		if (tokenCounter) {
+			tokenCounter = null;
+		}
 
 		if (formComponent) {
 			unmount(formComponent);
@@ -83,7 +88,33 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 		highlightOverlay.style.pointerEvents = 'none';
 		highlightOverlay.style.zIndex = '9999';
 
+		// Add token counter
+		tokenCounter = document.createElement('span');
+		tokenCounter.style.position = 'absolute';
+		tokenCounter.style.right = '0';
+		tokenCounter.style.bottom = '-20px';
+		tokenCounter.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+		tokenCounter.style.color = 'white';
+		tokenCounter.style.padding = '2px 6px';
+		tokenCounter.style.borderRadius = '4px';
+		tokenCounter.style.fontSize = '12px';
+		tokenCounter.style.fontFamily = 'Space Grotesk, sans-serif';
+		highlightOverlay.appendChild(tokenCounter);
+
 		document.body.appendChild(highlightOverlay);
+	}
+
+	function updateTokenCount(text: string) {
+		if (tokenCounter) {
+			const charCount = text.length;
+			const isOverLimit = charCount > 128000;
+			tokenCounter.textContent = `${charCount.toLocaleString()} chars`;
+			tokenCounter.style.backgroundColor = isOverLimit
+				? 'rgba(255, 0, 0, 0.7)'
+				: 'rgba(0, 0, 0, 0.7)';
+			return !isOverLimit;
+		}
+		return true;
 	}
 
 	async function handleSubmit(prompt: string): Promise<void> {
@@ -104,6 +135,11 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 			return;
 		}
 
+		if (selectedText.length > 128000) {
+			showNotification('Selection exceeds 128k character limit', 'warning');
+			return;
+		}
+
 		if (isStreamingResponse) {
 			showNotification('Responding in progress', 'info');
 			return;
@@ -115,8 +151,8 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 		try {
 			await sendMessage({
 				action: 'sendPrompt',
-				systemPrompt: `This is a text which i want you to use for my further instruction: ${selectedText}`,
-				userPrompt: prompt
+				systemPrompt: `You are a helpful assistant`,
+				userPrompt: `This is a text which i want you to use for my further instruction: ${selectedText}. Now this is my prompt: ${prompt}`
 			});
 		} catch (error) {
 			console.error('Error initiating formatting:', error);
@@ -141,8 +177,14 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 			return;
 		}
 
+		const selectedContent = selection.toString();
+		if (!updateTokenCount(selectedContent)) {
+			showNotification('Selection exceeds 128k character limit', 'warning');
+			return;
+		}
+
 		const range = selection.getRangeAt(0);
-		selectedText = selection.toString();
+		selectedText = selectedContent;
 
 		if (!highlightOverlay) {
 			createHighlightOverlay(range);
