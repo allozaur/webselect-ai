@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Select & Prompt",
+  "name": "WebCursor",
   "version": "0.0.1",
   "description": "MarkDown editor with AI on any website",
   "icons": {
@@ -25,7 +25,7 @@
       "128": "png/icons/icon128.png"
     },
     "default_popup": "index.html",
-    "default_title": "Select & Prompt"
+    "default_title": "WebCursor"
   },
   "content_scripts": [
     {
