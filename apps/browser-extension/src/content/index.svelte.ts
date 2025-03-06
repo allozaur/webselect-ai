@@ -1,54 +1,44 @@
-import PromptForm from '$lib/components/PromptForm.svelte';
+/* eslint-disable prefer-const */
 import { mount, unmount } from 'svelte';
+
+import LlmMessage from '$lib/components/LlmMessage.svelte';
+import PromptForm from '$lib/components/PromptForm.svelte';
+import SelectionOverlay from '$lib/components/SelectionOverlay.svelte';
+
+import injectFontLinks from './inject-font-links';
 import isFormFocused from './is-form-focused.svelte';
 import showNotification from './show-notification.svelte';
 import updateFormPosition from './update-form-position.svelte';
-import LlmMessage from '$lib/components/LlmMessage.svelte';
+
+(() => injectFontLinks())();
 
 (() => {
-	function injectFontLinks() {
-		const links = [
-			{ rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-			{ rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: true },
-			{
-				rel: 'stylesheet',
-				href: 'https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap'
-			}
-		];
+	let isStreamingActive = $state(false);
 
-		links.forEach((linkProps) => {
-			const link = document.createElement('link');
-			Object.entries(linkProps).forEach(([key, value]) => {
-				link.setAttribute(key, value);
-			});
-			document.head.appendChild(link);
-		});
-	}
-
-	let formComponent: unknown = null;
 	let llmMessageComponent: unknown = null;
 	let llmMessageContainer: HTMLDivElement | null = $state(null);
-	let formContainer: HTMLDivElement | null = $state(null);
-	let highlightOverlay: HTMLDivElement | null = $state(null);
-	let tokenCounter: HTMLSpanElement | null = $state(null);
-	let isStreamingResponse = $state(false);
-	// eslint-disable-next-line prefer-const
-	let promptFormProps = $state({ onSubmit: handleSubmit });
-	// eslint-disable-next-line prefer-const
 	let llmMessageProps = $state({ content: '' });
-	let responseState = $state('');
+
+	let promptFormComponent: unknown = null;
+	let promptFormContainer: HTMLDivElement | null = $state(null);
+	let promptFormProps = $state({ onSubmit: handleSubmit });
+
+	let selectionOverlayComponent: unknown = null;
+	let selectionOverlayContainer: HTMLDivElement | null = $state(null);
+	let selectionOverlayProps = $state({
+		rect: null as DOMRect | null,
+		textLength: 0
+	});
+
 	let selectedText: string | null = $state(null);
 
 	function cleanup() {
-		resetResponse();
+		isStreamingActive = false;
+		llmMessageProps.content = '';
 
-		if (tokenCounter) {
-			tokenCounter = null;
-		}
-
-		if (formComponent) {
-			unmount(formComponent);
-			formComponent = null;
+		if (promptFormComponent) {
+			unmount(promptFormComponent);
+			promptFormComponent = null;
 		}
 
 		if (llmMessageComponent) {
@@ -56,9 +46,14 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 			llmMessageComponent = null;
 		}
 
-		if (formContainer) {
-			formContainer.remove();
-			formContainer = null;
+		if (selectionOverlayComponent) {
+			unmount(selectionOverlayComponent);
+			selectionOverlayComponent = null;
+		}
+
+		if (promptFormContainer) {
+			promptFormContainer.remove();
+			promptFormContainer = null;
 		}
 
 		if (llmMessageContainer) {
@@ -66,55 +61,54 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 			llmMessageContainer = null;
 		}
 
-		if (highlightOverlay) {
-			highlightOverlay.remove();
-			highlightOverlay = null;
+		if (selectionOverlayContainer) {
+			selectionOverlayContainer.remove();
+			selectionOverlayContainer = null;
 		}
 
 		selectedText = null;
 	}
 
-	function createHighlightOverlay(range: Range) {
-		const rect = range.getBoundingClientRect();
-
-		highlightOverlay = document.createElement('div');
-		highlightOverlay.style.borderRadius = '0.5rem';
-		highlightOverlay.style.position = 'absolute';
-		highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
-		highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
-		highlightOverlay.style.width = `${rect.width}px`;
-		highlightOverlay.style.height = `${rect.height}px`;
-		highlightOverlay.style.backgroundColor = 'rgba(0, 123, 255, 0.2)';
-		highlightOverlay.style.pointerEvents = 'none';
-		highlightOverlay.style.zIndex = '9999';
-
-		// Add token counter
-		tokenCounter = document.createElement('span');
-		tokenCounter.style.position = 'absolute';
-		tokenCounter.style.right = '0';
-		tokenCounter.style.bottom = '-20px';
-		tokenCounter.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-		tokenCounter.style.color = 'white';
-		tokenCounter.style.padding = '2px 6px';
-		tokenCounter.style.borderRadius = '4px';
-		tokenCounter.style.fontSize = '12px';
-		tokenCounter.style.fontFamily = 'Space Grotesk, sans-serif';
-		highlightOverlay.appendChild(tokenCounter);
-
-		document.body.appendChild(highlightOverlay);
-	}
-
-	function updateTokenCount(text: string) {
-		if (tokenCounter) {
-			const charCount = text.length;
-			const isOverLimit = charCount > 128000;
-			tokenCounter.textContent = `${charCount.toLocaleString()} chars`;
-			tokenCounter.style.backgroundColor = isOverLimit
-				? 'rgba(255, 0, 0, 0.7)'
-				: 'rgba(0, 0, 0, 0.7)';
-			return !isOverLimit;
+	function handleSelection() {
+		if (isFormFocused(promptFormContainer)) {
+			return;
 		}
-		return true;
+
+		const selection = window.getSelection();
+
+		if (selection && llmMessageContainer?.contains(selection.anchorNode)) {
+			return;
+		}
+
+		if (!selection || !selection.toString().trim()) {
+			if (selectionOverlayComponent) {
+				cleanup();
+			}
+			return;
+		}
+
+		const selectedContent = selection.toString();
+
+		if (selectedContent.length > 128000) {
+			showNotification('Selection exceeds 128k character limit', 'warning');
+			return;
+		}
+
+		const range = selection.getRangeAt(0);
+		selectedText = selectedContent;
+		updateSelectionOverlay(range);
+
+		if (!promptFormContainer) {
+			promptFormContainer = document.createElement('div');
+			document.body.appendChild(promptFormContainer);
+
+			promptFormComponent = mount(PromptForm, {
+				target: promptFormContainer,
+				props: promptFormProps
+			});
+		}
+
+		updateFormPosition(selection, promptFormContainer);
 	}
 
 	async function handleSubmit(prompt: string): Promise<void> {
@@ -140,13 +134,12 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 			return;
 		}
 
-		if (isStreamingResponse) {
+		if (isStreamingActive) {
 			showNotification('Responding in progress', 'info');
 			return;
 		}
 
-		isStreamingResponse = true;
-		responseState = '';
+		isStreamingActive = true;
 
 		try {
 			await sendMessage({
@@ -161,163 +154,102 @@ import LlmMessage from '$lib/components/LlmMessage.svelte';
 		}
 	}
 
-	function handleSelection() {
-		if (isFormFocused(formContainer)) {
-			return;
-		}
+	function updateSelectionOverlay(range: Range) {
+		const rect = range.getBoundingClientRect();
+		selectionOverlayProps.rect = rect;
+		selectionOverlayProps.textLength = selectedText?.length || 0;
 
-		const selection = window.getSelection();
+		if (!selectionOverlayContainer) {
+			selectionOverlayContainer = document.createElement('div');
+			document.body.appendChild(selectionOverlayContainer);
 
-		// Ignore selections inside LLM message
-		if (selection && llmMessageContainer?.contains(selection.anchorNode)) {
-			return;
-		}
-
-		if (!selection || !selection.toString().trim()) {
-			return;
-		}
-
-		const selectedContent = selection.toString();
-		if (!updateTokenCount(selectedContent)) {
-			showNotification('Selection exceeds 128k character limit', 'warning');
-			return;
-		}
-
-		const range = selection.getRangeAt(0);
-		selectedText = selectedContent;
-
-		if (!highlightOverlay) {
-			createHighlightOverlay(range);
-		} else {
-			const rect = range.getBoundingClientRect();
-			highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
-			highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
-			highlightOverlay.style.width = `${rect.width}px`;
-			highlightOverlay.style.height = `${rect.height}px`;
-		}
-
-		if (!formContainer) {
-			formContainer = document.createElement('div');
-			document.body.appendChild(formContainer);
-
-			formComponent = mount(PromptForm, {
-				target: formContainer,
-				props: promptFormProps
-			});
-		}
-
-		updateFormPosition(selection, formContainer);
-	}
-
-	function resetResponse() {
-		isStreamingResponse = false;
-		llmMessageProps.content = '';
-		responseState = '';
-	}
-
-	function shouldCleanup(): boolean {
-		// Only prompt for cleanup if there's a response and we're not interacting with the LLM message
-		if (responseState.trim() && !llmMessageContainer?.contains(document.activeElement)) {
-			return window.confirm('Are you sure you want to clear the response and start over?');
-		}
-		// Don't cleanup if we have an active response
-		if (responseState.trim()) {
-			return false;
-		}
-		return true;
-	}
-
-	function mountLlmMessage() {
-		if (!llmMessageContainer) {
-			llmMessageContainer = document.createElement('div');
-			llmMessageContainer.style.position = 'fixed';
-			llmMessageContainer.style.top = '1rem';
-			llmMessageContainer.style.right = '1rem';
-			llmMessageContainer.style.zIndex = '10000';
-			document.body.appendChild(llmMessageContainer);
-
-			llmMessageComponent = mount(LlmMessage, {
-				target: llmMessageContainer,
-				props: llmMessageProps
+			selectionOverlayComponent = mount(SelectionOverlay, {
+				target: selectionOverlayContainer,
+				props: selectionOverlayProps
 			});
 		}
 	}
 
 	chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
-		if (!isStreamingResponse) return;
+		if (!isStreamingActive) return;
 
 		switch (message.action) {
 			case 'streamStart':
-				mountLlmMessage();
+				if (!llmMessageContainer) {
+					llmMessageContainer = document.createElement('div');
+					llmMessageContainer.style.position = 'fixed';
+					llmMessageContainer.style.top = '1rem';
+					llmMessageContainer.style.right = '1rem';
+					llmMessageContainer.style.zIndex = '10000';
+					document.body.appendChild(llmMessageContainer);
+
+					llmMessageComponent = mount(LlmMessage, {
+						target: llmMessageContainer,
+						props: llmMessageProps
+					});
+				}
 
 				break;
 			case 'streamUpdate':
 				if (message.chunk) {
-					responseState = responseState + message.chunk;
-					llmMessageProps.content = responseState;
+					llmMessageProps.content = llmMessageProps.content + message.chunk;
 				}
 				break;
 
 			case 'streamComplete':
-				isStreamingResponse = false;
+				isStreamingActive = false;
 				break;
 
 			case 'streamError':
 				console.error('Stream error:', message.error);
 				showNotification('Error: ' + (message.error || 'Unknown error'), 'error');
-				resetResponse();
+				isStreamingActive = false;
+				llmMessageProps.content = '';
 				break;
 		}
 	});
-
-	// Call the function to inject font links
-	injectFontLinks();
 
 	document.addEventListener('selectionchange', handleSelection);
 
 	document.addEventListener('mousedown', (e) => {
 		if (
-			formContainer &&
-			!formContainer.contains(e.target as Node) &&
-			!highlightOverlay?.contains(e.target as Node) &&
+			promptFormContainer &&
+			!promptFormContainer.contains(e.target as Node) &&
+			!selectionOverlayContainer?.contains(e.target as Node) &&
 			!llmMessageContainer?.contains(e.target as Node)
 		) {
-			// Only cleanup if we're clicking outside of all UI elements
-			// and there's no active response
-			if (!responseState.trim() || shouldCleanup()) {
+			if (
+				!llmMessageProps.content.trim() ||
+				(llmMessageProps?.content.trim().length > 0 &&
+					window.confirm('Are you sure you want to clear the response and start over?'))
+			) {
 				cleanup();
 			}
 		}
 	});
 
 	document.addEventListener('scroll', () => {
-		if (highlightOverlay && selectedText) {
+		if (selectedText) {
 			const selection = window.getSelection();
 
 			if (selection && selection.rangeCount > 0) {
 				const range = selection.getRangeAt(0);
-				const rect = range.getBoundingClientRect();
-				highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
-				highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
+				updateSelectionOverlay(range);
 			}
 		}
 	});
 
 	window.addEventListener('resize', () => {
-		if (highlightOverlay && selectedText && formContainer) {
+		if (selectedText && promptFormContainer) {
 			const selection = window.getSelection();
 
 			if (selection && selection.rangeCount > 0) {
 				const range = selection.getRangeAt(0);
+				updateSelectionOverlay(range);
+
 				const rect = range.getBoundingClientRect();
-
-				highlightOverlay.style.left = `${rect.left + window.scrollX}px`;
-				highlightOverlay.style.top = `${rect.top + window.scrollY}px`;
-				highlightOverlay.style.width = `${rect.width}px`;
-				highlightOverlay.style.height = `${rect.height}px`;
-
-				formContainer.style.left = `${rect.left + window.scrollX}px`;
-				formContainer.style.top = `${rect.bottom + window.scrollY + 10}px`;
+				promptFormContainer.style.left = `${rect.left + window.scrollX}px`;
+				promptFormContainer.style.top = `${rect.bottom + window.scrollY + 10}px`;
 			}
 		}
 	});

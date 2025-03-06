@@ -43,6 +43,7 @@ export default async function handleLlmRequest(
 		const openai = new OpenAI({
 			apiKey: apiKey ?? 'ollama',
 			baseURL: baseURL,
+			dangerouslyAllowBrowser: true,
 			defaultHeaders: {
 				'anthropic-dangerous-direct-browser-access': 'true'
 			}
@@ -54,7 +55,8 @@ export default async function handleLlmRequest(
 				{ role: 'system', content: systemPrompt },
 				{ role: 'user', content: text }
 			],
-			stream: true
+			stream: true,
+			max_tokens: provider === 'anthropic' ? 8192 : undefined
 		});
 
 		chrome.tabs.sendMessage(sender.tab!.id!, {
