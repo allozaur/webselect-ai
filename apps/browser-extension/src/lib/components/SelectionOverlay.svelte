@@ -33,7 +33,7 @@
 	.highlight-overlay {
 		border-radius: 0.5rem;
 		position: absolute;
-		background-color: rgba(0, 123, 255, 0.2);
+		background-color: var(--bg-highlight);
 		pointer-events: none;
 		z-index: 9999;
 	}

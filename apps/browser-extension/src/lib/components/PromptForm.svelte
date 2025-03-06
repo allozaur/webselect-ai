@@ -8,9 +8,7 @@
 		'Extract the keywords from this text'
 	];
 
-	let { onSubmit, isLoading = false } = $props();
-
-	let prompt = $state('');
+	let { onSubmit, isLoading = false, prompt = $bindable('') } = $props();
 	let selectedText = $state('');
 
 	function handleSubmit(e?: SubmitEvent) {

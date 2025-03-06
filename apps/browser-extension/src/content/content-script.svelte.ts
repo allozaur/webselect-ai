@@ -16,7 +16,7 @@ export default function contentScript() {
 
 	let promptFormComponent: unknown = null;
 	let promptFormContainer: HTMLDivElement | null = $state(null);
-	let promptFormProps = $state({ isLoading: false, onSubmit: handleSubmit });
+	let promptFormProps = $state({ isLoading: false, onSubmit: handleSubmit, prompt: '' });
 
 	let selectionOverlayComponent: unknown = null;
 	let selectionOverlayContainer: HTMLDivElement | null = $state(null);
@@ -31,35 +31,23 @@ export default function contentScript() {
 		promptFormProps.isLoading = false;
 		llmMessageProps.content = '';
 
-		if (promptFormComponent) {
-			unmount(promptFormComponent);
-			promptFormComponent = null;
+		const components = [
+			{ component: promptFormComponent, container: promptFormContainer },
+			{ component: llmMessageComponent, container: llmMessageContainer },
+			{ component: selectionOverlayComponent, container: selectionOverlayContainer }
+		];
+
+		for (const { component, container } of components) {
+			if (component) {
+				unmount(component);
+			}
+			if (container) {
+				container.remove();
+			}
 		}
 
-		if (llmMessageComponent) {
-			unmount(llmMessageComponent);
-			llmMessageComponent = null;
-		}
-
-		if (selectionOverlayComponent) {
-			unmount(selectionOverlayComponent);
-			selectionOverlayComponent = null;
-		}
-
-		if (promptFormContainer) {
-			promptFormContainer.remove();
-			promptFormContainer = null;
-		}
-
-		if (llmMessageContainer) {
-			llmMessageContainer.remove();
-			llmMessageContainer = null;
-		}
-
-		if (selectionOverlayContainer) {
-			selectionOverlayContainer.remove();
-			selectionOverlayContainer = null;
-		}
+		promptFormComponent = llmMessageComponent = selectionOverlayComponent = null;
+		promptFormContainer = llmMessageContainer = selectionOverlayContainer = null;
 
 		selectedText = null;
 	}
@@ -192,15 +180,14 @@ export default function contentScript() {
 				break;
 
 			case 'streamComplete':
-				alert('Stream complete');
 				promptFormProps.isLoading = false;
+				promptFormProps.prompt = '';
 				break;
 
 			case 'streamError':
 				console.error('Stream error:', message.error);
 				showNotification('Error: ' + (message.error || 'Unknown error'), 'error');
 				promptFormProps.isLoading = false;
-				llmMessageProps.content = '';
 				break;
 		}
 	});
