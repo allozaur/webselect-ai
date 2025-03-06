@@ -50,13 +50,13 @@ export default async function handleLlmRequest(
 		});
 
 		const completion = await openai.chat.completions.create({
-			model: model,
+			max_tokens: provider === 'anthropic' ? 8192 : undefined,
 			messages: [
 				{ role: 'system', content: systemPrompt },
 				{ role: 'user', content: text }
 			],
-			stream: true,
-			max_tokens: provider === 'anthropic' ? 8192 : undefined
+			model: model,
+			stream: true
 		});
 
 		chrome.tabs.sendMessage(sender.tab!.id!, {
@@ -71,6 +71,10 @@ export default async function handleLlmRequest(
 				} as StreamMessage);
 			}
 		}
+
+		chrome.tabs.sendMessage(sender.tab!.id!, {
+			action: 'streamComplete'
+		});
 	} catch (error) {
 		console.error('Error in handleLlmRequest:', error);
 		throw error;

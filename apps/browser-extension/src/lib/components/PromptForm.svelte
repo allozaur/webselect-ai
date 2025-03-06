@@ -1,16 +1,21 @@
 <script lang="ts">
-	import '@webcursor/ui/styles/index.css';
+	import '@webcursor/ui/styles/variables.css';
+	import { Button } from '@webcursor/ui';
 
-	let { onSubmit, response = '' } = $props();
+	const suggestedPrompts = [
+		'Summarize this text',
+		'Analyze the sentiment of this text',
+		'Extract the keywords from this text'
+	];
+
+	let { onSubmit, isLoading = false } = $props();
 
 	let prompt = $state('');
 	let selectedText = $state('');
-	let isLoading = $state(false);
 
 	function handleSubmit(e?: SubmitEvent) {
 		e?.preventDefault();
 
-		isLoading = true;
 		onSubmit(prompt, selectedText);
 	}
 
@@ -21,16 +26,19 @@
 			handleSubmit();
 		}
 	}
-
-	$effect(() => {
-		if (response) {
-			isLoading = false;
-		}
-	});
 </script>
 
 <div class="prompt-form">
 	<form onsubmit={handleSubmit}>
+		{#if !prompt}
+			<div class="suggested-prompts">
+				{#each suggestedPrompts as suggestedPrompt}
+					<Button onclick={() => (prompt = suggestedPrompt)}>
+						{suggestedPrompt}
+					</Button>
+				{/each}
+			</div>
+		{/if}
 		<textarea
 			onkeydown={handleKeydown}
 			placeholder="What do you want to do with this selection?"
@@ -38,9 +46,11 @@
 			bind:value={prompt}
 		></textarea>
 
-		<button type="submit" disabled={isLoading}>
-			{isLoading ? 'Processing...' : 'Submit'}
-		</button>
+		{#if prompt}
+			<Button type="submit" disabled={isLoading}>
+				{isLoading ? 'Processing...' : 'Submit'}
+			</Button>
+		{/if}
 	</form>
 </div>
 
@@ -55,6 +65,7 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		width: 300px;
 		z-index: 10000;
+		width: min(80vw, 48rem);
 	}
 
 	.prompt-form textarea {
@@ -85,5 +96,11 @@
 	.prompt-form button:disabled {
 		background: #cccccc;
 		cursor: not-allowed;
+	}
+
+	.suggested-prompts {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
 	}
 </style>

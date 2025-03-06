@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "WebCursor",
   "version": "0.0.1",
-  "description": "MarkDown editor with AI on any website",
+  "description": "Select anything on website and instantly chat with AI",
   "icons": {
     "16": "png/icons/icon16.png",
     "48": "png/icons/icon48.png",
