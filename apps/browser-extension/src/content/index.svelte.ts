@@ -1,5 +1,9 @@
-import injectFontLinks from './inject-font-links';
-import contentScript from './content-script.svelte';
+import { mount } from 'svelte';
+import App from './App.svelte';
 
-(() => injectFontLinks())();
-(() => contentScript())();
+(() => {
+	const container = document.createElement('div');
+	document.body.appendChild(container);
+
+	mount(App, { target: container });
+})();

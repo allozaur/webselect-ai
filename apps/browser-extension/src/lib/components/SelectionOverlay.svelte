@@ -1,47 +1,43 @@
 <script lang="ts">
-	let { rect = null, textLength = 0 } = $props();
+	let { bottom, rect = null, textLength = 0 } = $props();
 
 	let isOverLimit = $derived(textLength > 128000);
-
-	let style = $derived(
-		rect
-			? {
-					left: `${rect.left + window.scrollX}px`,
-					top: `${rect.top + window.scrollY}px`,
-					width: `${rect.width}px`,
-					height: `${rect.height}px`
-				}
-			: undefined
-	);
 </script>
 
 {#if rect}
 	<div
 		class="highlight-overlay"
-		style:left={style?.left}
-		style:top={style?.top}
-		style:width={style?.width}
-		style:height={style?.height}
+		style:left="{rect.left}px"
+		style:top="{rect.top}px"
+		style:width="{rect.width}px"
+		style:height="{rect.height}px"
 	>
-		<span class="token-counter" class:over-limit={isOverLimit}>
-			{textLength.toLocaleString()} chars
-		</span>
+		<div class="bottom">
+			<span class="token-counter" class:over-limit={isOverLimit}>
+				{textLength.toLocaleString()} chars
+			</span>
+
+			{@render bottom()}
+		</div>
 	</div>
 {/if}
 
 <style>
 	.highlight-overlay {
-		border-radius: 0.5rem;
 		position: absolute;
-		background-color: var(--bg-highlight);
+		background-color: rgba(66, 135, 245, 0.2); /* Visible but translucent blue */
+		border: 2px solid rgba(66, 135, 245, 0.4);
 		pointer-events: none;
 		z-index: 9999;
 	}
 
-	.token-counter {
+	.bottom {
 		position: absolute;
 		right: 0;
-		bottom: -20px;
+		top: calc(100% + 1.5rem);
+	}
+
+	.token-counter {
 		background-color: rgba(0, 0, 0, 0.7);
 		color: white;
 		padding: 2px 6px;

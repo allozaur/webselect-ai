@@ -8,7 +8,11 @@
 		'Extract the keywords from this text'
 	];
 
-	let { isLoading = $bindable(false), prompt = $bindable(''), selectedText = '' } = $props();
+	let {
+		isLoading = $bindable(false),
+		prompt = $bindable(''),
+		selectedText = $bindable('')
+	} = $props();
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Enter' && !e.shiftKey) {
@@ -101,6 +105,7 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		width: 300px;
 		z-index: 10000;
+		pointer-events: all;
 		width: min(80vw, 48rem);
 	}
 
