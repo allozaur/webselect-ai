@@ -8,10 +8,15 @@ declare global {
 	}
 
 	// Chrome extension message types
+
+	interface Message {
+		role: 'system' | 'user' | 'assistant';
+		content: string;
+	}
+
 	interface ChromeMessage {
 		action: 'streamUpdate' | 'streamComplete' | 'streamError' | 'streamStart' | 'sendPrompt';
-		systemPrompt?: string;
-		userPrompt?: string;
+		messages: Message[];
 		chunk?: string;
 		error?: string;
 	}
@@ -20,6 +25,7 @@ declare global {
 		action: 'sendPrompt';
 		systemPrompt: string;
 		userPrompt: string;
+		messages: Message[];
 	}
 
 	interface OpenAiMessage {

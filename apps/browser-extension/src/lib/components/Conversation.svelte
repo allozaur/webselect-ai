@@ -1,0 +1,69 @@
+<script lang="ts">
+	import { marked } from 'marked';
+	import PromptForm from './PromptForm.svelte';
+
+	let { messages = $bindable([]), isLoading = $bindable(false) } = $props();
+
+	function copyToClipboard(content: string) {
+		navigator.clipboard.writeText(content);
+	}
+</script>
+
+<div class="conversation">
+	{#if messages.length > 0}
+		{#each messages as message}
+			<div class="message {message.role}">
+				{#if message.role === 'user'}
+					<div class="content">
+						{message.content}
+					</div>
+				{:else}
+					<div class="content">
+						{@html marked.parse(message.content)}
+						<button class="copy-button" onclick={() => copyToClipboard(message.content)}>
+							Copy to clipboard
+						</button>
+					</div>
+				{/if}
+			</div>
+		{/each}
+
+		<PromptForm bind:isLoading bind:messages isContinuation />
+	{:else}
+		Loading...
+	{/if}
+</div>
+
+<style>
+	.conversation {
+		position: fixed;
+		top: 1rem;
+		right: 1rem;
+		width: min(33vw, 400px);
+		max-height: calc(100vh - 2rem);
+		overflow: auto;
+		background: var(--bg-body);
+		border-radius: 1rem;
+		pointer-events: all;
+	}
+
+	.message {
+		padding: 1rem;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	}
+
+	.message.assistant {
+		background: rgba(66, 135, 245, 0.1);
+	}
+
+	.content :global(p) {
+		margin: 0;
+		font-family: 'Space Grotesk', sans-serif;
+	}
+
+	.copy-button {
+		margin-top: 0.5rem;
+		font-size: 0.875rem;
+		opacity: 0.7;
+	}
+</style>

@@ -11,7 +11,10 @@
 	let {
 		isLoading = $bindable(false),
 		prompt = $bindable(''),
-		selectedText = $bindable('')
+		selectedText = $bindable(''),
+		isContinuation = false,
+		messages = $bindable([]) as Message[],
+		promptFormEl = $bindable() as HTMLElement
 	} = $props();
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -25,12 +28,12 @@
 	async function handleSubmit(e?: SubmitEvent) {
 		e?.preventDefault();
 
-		if (!selectedText) {
+		if (!isContinuation && !selectedText) {
 			alert('No text selected');
 			return;
 		}
 
-		if (selectedText.length > 128000) {
+		if (!isContinuation && selectedText.length > 128000) {
 			alert('Selection exceeds 128k character limit');
 			return;
 		}
@@ -43,14 +46,29 @@
 		isLoading = true;
 
 		try {
+			if (!isContinuation) {
+				messages.push({
+					role: 'system',
+					content: 'You are a helpful assistant'
+				});
+				messages.push({
+					role: 'user',
+					content: `This is a text which i want you to use for my further instruction: ${selectedText}. Now this is my prompt: ${prompt}`
+				});
+			} else {
+				messages.push({
+					role: 'user',
+					content: prompt
+				});
+			}
+
 			await sendMessage({
 				action: 'sendPrompt',
-				systemPrompt: `You are a helpful assistant`,
-				userPrompt: `This is a text which i want you to use for my further instruction: ${selectedText}. Now this is my prompt: ${prompt}`
+				messages: messages
 			});
 		} catch (error) {
 			console.error('Error initiating LLM message:', error);
-			alert('Connection error');
+			alert(error);
 			isLoading = false;
 		}
 	}
@@ -68,9 +86,9 @@
 	}
 </script>
 
-<div class="prompt-form">
+<div class="prompt-form {isContinuation ? 'continuation' : ''}" bind:this={promptFormEl}>
 	<form onsubmit={handleSubmit}>
-		{#if !prompt}
+		{#if !prompt && !isContinuation}
 			<div class="suggested-prompts">
 				{#each suggestedPrompts as suggestedPrompt}
 					<Button onclick={() => (prompt = suggestedPrompt)}>
@@ -105,9 +123,6 @@
 	}
 
 	.prompt-form textarea {
-		background: var(--bg-body);
-		color: var(--c-text);
-		font-family: 'Space Grotesk', sans-serif;
 		width: 100%;
 		padding: 8px;
 		margin-bottom: 8px;
@@ -120,5 +135,9 @@
 		display: flex;
 		gap: 0.5rem;
 		flex-wrap: wrap;
+	}
+
+	.continuation {
+		width: 100%;
 	}
 </style>

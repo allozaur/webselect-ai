@@ -1,4 +1,8 @@
 :root {
+	--ff:
+		'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+		sans-serif;
+
 	--hex-primary: #1e56ff;
 	--hex-primary-20: #1e56ff20;
 	--hex-primary-40: #1e56ff40;
@@ -7,5 +11,4 @@
 	--bg-highlight: light-dark(var(--hex-primary-20), var(--hex-primary-40));
 
 	--c-text: light-dark(#000, #efefef);
-	color-scheme: light dark;
 }

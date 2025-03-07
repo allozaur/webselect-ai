@@ -12,18 +12,11 @@
 
 <style>
 	.webcursor-popup {
+		color-scheme: light dark;
 		background-color: var(--bg-body);
 		box-sizing: border-box;
 		color: var(--c-text);
-		font-family:
-			'Space Grotesk',
-			-apple-system,
-			BlinkMacSystemFont,
-			'Segoe UI',
-			Roboto,
-			'Helvetica Neue',
-			Arial,
-			sans-serif;
+		font-family: var(--ff);
 		font-optical-sizing: auto;
 		letter-spacing: -0.01em;
 		margin: 0;

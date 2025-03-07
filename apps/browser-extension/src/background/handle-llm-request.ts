@@ -3,8 +3,7 @@ import OpenAI from 'openai';
 let baseURL: string;
 
 export default async function handleLlmRequest(
-	systemPrompt: string,
-	text: string,
+	messages: Message[] = [],
 	sender: chrome.runtime.MessageSender
 ): Promise<void> {
 	try {
@@ -18,7 +17,7 @@ export default async function handleLlmRequest(
 					reject(chrome.runtime.lastError);
 				}
 				if (!result.llm_config) {
-					reject(new Error('OpenAI base URL not set'));
+					reject(new Error('LLM configuration not set'));
 				}
 				resolve(result.llm_config);
 			});
@@ -51,10 +50,7 @@ export default async function handleLlmRequest(
 
 		const completion = await openai.chat.completions.create({
 			max_tokens: provider === 'anthropic' ? 8192 : undefined,
-			messages: [
-				{ role: 'system', content: systemPrompt },
-				{ role: 'user', content: text }
-			],
+			messages: messages,
 			model: model,
 			stream: true
 		});

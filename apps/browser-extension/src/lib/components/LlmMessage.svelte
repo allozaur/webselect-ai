@@ -1,17 +1,18 @@
 <script lang="ts">
+	import { Button } from '@webcursor/ui';
 	import { marked } from 'marked';
 
-	let { content = '' } = $props();
+	let { message = { content: '', role: '' } } = $props();
 
 	function copyToClipboard() {
-		navigator.clipboard.writeText(content);
+		navigator.clipboard.writeText(message.content);
 	}
 </script>
 
 <div class="llm-message">
-	{@html marked.parse(content)}
+	{@html marked.parse(message.content)}
 
-	<button class="copy-button" onclick={copyToClipboard}> Copy to clipboard </button>
+	<Button onclick={copyToClipboard}>Copy to clipboard</Button>
 </div>
 
 <style>
@@ -25,9 +26,5 @@
 		background: var(--bg-body);
 		color: var(--c-text);
 		border: var(--c-text);
-	}
-
-	.llm-message :global(:is(h1, h2, h3, h4, h5, h6, ul, ol, li, span)) {
-		font-family: 'Space Grotesk', sans-serif !important;
 	}
 </style>

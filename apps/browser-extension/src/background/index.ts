@@ -3,7 +3,7 @@ import handleLlmRequest from './handle-llm-request';
 chrome.runtime.onMessage.addListener(
 	(request: SendPromptRequest, sender: chrome.runtime.MessageSender) => {
 		if (request.action === 'sendPrompt') {
-			handleLlmRequest(request.systemPrompt, request.userPrompt, sender)
+			handleLlmRequest(request.messages, sender)
 				.then(() => {
 					chrome.tabs.sendMessage(sender.tab!.id!, {
 						action: 'streamComplete'

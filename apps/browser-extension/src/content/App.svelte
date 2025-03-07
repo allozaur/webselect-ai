@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import LlmMessage from '$lib/components/LlmMessage.svelte';
 	import PromptForm from '$lib/components/PromptForm.svelte';
 	import SelectionOverlay from '$lib/components/SelectionOverlay.svelte';
+	import Conversation from '$lib/components/Conversation.svelte';
 
 	let llmContent = $state('');
 	let isLoading = $state(false);
+	let messages: Message[] = $state([]);
 	let prompt = $state('');
-	let selectedText = $state('');
-
 	let selectionRect: DOMRect | null = $state(null);
+	let selectedText = $state('');
+	let showInitialPrompt = $state(true);
+	let promptFormEl: HTMLElement | undefined = $state();
 
 	function cleanup() {
 		isLoading = false;
@@ -22,9 +24,8 @@
 	function handleMouseDown(e: MouseEvent) {
 		const target = e.target as Node;
 		const components = document.querySelector('.webcursor');
-		const promptForm = document.querySelector('.prompt-form');
 
-		if (promptForm?.contains(target)) {
+		if (promptFormEl?.contains(target)) {
 			return;
 		}
 
@@ -39,11 +40,18 @@
 		}
 	}
 
-	function handleSelection() {
+	function handleSelectionRect(e: Event) {
+		const target = e.target as Node;
 		const selection = window.getSelection();
 
+		if (promptFormEl?.contains(target)) {
+			return;
+		}
+
 		if (!selection || !selection.toString().trim()) {
-			cleanup();
+			// Don't cleanup messages when selection changes
+			selectionRect = null;
+			showInitialPrompt = true;
 			return;
 		}
 
@@ -61,31 +69,40 @@
 	onMount(() => {
 		chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 			switch (message.action) {
+				case 'streamStart':
+					messages = [
+						...messages,
+						{ role: 'user', content: prompt },
+						{ role: 'assistant', content: '' }
+					];
+					showInitialPrompt = false;
+					prompt = '';
+					break;
 				case 'streamUpdate':
 					if (message.chunk) {
-						llmContent += message.chunk;
+						const lastMessage = messages[messages.length - 1];
+						lastMessage.content += message.chunk;
+						messages = [...messages];
 					}
 					break;
 				case 'streamComplete':
 					isLoading = false;
-					prompt = '';
 					break;
 				case 'streamError':
 					console.error('Stream error:', message.error);
 					isLoading = false;
-					prompt = '';
 					break;
 			}
 		});
 	});
 </script>
 
-<svelte:document onselectionchange={handleSelection} />
+<svelte:document onselectionchange={handleSelectionRect} />
 
 <svelte:window
 	onmousedown={handleMouseDown}
-	onresize={handleSelection}
-	onscroll={handleSelection}
+	onresize={handleSelectionRect}
+	onscroll={handleSelectionRect}
 />
 
 <svelte:head>
@@ -101,33 +118,43 @@
 	{#if selectionRect}
 		<SelectionOverlay rect={selectionRect} textLength={selectedText.length}>
 			{#snippet bottom()}
-				<PromptForm bind:isLoading bind:prompt bind:selectedText />
+				{#if showInitialPrompt}
+					<PromptForm
+						bind:isLoading
+						bind:messages
+						bind:prompt
+						bind:promptFormEl
+						bind:selectedText
+					/>
+				{/if}
 			{/snippet}
 		</SelectionOverlay>
 	{/if}
 
-	{#if llmContent}
-		<div class="llm-message-wrapper">
-			<LlmMessage content={llmContent} />
-		</div>
+	{#if messages.length > 0}
+		<Conversation {messages} bind:isLoading />
 	{/if}
 </div>
 
-<style>
+<style lang="postcss">
 	.webcursor {
+		box-sizing: border-box;
+		color: var(--c-text);
+		color-scheme: light dark;
+		font-family: var(--ff);
+		font-optical-sizing: auto;
+		letter-spacing: -0.01em;
+		margin: 0;
+		padding: 0;
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+
 		position: fixed;
 		top: 0;
 		left: 0;
-		width: 100%;
-		height: 100%;
+		right: 0;
+		bottom: 0;
 		pointer-events: none;
-		z-index: 9999;
-	}
-
-	.llm-message-wrapper {
-		position: fixed;
-		top: 1rem;
-		right: 1rem;
-		z-index: 10000;
+		z-index: 999999999999999999;
 	}
 </style>
