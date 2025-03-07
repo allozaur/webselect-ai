@@ -3,23 +3,19 @@
 	import { Button } from '@webcursor/ui';
 
 	const suggestedPrompts = [
-		'Summarize this text',
-		'Analyze the sentiment of this text',
+		'Summarize this thread',
+		'Breakdown this text into bullet points',
 		'Extract the keywords from this text'
 	];
 
 	let { isLoading = $bindable(false), prompt = $bindable(''), selectedText = '' } = $props();
 
-	function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
-		return new Promise((resolve, reject) => {
-			chrome.runtime.sendMessage(message, (response) => {
-				if (chrome.runtime.lastError) {
-					reject(chrome.runtime.lastError);
-				} else {
-					resolve(response);
-				}
-			});
-		});
+	function handleKeydown(e: KeyboardEvent) {
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+
+			handleSubmit();
+		}
 	}
 
 	async function handleSubmit(e?: SubmitEvent) {
@@ -55,12 +51,16 @@
 		}
 	}
 
-	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Enter' && !e.shiftKey) {
-			e.preventDefault();
-
-			handleSubmit();
-		}
+	function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
+		return new Promise((resolve, reject) => {
+			chrome.runtime.sendMessage(message, (response) => {
+				if (chrome.runtime.lastError) {
+					reject(chrome.runtime.lastError);
+				} else {
+					resolve(response);
+				}
+			});
+		});
 	}
 </script>
 

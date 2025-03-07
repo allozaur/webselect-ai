@@ -1,12 +1,8 @@
 /* eslint-disable prefer-const */
 import { mount, unmount } from 'svelte';
-
 import LlmMessage from '$lib/components/LlmMessage.svelte';
 import PromptForm from '$lib/components/PromptForm.svelte';
 import SelectionOverlay from '$lib/components/SelectionOverlay.svelte';
-
-import isFormFocused from './is-form-focused.svelte';
-import updateFormPosition from './update-form-position.svelte';
 
 export default function contentScript() {
 	let llmMessageComponent: unknown = null;
@@ -15,7 +11,11 @@ export default function contentScript() {
 
 	let promptFormComponent: unknown = null;
 	let promptFormContainer: HTMLDivElement | null = $state(null);
-	let promptFormProps = $state({ isLoading: false, prompt: '', selectedText: '' });
+	let promptFormProps = $state({
+		isLoading: false,
+		prompt: '',
+		selectedText: ''
+	});
 
 	let selectionOverlayComponent: unknown = null;
 	let selectionOverlayContainer: HTMLDivElement | null = $state(null);
@@ -51,32 +51,35 @@ export default function contentScript() {
 	}
 
 	function handleSelection() {
-		if (isFormFocused(promptFormContainer)) {
-			return;
-		}
+		if (promptFormContainer?.contains(document.activeElement)) return;
 
 		const selection = window.getSelection();
 
-		if (selection && llmMessageContainer?.contains(selection.anchorNode)) {
+		if (
+			selection &&
+			(llmMessageContainer?.contains(selection.anchorNode) ||
+				promptFormContainer?.contains(selection.anchorNode))
+		)
 			return;
-		}
 
 		if (!selection || !selection.toString().trim()) {
 			if (selectionOverlayComponent) {
 				cleanup();
 			}
+
 			return;
 		}
 
-		const selectedContent = selection.toString();
+		promptFormProps.selectedText = selection.toString();
 
-		if (selectedContent.length > 128000) {
+		if (promptFormProps.selectedText.length > 128000) {
 			alert('Selection exceeds 128k character limit');
 			return;
 		}
 
 		const range = selection.getRangeAt(0);
-		promptFormProps.selectedText = selectedContent;
+		const rect = range.getBoundingClientRect();
+
 		updateSelectionOverlay(range);
 
 		if (!promptFormContainer) {
@@ -89,10 +92,10 @@ export default function contentScript() {
 			});
 		}
 
-		updateFormPosition(selection, promptFormContainer);
+		promptFormContainer.style.position = 'absolute';
+		promptFormContainer.style.left = `${rect.left + window.scrollX}px`;
+		promptFormContainer.style.top = `${rect.bottom + window.scrollY + 10}px`;
 	}
-
-	// Remove handleSubmit function as it's now in PromptForm
 
 	function mountLlmMessage() {
 		if (!llmMessageContainer) {
@@ -112,6 +115,7 @@ export default function contentScript() {
 
 	function updateSelectionOverlay(range: Range) {
 		const rect = range.getBoundingClientRect();
+
 		selectionOverlayProps.rect = rect;
 		selectionOverlayProps.textLength = promptFormProps.selectedText?.length || 0;
 
