@@ -1,4 +1,5 @@
 import { mdsvex } from 'mdsvex';
+// @ts-expect-error - non-standard module export
 import adapter from 'sveltekit-adapter-chrome-extension';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
