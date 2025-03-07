@@ -8,13 +8,51 @@
 		'Extract the keywords from this text'
 	];
 
-	let { onSubmit, isLoading = false, prompt = $bindable('') } = $props();
-	let selectedText = $state('');
+	let { isLoading = $bindable(false), prompt = $bindable(''), selectedText = '' } = $props();
 
-	function handleSubmit(e?: SubmitEvent) {
+	function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
+		return new Promise((resolve, reject) => {
+			chrome.runtime.sendMessage(message, (response) => {
+				if (chrome.runtime.lastError) {
+					reject(chrome.runtime.lastError);
+				} else {
+					resolve(response);
+				}
+			});
+		});
+	}
+
+	async function handleSubmit(e?: SubmitEvent) {
 		e?.preventDefault();
 
-		onSubmit(prompt, selectedText);
+		if (!selectedText) {
+			alert('No text selected');
+			return;
+		}
+
+		if (selectedText.length > 128000) {
+			alert('Selection exceeds 128k character limit');
+			return;
+		}
+
+		if (isLoading) {
+			alert('Responding in progress');
+			return;
+		}
+
+		isLoading = true;
+
+		try {
+			await sendMessage({
+				action: 'sendPrompt',
+				systemPrompt: `You are a helpful assistant`,
+				userPrompt: `This is a text which i want you to use for my further instruction: ${selectedText}. Now this is my prompt: ${prompt}`
+			});
+		} catch (error) {
+			console.error('Error initiating LLM message:', error);
+			alert('Connection error');
+			isLoading = false;
+		}
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -74,26 +112,6 @@
 		border: 1px solid #ccc;
 		border-radius: 4px;
 		resize: vertical;
-	}
-
-	.prompt-form button {
-		font-family: 'Space Grotesk', sans-serif;
-		padding: 4px 8px;
-		background: #007bff;
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-		font-size: 12px;
-	}
-
-	.prompt-form button:hover {
-		background: #0056b3;
-	}
-
-	.prompt-form button:disabled {
-		background: #cccccc;
-		cursor: not-allowed;
 	}
 
 	.suggested-prompts {

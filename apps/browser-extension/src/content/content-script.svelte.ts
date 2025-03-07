@@ -6,7 +6,6 @@ import PromptForm from '$lib/components/PromptForm.svelte';
 import SelectionOverlay from '$lib/components/SelectionOverlay.svelte';
 
 import isFormFocused from './is-form-focused.svelte';
-import showNotification from './show-notification.svelte';
 import updateFormPosition from './update-form-position.svelte';
 
 export default function contentScript() {
@@ -16,7 +15,7 @@ export default function contentScript() {
 
 	let promptFormComponent: unknown = null;
 	let promptFormContainer: HTMLDivElement | null = $state(null);
-	let promptFormProps = $state({ isLoading: false, onSubmit: handleSubmit, prompt: '' });
+	let promptFormProps = $state({ isLoading: false, prompt: '', selectedText: '' });
 
 	let selectionOverlayComponent: unknown = null;
 	let selectionOverlayContainer: HTMLDivElement | null = $state(null);
@@ -25,10 +24,9 @@ export default function contentScript() {
 		textLength: 0
 	});
 
-	let selectedText: string | null = $state(null);
-
 	function cleanup() {
 		promptFormProps.isLoading = false;
+		promptFormProps.prompt = '';
 		llmMessageProps.content = '';
 
 		const components = [
@@ -49,7 +47,7 @@ export default function contentScript() {
 		promptFormComponent = llmMessageComponent = selectionOverlayComponent = null;
 		promptFormContainer = llmMessageContainer = selectionOverlayContainer = null;
 
-		selectedText = null;
+		promptFormProps.selectedText = '';
 	}
 
 	function handleSelection() {
@@ -73,12 +71,12 @@ export default function contentScript() {
 		const selectedContent = selection.toString();
 
 		if (selectedContent.length > 128000) {
-			showNotification('Selection exceeds 128k character limit', 'warning');
+			alert('Selection exceeds 128k character limit');
 			return;
 		}
 
 		const range = selection.getRangeAt(0);
-		selectedText = selectedContent;
+		promptFormProps.selectedText = selectedContent;
 		updateSelectionOverlay(range);
 
 		if (!promptFormContainer) {
@@ -94,53 +92,28 @@ export default function contentScript() {
 		updateFormPosition(selection, promptFormContainer);
 	}
 
-	async function handleSubmit(prompt: string): Promise<void> {
-		function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
-			return new Promise((resolve, reject) => {
-				chrome.runtime.sendMessage(message, (response) => {
-					if (chrome.runtime.lastError) {
-						reject(chrome.runtime.lastError);
-					} else {
-						resolve(response);
-					}
-				});
+	// Remove handleSubmit function as it's now in PromptForm
+
+	function mountLlmMessage() {
+		if (!llmMessageContainer) {
+			llmMessageContainer = document.createElement('div');
+			llmMessageContainer.style.position = 'fixed';
+			llmMessageContainer.style.top = '1rem';
+			llmMessageContainer.style.right = '1rem';
+			llmMessageContainer.style.zIndex = '10000';
+			document.body.appendChild(llmMessageContainer);
+
+			llmMessageComponent = mount(LlmMessage, {
+				target: llmMessageContainer,
+				props: llmMessageProps
 			});
-		}
-
-		if (!selectedText) {
-			showNotification('No text selected', 'warning');
-			return;
-		}
-
-		if (selectedText.length > 128000) {
-			showNotification('Selection exceeds 128k character limit', 'warning');
-			return;
-		}
-
-		if (promptFormProps.isLoading) {
-			showNotification('Responding in progress', 'info');
-			return;
-		}
-
-		promptFormProps.isLoading = true;
-
-		try {
-			await sendMessage({
-				action: 'sendPrompt',
-				systemPrompt: `You are a helpful assistant`,
-				userPrompt: `This is a text which i want you to use for my further instruction: ${selectedText}. Now this is my prompt: ${prompt}`
-			});
-		} catch (error) {
-			console.error('Error initiating LLM message:', error);
-			showNotification('Connection error', 'error');
-			cleanup();
 		}
 	}
 
 	function updateSelectionOverlay(range: Range) {
 		const rect = range.getBoundingClientRect();
 		selectionOverlayProps.rect = rect;
-		selectionOverlayProps.textLength = selectedText?.length || 0;
+		selectionOverlayProps.textLength = promptFormProps.selectedText?.length || 0;
 
 		if (!selectionOverlayContainer) {
 			selectionOverlayContainer = document.createElement('div');
@@ -154,24 +127,9 @@ export default function contentScript() {
 	}
 
 	chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
-		if (!promptFormProps.isLoading) return;
-
 		switch (message.action) {
 			case 'streamStart':
-				if (!llmMessageContainer) {
-					llmMessageContainer = document.createElement('div');
-					llmMessageContainer.style.position = 'fixed';
-					llmMessageContainer.style.top = '1rem';
-					llmMessageContainer.style.right = '1rem';
-					llmMessageContainer.style.zIndex = '10000';
-					document.body.appendChild(llmMessageContainer);
-
-					llmMessageComponent = mount(LlmMessage, {
-						target: llmMessageContainer,
-						props: llmMessageProps
-					});
-				}
-
+				mountLlmMessage();
 				break;
 			case 'streamUpdate':
 				if (message.chunk) {
@@ -186,8 +144,8 @@ export default function contentScript() {
 
 			case 'streamError':
 				console.error('Stream error:', message.error);
-				showNotification('Error: ' + (message.error || 'Unknown error'), 'error');
 				promptFormProps.isLoading = false;
+				promptFormProps.prompt = '';
 				break;
 		}
 	});
@@ -209,8 +167,21 @@ export default function contentScript() {
 		}
 	});
 
+	document.addEventListener('scroll', () => {
+		if (promptFormProps.selectedText) {
+			const selection = window.getSelection();
+
+			if (selection && selection.rangeCount > 0) {
+				const range = selection.getRangeAt(0);
+				updateSelectionOverlay(range);
+			}
+		}
+	});
+
+	document.addEventListener('selectionchange', handleSelection);
+
 	window.addEventListener('resize', () => {
-		if (selectedText && promptFormContainer) {
+		if (promptFormProps.selectedText && promptFormContainer) {
 			const selection = window.getSelection();
 
 			if (selection && selection.rangeCount > 0) {
@@ -223,17 +194,4 @@ export default function contentScript() {
 			}
 		}
 	});
-
-	document.addEventListener('scroll', () => {
-		if (selectedText) {
-			const selection = window.getSelection();
-
-			if (selection && selection.rangeCount > 0) {
-				const range = selection.getRangeAt(0);
-				updateSelectionOverlay(range);
-			}
-		}
-	});
-
-	document.addEventListener('selectionchange', handleSelection);
 }
