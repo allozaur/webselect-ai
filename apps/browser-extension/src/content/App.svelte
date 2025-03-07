@@ -21,6 +21,11 @@
 		selectionRect = null;
 	}
 
+	function handleCloseConversation() {
+		messages = [];
+		cleanup();
+	}
+
 	function handleMouseDown(e: MouseEvent) {
 		const target = e.target as Node;
 		const components = document.querySelector('.webcursor');
@@ -89,7 +94,7 @@
 					isLoading = false;
 					break;
 				case 'streamError':
-					console.error('Stream error:', message.error);
+					console.error('Stream error:', JSON.stringify(message.error));
 					isLoading = false;
 					break;
 			}
@@ -132,7 +137,7 @@
 	{/if}
 
 	{#if messages.length > 0}
-		<Conversation {messages} bind:isLoading />
+		<Conversation {messages} onClose={handleCloseConversation} bind:isLoading />
 	{/if}
 </div>
 

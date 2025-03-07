@@ -11,6 +11,11 @@
 </div>
 
 <style>
+	:global(body) {
+		background: var(--bg-body);
+		margin: 0;
+		padding: 0;
+	}
 	.webcursor-popup {
 		color-scheme: light dark;
 		background-color: var(--bg-body);

@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { marked } from 'marked';
 	import PromptForm from './PromptForm.svelte';
+	import { Button } from '@webcursor/ui';
 
-	let { messages = $bindable([]), isLoading = $bindable(false) } = $props();
+	let { messages = $bindable([]), isLoading = $bindable(false), onClose } = $props();
 
 	function copyToClipboard(content: string) {
 		navigator.clipboard.writeText(content);
@@ -10,6 +11,10 @@
 </script>
 
 <div class="conversation">
+	<header>
+		<Button onclick={onClose}>Close</Button>
+	</header>
+
 	{#if messages.length > 0}
 		{#each messages as message}
 			<div class="message {message.role}">
@@ -45,6 +50,9 @@
 		background: var(--bg-body);
 		border-radius: 1rem;
 		pointer-events: all;
+
+		display: grid;
+		gap: 1.5rem;
 	}
 
 	.message {
