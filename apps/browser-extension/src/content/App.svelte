@@ -22,6 +22,11 @@
 	function handleMouseDown(e: MouseEvent) {
 		const target = e.target as Node;
 		const components = document.querySelector('.webcursor');
+		const promptForm = document.querySelector('.prompt-form');
+
+		if (promptForm?.contains(target)) {
+			return;
+		}
 
 		if (components && !components.contains(target)) {
 			if (

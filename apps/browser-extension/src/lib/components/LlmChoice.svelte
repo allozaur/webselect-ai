@@ -25,6 +25,7 @@
 		<span>Provider</span>
 
 		<select name="llm_base_url" bind:value={llmConfig.provider} onchange={handleChangeProvider}>
+			<option value="" selected disabled>Choose provider</option>
 			<option value="ollama">Ollama (local)</option>
 			<option value="anthropic">Anthropic</option>
 			<option value="google">Google</option>
@@ -59,19 +60,17 @@
 			/>
 		{:else}
 			<select name="llm_model" bind:value={llmConfig.model} onchange={handleChangeValue}>
+				<option value="" selected disabled>Choose model</option>
 				{#if llmConfig.provider === 'anthropic'}
-					<option value="" selected hidden disabled>Choose model</option>
 					<option value="claude-3-7-sonnet-latest">Claude 3.7 Sonnet</option>
 					<option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet</option>
 					<option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option>
 				{:else if llmConfig.provider === 'google'}
-					<option value="" selected hidden disabled>Choose model</option>
 					<option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
 					<option value="gemini-2.0-pro">Gemini 2.0 Pro</option>
 					<option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
 					<option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
 				{:else if llmConfig.provider === 'openai'}
-					<option value="" selected hidden disabled>Choose model</option>
 					<option value="gpt-4o">GPT-4o</option>
 					<option value="gpt-4o-mini">GPT-4o mini</option>
 					<option value="gpt-4-turbo">GPT-4 Turbo</option>
