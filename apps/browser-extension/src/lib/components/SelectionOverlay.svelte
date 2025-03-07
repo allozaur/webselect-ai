@@ -33,8 +33,9 @@
 
 	.bottom {
 		position: absolute;
+		left: 0;
 		right: 0;
-		top: calc(100% + 1.5rem);
+		top: calc(100%);
 	}
 
 	.token-counter {
@@ -42,7 +43,7 @@
 		color: white;
 		padding: 2px 6px;
 		border-radius: 4px;
-		font-size: 12px;
+		font-size: 0.875rem;
 		font-family: 'Space Grotesk', sans-serif;
 	}
 

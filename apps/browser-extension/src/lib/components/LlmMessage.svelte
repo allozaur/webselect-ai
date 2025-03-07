@@ -23,6 +23,7 @@
 		padding: 1rem;
 		border-radius: 1rem;
 		background: var(--bg-body);
+		color: var(--c-text);
 		border: var(--c-text);
 	}
 

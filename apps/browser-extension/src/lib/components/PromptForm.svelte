@@ -98,18 +98,15 @@
 	.prompt-form {
 		font-family: 'Space Grotesk', sans-serif;
 		position: relative;
-		background: var(--bg-body);
-		color: var(--c-text);
-		padding: 12px;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		width: 300px;
 		z-index: 10000;
 		pointer-events: all;
-		width: min(80vw, 48rem);
+		width: min(80vw, 48rem, 100%);
 	}
 
 	.prompt-form textarea {
+		background: var(--bg-body);
+		color: var(--c-text);
 		font-family: 'Space Grotesk', sans-serif;
 		width: 100%;
 		padding: 8px;
