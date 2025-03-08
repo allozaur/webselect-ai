@@ -9,15 +9,29 @@
 	let messages: Message[] = $state([]);
 	let prompt = $state('');
 	let selectionRect: DOMRect | null = $state(null);
-	let selectedText = $state('');
+	let selectedContent = $state({ text: '', html: '' });
 	let showInitialPrompt = $state(true);
 	let promptFormEl: HTMLElement | undefined = $state();
+
+	function getSelectionContent(selection: Selection): { text: string; html: string } {
+		const text = selection.toString();
+		let html = '';
+
+		if (selection.rangeCount > 0) {
+			const container = document.createElement('div');
+			const range = selection.getRangeAt(0);
+			container.appendChild(range.cloneContents());
+			html = container.innerHTML;
+		}
+
+		return { text, html };
+	}
 
 	function cleanup() {
 		isLoading = false;
 		prompt = '';
 		llmContent = '';
-		selectedText = '';
+		selectedContent = { text: '', html: '' };
 		selectionRect = null;
 	}
 
@@ -54,19 +68,19 @@
 		}
 
 		if (!selection || !selection.toString().trim()) {
-			// Don't cleanup messages when selection changes
 			selectionRect = null;
 			showInitialPrompt = true;
 			return;
 		}
 
-		selectedText = selection.toString();
+		const content = getSelectionContent(selection);
 
-		if (selectedText.length > 128000) {
+		if (content.text.length > 128000) {
 			alert('Selection exceeds 128k character limit');
 			return;
 		}
 
+		selectedContent = content;
 		const range = selection.getRangeAt(0);
 		selectionRect = range.getBoundingClientRect();
 	}
@@ -121,7 +135,7 @@
 
 <div class="webcursor">
 	{#if selectionRect}
-		<SelectionOverlay rect={selectionRect} textLength={selectedText.length}>
+		<SelectionOverlay rect={selectionRect} textLength={selectedContent.text.length}>
 			{#snippet bottom()}
 				{#if showInitialPrompt}
 					<PromptForm
@@ -129,7 +143,7 @@
 						bind:messages
 						bind:prompt
 						bind:promptFormEl
-						bind:selectedText
+						bind:selectedContent
 					/>
 				{/if}
 			{/snippet}

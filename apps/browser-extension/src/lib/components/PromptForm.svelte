@@ -11,7 +11,7 @@
 	let {
 		isLoading = $bindable(false),
 		prompt = $bindable(''),
-		selectedText = $bindable(''),
+		selectedContent = $bindable({ text: '', html: '' }),
 		isContinuation = false,
 		messages = $bindable([]) as Message[],
 		promptFormEl = $bindable() as HTMLElement
@@ -28,12 +28,12 @@
 	async function handleSubmit(e?: SubmitEvent) {
 		e?.preventDefault();
 
-		if (!isContinuation && !selectedText) {
+		if (!isContinuation && !selectedContent) {
 			alert('No text selected');
 			return;
 		}
 
-		if (!isContinuation && selectedText.length > 128000) {
+		if (!isContinuation && selectedContent.length > 128000) {
 			alert('Selection exceeds 128k character limit');
 			return;
 		}
@@ -46,14 +46,15 @@
 		isLoading = true;
 
 		try {
-			if (!isContinuation) {
+			if (!messages.some((message) => message.role === 'system')) {
 				messages.push({
 					role: 'system',
-					content: 'You are a helpful assistant'
+					content: `You are a helpful assistant that works as a web content selection analyzer. My first message is a copied web content which i want you to use for further conversation.`
 				});
+
 				messages.push({
 					role: 'user',
-					content: `This is a text which i want you to use for my further instruction: ${selectedText}. Now this is my prompt: ${prompt}`
+					content: selectedContent.html
 				});
 			} else {
 				messages.push({

@@ -14,21 +14,29 @@
 	<Button onclick={onClose}>Close</Button>
 
 	{#if messages.length > 0}
-		{#each messages as message}
-			<div class="message {message.role}">
-				{#if message.role === 'user'}
-					<div class="content">
-						{message.content}
-					</div>
-				{:else}
-					<div class="content">
-						{@html marked.parse(message.content)}
-						<button class="copy-button" onclick={() => copyToClipboard(message.content)}>
-							Copy to clipboard
-						</button>
-					</div>
-				{/if}
-			</div>
+		{#each messages as message, i}
+			{#if message.role !== 'system'}
+				<div class="message {message.role}">
+					{#if message.role === 'user' && i === 1}
+						<div class="content">
+							<details>
+								<summary>Analyzed content</summary>
+
+								{@html message.content}
+							</details>
+						</div>
+					{:else}
+						<div class="content">
+							{@html marked.parse(message.content)}
+
+							<button class="copy-button" onclick={() => copyToClipboard(message.content)}>
+								Copy to clipboard
+							</button>
+						</div>
+					{/if}
+				</div>
+				<!-- content here -->
+			{/if}
 		{/each}
 
 		<PromptForm bind:isLoading bind:messages isContinuation />
@@ -42,7 +50,7 @@
 		position: fixed;
 		top: 1rem;
 		right: 1rem;
-		width: min(33vw, 400px);
+		width: min(33vw, 32rem);
 		max-height: calc(100vh - 2rem);
 		overflow: auto;
 		background: var(--bg-body);
