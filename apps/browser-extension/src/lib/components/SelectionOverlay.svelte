@@ -1,10 +1,40 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	let { bottom, rect = null, textLength = 0 } = $props();
 
 	let isOverLimit = $derived(textLength > 128000);
+	let isAutoselectionEnabled = $state(false);
+	let isAltToggled = $state(false);
+
+	function handleKeyDown(e: KeyboardEvent) {
+		if (e.key === 'Alt') {
+			e.preventDefault();
+			isAltToggled = !isAltToggled;
+		}
+	}
+
+	function handleKeyUp(e: KeyboardEvent) {
+		if (e.key === 'Alt') {
+			e.preventDefault();
+		}
+	}
+
+	onMount(() => {
+		chrome.storage.local.get(['autoselection_enabled'], (result) => {
+			isAutoselectionEnabled = result.autoselection_enabled ?? true;
+		});
+
+		window.addEventListener('keydown', handleKeyDown);
+		window.addEventListener('keyup', handleKeyUp);
+
+		return () => {
+			window.removeEventListener('keydown', handleKeyDown);
+			window.removeEventListener('keyup', handleKeyUp);
+		};
+	});
 </script>
 
-{#if rect}
+{#if rect && (isAutoselectionEnabled || isAltToggled)}
 	<div
 		class="highlight-overlay"
 		style:left="{rect.left}px"
