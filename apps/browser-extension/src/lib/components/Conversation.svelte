@@ -11,9 +11,7 @@
 </script>
 
 <div class="conversation">
-	<header>
-		<Button onclick={onClose}>Close</Button>
-	</header>
+	<Button onclick={onClose}>Close</Button>
 
 	{#if messages.length > 0}
 		{#each messages as message}
