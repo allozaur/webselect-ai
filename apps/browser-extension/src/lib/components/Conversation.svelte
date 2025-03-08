@@ -4,13 +4,23 @@
 	import { Button } from '@webcursor/ui';
 
 	let { messages = $bindable([]), isLoading = $bindable(false), onClose } = $props();
+	let conversationContainer: HTMLElement;
 
 	function copyToClipboard(content: string) {
 		navigator.clipboard.writeText(content);
 	}
+
+	$effect(() => {
+		if (messages.length > 0) {
+			conversationContainer?.scrollTo({
+				top: conversationContainer.scrollHeight,
+				behavior: 'smooth'
+			});
+		}
+	});
 </script>
 
-<div class="conversation">
+<div class="conversation" bind:this={conversationContainer}>
 	<Button onclick={onClose}>Close</Button>
 
 	{#if messages.length > 0}
