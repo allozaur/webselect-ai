@@ -12,7 +12,9 @@
 <div class="llm-message">
 	{@html marked.parse(message.content)}
 
-	<Button onclick={copyToClipboard}>Copy to clipboard</Button>
+	{#if message.role === 'assistant'}
+		<Button onclick={copyToClipboard}>Copy to clipboard</Button>
+	{/if}
 </div>
 
 <style>

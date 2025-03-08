@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { Button } from '@webcursor/ui';
 	import { onMount } from 'svelte';
 
 	let llmConfig = $state({ apiKey: '', provider: '', model: '' });
-	let showApiKey = $state(false);
 	let ollamaModels = $state<{ name: string }[]>([]);
 
 	onMount(() => {
@@ -41,7 +39,9 @@
 	}
 </script>
 
-<div class="llm-choice">
+<fieldset class="llm-choice">
+	<legend>LLM Configuration</legend>
+
 	<label>
 		<span>Provider</span>
 
@@ -62,13 +62,9 @@
 				name="llm_api_key"
 				oninput={handleChangeValue}
 				placeholder="e.g. 1234567890abcdef"
-				type={showApiKey ? 'text' : 'password'}
+				type="password"
 				bind:value={llmConfig.apiKey}
 			/>
-
-			<Button type="button" onclick={() => (showApiKey = !showApiKey)}>
-				{showApiKey ? 'Hide' : 'Show'}
-			</Button>
 		</label>
 	{/if}
 
@@ -103,7 +99,7 @@
 			</select>
 		{/if}
 	</label>
-</div>
+</fieldset>
 
 <style>
 	.llm-choice {

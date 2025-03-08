@@ -9,6 +9,7 @@
 	];
 
 	let {
+		contentType = 'text',
 		isLoading = $bindable(false),
 		prompt = $bindable(''),
 		selectedContent = $bindable({ text: '', html: '' }),
@@ -54,22 +55,22 @@
 
 				messages.push({
 					role: 'user',
-					content: selectedContent.html
-				});
-			} else {
-				messages.push({
-					role: 'user',
-					content: prompt
+					content: selectedContent[contentType]
 				});
 			}
+
+			messages.push({
+				role: 'user',
+				content: prompt
+			});
 
 			await sendMessage({
 				action: 'sendPrompt',
 				messages: messages
 			});
-		} catch (error) {
-			console.error('Error initiating LLM message:', error);
-			alert(error);
+		} catch (error: any) {
+			console.error(error.message);
+			// alert(error.message);
 			isLoading = false;
 		}
 	}

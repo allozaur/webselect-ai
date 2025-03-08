@@ -4,6 +4,7 @@
 	import SelectionOverlay from '$lib/components/SelectionOverlay.svelte';
 	import Conversation from '$lib/components/Conversation.svelte';
 
+	let contentType = $state('text');
 	let llmContent = $state('');
 	let isLoading = $state(false);
 	let messages: Message[] = $state([]);
@@ -80,6 +81,10 @@
 			return;
 		}
 
+		chrome.storage.local.get('content_type', (result) => {
+			contentType = result.content_type ?? 'text';
+		});
+
 		selectedContent = content;
 		const range = selection.getRangeAt(0);
 		selectionRect = range.getBoundingClientRect();
@@ -108,7 +113,7 @@
 					isLoading = false;
 					break;
 				case 'streamError':
-					console.error('Stream error:', JSON.stringify(message.error));
+					console.error(message.error);
 					isLoading = false;
 					break;
 			}
@@ -139,6 +144,7 @@
 			{#snippet bottom()}
 				{#if showInitialPrompt}
 					<PromptForm
+						{contentType}
 						bind:isLoading
 						bind:messages
 						bind:prompt

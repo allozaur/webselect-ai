@@ -29,13 +29,14 @@
 						<div class="content">
 							{@html marked.parse(message.content)}
 
-							<button class="copy-button" onclick={() => copyToClipboard(message.content)}>
-								Copy to clipboard
-							</button>
+							{#if message.role === 'assistant'}
+								<button class="copy-button" onclick={() => copyToClipboard(message.content)}>
+									Copy to clipboard
+								</button>
+							{/if}
 						</div>
 					{/if}
 				</div>
-				<!-- content here -->
 			{/if}
 		{/each}
 
