@@ -4,7 +4,7 @@
 	interface Props {
 		children?: () => any;
 		disabled?: boolean;
-		onclick?: (e?: MouseEvent) => void;
+		onclick?: (e: MouseEvent) => void;
 		type?: 'button' | 'submit' | 'reset';
 	}
 

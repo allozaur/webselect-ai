@@ -2,19 +2,25 @@
 	import { Button } from '@webcursor/ui';
 	import { onMount } from 'svelte';
 
-	let llmConfig = $state({ apiKey: '', provider: '', model: '' });
+	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
 	let ollamaModels = $state<{ name: string }[]>([]);
 	let customModelName = $state('');
 
 	const suggestedModels = [
 		{ name: 'qwen2.5:latest', label: 'Qwen 2.5' },
-		{ name: 'deepseek-r1:latest', label: 'Deepseek R1' },
-		{ name: 'llama3.3:latest', label: 'Llama 3.3' }
+		{ name: 'qwen2.5-coder:latest', label: 'Qwen 2.5 Coder' },
+		{ name: 'qwq', label: 'QWQ' },
+		{ name: 'deepseek-r1:latest', label: 'Deepseek R1' }
 	];
 
 	onMount(() => {
 		chrome.storage.local.get('llm_config', (result) => {
-			llmConfig = result.llm_config ?? { provider: '', model: '' };
+			llmConfig = result.llm_config ?? {
+				apiKey: '',
+				hosting: 'local',
+				model: '',
+				provider: 'ollama'
+			};
 			if (llmConfig.provider === 'ollama') {
 				fetchOllamaModels();
 			}
@@ -30,13 +36,6 @@
 			console.error('Failed to fetch Ollama models:', error);
 			ollamaModels = [];
 		}
-	}
-
-	interface DownloadStatus {
-		status: string;
-		digest?: string;
-		total?: number;
-		completed?: number;
 	}
 
 	let downloadStatus = $state<DownloadStatus | null>(null);
@@ -91,7 +90,7 @@
 					}
 				}
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.error(`Failed to download ${modelName}:`, error);
 			downloadStatus = { status: 'Error: ' + error.message };
 		}
@@ -106,15 +105,25 @@
 	async function handleChangeProvider() {
 		handleChangeValue();
 		llmConfig.model = '';
-		if (llmConfig.provider === 'ollama') {
+	}
+
+	async function handleChangeHosting() {
+		handleChangeValue();
+
+		if (llmConfig.hosting === 'local') {
+			llmConfig.provider = 'ollama';
+
 			await fetchOllamaModels();
+		} else {
+			llmConfig.provider = 'google';
 		}
 	}
 
-	function handleModelDownload(e: Event) {
+	async function handleModelDownload(e: Event | MouseEvent | KeyboardEvent | SubmitEvent) {
 		e.preventDefault();
+
 		if (customModelName.trim()) {
-			downloadModel(customModelName.trim());
+			await downloadModel(customModelName.trim());
 			customModelName = '';
 		}
 	}
@@ -123,19 +132,51 @@
 <fieldset class="llm-choice">
 	<legend>LLM Configuration</legend>
 
+	<fieldset class="hosting">
+		<legend>Hosting</legend>
+
+		<label>
+			<input
+				type="radio"
+				name="llm_hosting"
+				value="local"
+				bind:group={llmConfig.hosting}
+				onchange={handleChangeHosting}
+			/>
+
+			<span>Local</span>
+		</label>
+
+		<label>
+			<input
+				type="radio"
+				name="llm_hosting"
+				value="cloud"
+				bind:group={llmConfig.hosting}
+				onchange={handleChangeHosting}
+			/>
+
+			<span>Cloud</span>
+		</label>
+	</fieldset>
+
 	<label>
 		<span>Provider</span>
 
 		<select name="llm_base_url" bind:value={llmConfig.provider} onchange={handleChangeProvider}>
 			<option value="" selected disabled>Choose provider</option>
-			<option value="ollama">Ollama (local)</option>
-			<!-- <option value="anthropic">Anthropic</option> -->
-			<option value="google">Google</option>
-			<option value="openai">OpenAI</option>
+
+			{#if llmConfig.hosting === 'cloud'}
+				<option value="anthropic" disabled>Anthropic</option>
+				<option value="google">Google</option>
+				<option value="openai">OpenAI</option>
+			{:else if llmConfig.hosting === 'local'}
+				<option selected value="ollama">Ollama</option>
+			{/if}
 		</select>
 	</label>
 
-	{#if llmConfig.provider !== 'ollama'}
+	{#if llmConfig.hosting === 'cloud'}
 		<label>
 			<span>API Key</span>
 
@@ -156,9 +197,7 @@
 				bind:value={llmConfig.apiKey}
 			/>
 		</label>
-	{/if}
-
-	{#if llmConfig.provider === 'ollama'}
+	{:else if llmConfig.hosting === 'local'}
 		{#if downloadStatus}
 			<div class="download-status">
 				<p>{downloadStatus.status}</p>
@@ -172,56 +211,58 @@
 		<div class="model-download">
 			<div class="suggested-models">
 				{#each suggestedModels as model}
-					<Button onclick={() => downloadModel(model.name)} disabled={!!downloadStatus}>
+					<Button onclick={async () => await downloadModel(model.name)} disabled={!!downloadStatus}>
 						{model.label}
 					</Button>
 				{/each}
 			</div>
 
-			<form class="download-form" onsubmit={handleModelDownload}>
+			<label>
+				Model name
+
 				<input
-					type="text"
-					placeholder="Enter model name (e.g. llama3:7b)"
-					bind:value={customModelName}
 					disabled={!!downloadStatus}
+					placeholder="Enter model name (e.g. llama3:7b)"
+					type="text"
+					onkeydown={(e) => e.key === 'Enter' && handleModelDownload(e)}
+					bind:value={customModelName}
 				/>
-				<Button type="submit" disabled={!customModelName.trim() || !!downloadStatus}>
+			</label>
+
+			{#if customModelName?.trim()}
+				<Button disabled={!!downloadStatus} onclick={async (e) => await handleModelDownload(e)}>
 					Download model
 				</Button>
-			</form>
+			{/if}
 		</div>
 	{/if}
 
 	<label>
 		<span>Model</span>
 
-		{#if llmConfig.provider === 'ollama'}
-			<select name="llm_model" bind:value={llmConfig.model} onchange={handleChangeValue}>
-				<option value="" selected disabled>Choose model</option>
+		<select name="llm_model" bind:value={llmConfig.model} onchange={handleChangeValue}>
+			<option value="" selected disabled>Choose model</option>
+
+			{#if llmConfig.provider === 'ollama'}
 				{#each ollamaModels as model}
 					<option value={model.name}>{model.name}</option>
 				{/each}
-			</select>
-		{:else}
-			<select name="llm_model" bind:value={llmConfig.model} onchange={handleChangeValue}>
-				<option value="" selected disabled>Choose model</option>
-				{#if llmConfig.provider === 'google'}
-					<option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-					<option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-					<option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
-					<option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-					<option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro (Experimental)</option>
-					<!-- {:else if llmConfig.provider === 'anthropic'}
-					<option value="claude-3-7-sonnet-latest">Claude 3.7 Sonnet</option>
-					<option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet</option>
-					<option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option> -->
-				{:else if llmConfig.provider === 'openai'}
-					<option value="gpt-4o">GPT-4o</option>
-					<option value="gpt-4o-mini">GPT-4o mini</option>
-					<option value="gpt-4-turbo">GPT-4 Turbo</option>
-				{/if}
-			</select>
-		{/if}
+			{:else if llmConfig.provider === 'google'}
+				<option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+				<option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+				<option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+				<option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+				<option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro (Experimental)</option>
+			{:else if llmConfig.provider === 'anthropic'}
+				<option value="claude-3-7-sonnet-latest">Claude 3.7 Sonnet</option>
+				<option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet</option>
+				<option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option>
+			{:else if llmConfig.provider === 'openai'}
+				<option value="gpt-4o">GPT-4o</option>
+				<option value="gpt-4o-mini">GPT-4o mini</option>
+				<option value="gpt-4-turbo">GPT-4 Turbo</option>
+			{/if}
+		</select>
 	</label>
 </fieldset>
 
@@ -257,14 +298,19 @@
 		flex-wrap: wrap;
 	}
 
-	.download-form {
-		display: grid;
-		gap: 0.5rem;
-	}
-
 	input {
 		padding: 0.5rem;
 		border: 1px solid #ccc;
 		border-radius: 4px;
+	}
+
+	.hosting {
+		display: flex;
+		gap: 1rem;
+
+		label {
+			display: inline-flex;
+			gap: 0.5rem;
+		}
 	}
 </style>

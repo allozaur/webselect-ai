@@ -9,6 +9,13 @@ declare global {
 
 	// Chrome extension message types
 
+	interface DownloadStatus {
+		status: string;
+		digest?: string;
+		total?: number;
+		completed?: number;
+	}
+
 	interface Message {
 		role: 'assistant' | 'system' | 'user';
 		content: string;
