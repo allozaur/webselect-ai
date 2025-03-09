@@ -44,12 +44,18 @@
 	function handleMouseDown(e: MouseEvent) {
 		const target = e.target as Node;
 		const components = document.querySelector('.webcursor');
+		const conversationComponent = document.querySelector('.webcursor-conversation');
 
 		if (promptFormEl?.contains(target)) {
 			return;
 		}
 
-		if (components && !components.contains(target)) {
+		if (
+			components &&
+			!components.contains(target) &&
+			conversationComponent &&
+			!conversationComponent.contains(target)
+		) {
 			if (
 				!llmContent.trim() ||
 				(llmContent.trim().length > 0 &&
@@ -94,11 +100,7 @@
 		chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 			switch (message.action) {
 				case 'streamStart':
-					messages = [
-						...messages,
-						{ role: 'user', content: prompt },
-						{ role: 'assistant', content: '' }
-					];
+					messages = [...messages, { role: 'assistant', content: '' }];
 					showInitialPrompt = false;
 					prompt = '';
 					break;
@@ -145,6 +147,7 @@
 				{#if showInitialPrompt}
 					<PromptForm
 						{contentType}
+						showSuggestedPrompts
 						bind:isLoading
 						bind:messages
 						bind:prompt
@@ -157,7 +160,7 @@
 	{/if}
 
 	{#if messages.length > 0}
-		<Conversation {messages} onClose={handleCloseConversation} bind:isLoading />
+		<Conversation {messages} onClose={handleCloseConversation} bind:isLoading bind:prompt />
 	{/if}
 </div>
 

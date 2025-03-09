@@ -13,28 +13,30 @@
 		isLoading = $bindable(false),
 		prompt = $bindable(''),
 		selectedContent = $bindable({ text: '', html: '' }),
-		isContinuation = false,
 		messages = $bindable([]) as Message[],
-		promptFormEl = $bindable() as HTMLElement
+		promptFormEl = $bindable() as HTMLElement,
+		showSuggestedPrompts = false
 	} = $props();
+
+	let formElement: HTMLFormElement;
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Enter' && !e.shiftKey) {
 			e.preventDefault();
 
-			handleSubmit();
+			formElement.requestSubmit();
 		}
 	}
 
 	async function handleSubmit(e?: SubmitEvent) {
 		e?.preventDefault();
 
-		if (!isContinuation && !selectedContent) {
-			alert('No text selected');
+		if (!selectedContent && !prompt) {
+			alert('Please select text or enter a prompt');
 			return;
 		}
 
-		if (!isContinuation && selectedContent.length > 128000) {
+		if (selectedContent && selectedContent.length > 128000) {
 			alert('Selection exceeds 128k character limit');
 			return;
 		}
@@ -50,12 +52,14 @@
 			if (!messages.some((message) => message.role === 'system')) {
 				messages.push({
 					role: 'system',
-					content: `You are a helpful assistant that works as a web content selection analyzer. My first message is a copied web content which i want you to use for further conversation.`
+					content: `You are a helpful assistant that works as a web content selection analyzer. My copied web content will ALWAYS begin with "!THIS IS MY SELECTED WEB PAGE CONTENT!", otherwise ALWAYS treat other message as user's input.`
 				});
+			}
 
+			if (selectedContent.text.length > 0) {
 				messages.push({
 					role: 'user',
-					content: selectedContent[contentType]
+					content: `!THIS IS MY SELECTED WEB PAGE CONTENT! ${selectedContent[contentType]}`
 				});
 			}
 
@@ -64,13 +68,14 @@
 				content: prompt
 			});
 
+			prompt = '';
+
 			await sendMessage({
 				action: 'sendPrompt',
 				messages: messages
 			});
 		} catch (error: any) {
 			console.error(error.message);
-			// alert(error.message);
 			isLoading = false;
 		}
 	}
@@ -88,9 +93,9 @@
 	}
 </script>
 
-<div class="prompt-form {isContinuation ? 'continuation' : ''}" bind:this={promptFormEl}>
-	<form onsubmit={handleSubmit}>
-		{#if !prompt && !isContinuation}
+<div class="prompt-form" bind:this={promptFormEl}>
+	<form onsubmit={handleSubmit} bind:this={formElement}>
+		{#if !prompt && showSuggestedPrompts}
 			<div class="suggested-prompts">
 				{#each suggestedPrompts as suggestedPrompt}
 					<Button onclick={() => (prompt = suggestedPrompt)}>
@@ -102,7 +107,7 @@
 		<textarea
 			onkeydown={handleKeydown}
 			placeholder="What do you want to do with this selection?"
-			rows="3"
+			rows="1"
 			bind:value={prompt}
 		></textarea>
 

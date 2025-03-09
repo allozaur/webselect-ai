@@ -3,7 +3,12 @@
 	import PromptForm from './PromptForm.svelte';
 	import { Button } from '@webcursor/ui';
 
-	let { messages = $bindable([]), isLoading = $bindable(false), onClose } = $props();
+	let {
+		messages = $bindable([]),
+		isLoading = $bindable(false),
+		onClose,
+		prompt = $bindable('')
+	} = $props();
 	let conversationContainer: HTMLElement;
 
 	function copyToClipboard(content: string) {
@@ -20,19 +25,19 @@
 	});
 </script>
 
-<div class="conversation" bind:this={conversationContainer}>
+<div class="webcursor-conversation" bind:this={conversationContainer}>
 	<Button onclick={onClose}>Close</Button>
 
 	{#if messages.length > 0}
 		{#each messages as message, i}
 			{#if message.role !== 'system'}
 				<div class="message {message.role}">
-					{#if message.role === 'user' && i === 1}
+					{#if message.content.startsWith('!THIS IS MY SELECTED WEB PAGE CONTENT!')}
 						<div class="content">
 							<details>
 								<summary>Analyzed content</summary>
 
-								{@html message.content}
+								{@html message.content.replace('!THIS IS MY SELECTED WEB PAGE CONTENT!', '')}
 							</details>
 						</div>
 					{:else}
@@ -50,14 +55,14 @@
 			{/if}
 		{/each}
 
-		<PromptForm bind:isLoading bind:messages isContinuation />
+		<PromptForm bind:isLoading bind:messages bind:prompt />
 	{:else}
 		Loading...
 	{/if}
 </div>
 
 <style>
-	.conversation {
+	.webcursor-conversation {
 		position: fixed;
 		top: 1rem;
 		right: 1rem;

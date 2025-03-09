@@ -10,7 +10,7 @@ declare global {
 	// Chrome extension message types
 
 	interface Message {
-		role: 'system' | 'user' | 'assistant';
+		role: 'assistant' | 'system' | 'tool' | 'user';
 		content: string;
 	}
 
