@@ -276,8 +276,16 @@
 			</select>
 		</label>
 	{:else if llmConfig.hosting === 'local'}
-		<div class="ollama-container relative">
-			<div>
+		{#if !isOllamaAvailable}
+			<div class="not-detected-alert">
+				<h3>Ollama Not Detected</h3>
+
+				<p>Please install and run Ollama on your device to start using local LLMs.</p>
+
+				<Button href="https://ollama.com/download" target="_blank">Download Ollama</Button>
+			</div>
+		{:else}
+			<div class="ollama-container relative">
 				{#if ollamaModels.length > 0}
 					<label>
 						<span>Model</span>
@@ -379,24 +387,7 @@
 					</div>
 				{/if}
 			</div>
-
-			<!-- {#if !isOllamaAvailable}
-				<div class="ollama-overlay">
-					<div class="overlay-content">
-						<h3>Ollama Not Detected</h3>
-						<p>Please install and run Ollama to enable AI features</p>
-						<a
-							href="https://ollama.ai"
-							target="_blank"
-							rel="noopener noreferrer"
-							class="install-button"
-						>
-							Get Ollama
-						</a>
-					</div>
-				</div>
-			{/if} -->
-		</div>
+		{/if}
 	{/if}
 </fieldset>
 
@@ -475,43 +466,21 @@
 		position: relative;
 	}
 
-	.ollama-overlay {
-		position: absolute;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.5);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 4px;
-	}
-
-	.overlay-content {
-		background: white;
+	.not-detected-alert {
+		display: grid;
+		gap: 1rem;
+		place-items: center;
+		background: var(--bg-body);
 		padding: 1.5rem;
-		border-radius: 4px;
-		text-align: center;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		border-radius: 0.25rem;
 	}
 
-	.overlay-content h3 {
-		font-size: 1.2rem;
-		margin-bottom: 0.5rem;
+	.not-detected-alert h3 {
+		font-size: 1.25rem;
+		margin: 0;
 	}
 
-	.overlay-content p {
+	.not-detected-alert p {
 		margin-bottom: 1rem;
-	}
-
-	.install-button {
-		display: inline-block;
-		background: #2563eb;
-		color: white;
-		padding: 0.5rem 1rem;
-		border-radius: 4px;
-		text-decoration: none;
-	}
-
-	.install-button:hover {
-		background: #1d4ed8;
 	}
 </style>
