@@ -32,7 +32,6 @@
 		gap: 1rem;
 		flex-direction: column;
 		overflow: auto;
-		border-radius: 1rem;
 		background: var(--bg-body);
 		color: var(--c-text);
 		border: var(--c-text);
@@ -44,12 +43,16 @@
 
 	.content {
 		width: auto;
-		max-width: min(84%, 32rem);
+		max-width: 84%;
 		border-radius: 1rem;
 
 		:global(p) {
 			margin: 0;
 			line-height: 1.5;
+		}
+
+		:global(pre) {
+			overflow: auto;
 		}
 
 		.role-user & {

@@ -1,20 +1,25 @@
 <script lang="ts">
 	import { Button } from '@webcursor/ui';
+	import LlmModelSelector from './LlmModelSelector.svelte';
 	import { onMount } from 'svelte';
 
 	let customModelName = $state('');
 	let downloadStatus = $state<DownloadStatus | null>(null);
 	let downloadProgress = $state<number>(0);
 	let isOllamaAvailable = $state(false);
-	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
 	let ollamaModels = $state<{ name: string }[]>([]);
 	let selectedModelInfo = $state<ModelInfo | null>(null);
 	let showDownloadModel = $state(false);
 
+	let { llmConfig = $bindable({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' }) } =
+		$props();
+
 	async function checkOllamaAvailability() {
 		try {
 			const response = await fetch('http://localhost:11434/api/tags');
+
 			isOllamaAvailable = response.status === 200;
+
 			if (isOllamaAvailable) {
 				await fetchOllamaModels();
 			}
@@ -28,6 +33,7 @@
 		try {
 			const response = await fetch('http://localhost:11434/api/tags');
 			const data = await response.json();
+
 			ollamaModels = data.models;
 
 			if (ollamaModels.length === 0) {
@@ -95,27 +101,19 @@
 		}
 	}
 
-	function handleChangeValue() {
-		chrome.storage.local.set({
-			llm_config: llmConfig
-		});
-	}
-
 	async function handleChangeProvider() {
 		llmConfig.model = '';
-		handleChangeValue();
 	}
 
 	async function handleChangeHosting() {
 		llmConfig.model = '';
-		handleChangeValue();
 
 		if (llmConfig.hosting === 'local') {
 			llmConfig.provider = 'ollama';
 
 			await fetchOllamaModels();
 		} else {
-			llmConfig.provider = 'google';
+			llmConfig.provider = '';
 		}
 	}
 
@@ -154,8 +152,6 @@
 		} else {
 			selectedModelInfo = null;
 		}
-
-		handleChangeValue();
 	}
 
 	onMount(async () => {
@@ -166,13 +162,13 @@
 				model: '',
 				provider: 'ollama'
 			};
-
-			if (llmConfig.provider === 'ollama') {
-				checkOllamaAvailability();
-
-				await fetchModelInfo(llmConfig.model);
-			}
 		});
+	});
+
+	$effect(() => {
+		if (llmConfig.provider === 'ollama') {
+			checkOllamaAvailability();
+		}
 	});
 </script>
 
@@ -238,42 +234,14 @@
 
 			<input
 				name="llm_api_key"
-				oninput={handleChangeValue}
 				placeholder="e.g. 1234567890abcdef"
 				type="password"
 				bind:value={llmConfig.apiKey}
 			/>
 		</label>
-
-		<label>
-			<span>Model</span>
-
-			<select
-				disabled={showDownloadModel}
-				name="llm_model"
-				bind:value={llmConfig.model}
-				onchange={handleModelSelect}
-			>
-				<option value="" selected disabled>Choose model</option>
-
-				{#if llmConfig.provider === 'google'}
-					<option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-					<option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-					<option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
-					<option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-					<option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro (Experimental)</option>
-				{:else if llmConfig.provider === 'anthropic'}
-					<option value="claude-3-7-sonnet-latest">Claude 3.7 Sonnet</option>
-					<option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet</option>
-					<option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option>
-				{:else if llmConfig.provider === 'openai'}
-					<option value="gpt-4o">GPT-4o</option>
-					<option value="gpt-4o-mini">GPT-4o mini</option>
-					<option value="gpt-4-turbo">GPT-4 Turbo</option>
-				{/if}
-			</select>
-		</label>
-	{:else if llmConfig.hosting === 'local'}
+	{/if}
+	<LlmModelSelector {handleModelSelect} {ollamaModels} bind:llmConfig {showDownloadModel} />
+	{#if llmConfig.hosting === 'local'}
 		{#if !isOllamaAvailable}
 			<div class="not-detected-alert">
 				<h3>Ollama Not Detected</h3>
@@ -283,55 +251,34 @@
 				<Button href="https://ollama.com/download" target="_blank">Download Ollama</Button>
 			</div>
 		{:else}
-			<div class="ollama-container relative">
-				{#if ollamaModels.length > 0}
-					<label>
-						<span>Model</span>
+			<div class="ollama-container">
+				{#if selectedModelInfo && llmConfig.provider === 'ollama'}
+					<details>
+						<summary>Model Info</summary>
 
-						<select
-							disabled={showDownloadModel}
-							name="llm_model"
-							bind:value={llmConfig.model}
-							onchange={handleModelSelect}
-						>
-							<option value="" selected disabled>Choose model</option>
-
-							{#if llmConfig.provider === 'ollama'}
-								{#each ollamaModels as model}
-									<option value={model.name}>{model.name}</option>
-								{/each}
-							{/if}
-						</select>
-					</label>
-
-					{#if selectedModelInfo && llmConfig.provider === 'ollama'}
-						<details>
-							<summary>Model Info</summary>
-
-							<div class="model-info">
-								<table>
-									<tbody>
-										<tr>
-											<th>License</th>
-											<td>{selectedModelInfo.license || 'N/A'}</td>
-										</tr>
-										<tr>
-											<th>Size</th>
-											<td>{(selectedModelInfo.size / 1024 / 1024 / 1024).toFixed(2)} GB</td>
-										</tr>
-										<tr>
-											<th>Parameters</th>
-											<td>{selectedModelInfo.parameters || 'N/A'}</td>
-										</tr>
-										<tr>
-											<th>Digest</th>
-											<td class="digest">{selectedModelInfo.digest || 'N/A'}</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</details>
-					{/if}
+						<div class="model-info">
+							<table>
+								<tbody>
+									<tr>
+										<th>License</th>
+										<td>{selectedModelInfo.license || 'N/A'}</td>
+									</tr>
+									<tr>
+										<th>Size</th>
+										<td>{(selectedModelInfo.size / 1024 / 1024 / 1024).toFixed(2)} GB</td>
+									</tr>
+									<tr>
+										<th>Parameters</th>
+										<td>{selectedModelInfo.parameters || 'N/A'}</td>
+									</tr>
+									<tr>
+										<th>Digest</th>
+										<td class="digest">{selectedModelInfo.digest || 'N/A'}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</details>
 				{/if}
 
 				<Button onclick={() => (showDownloadModel = !showDownloadModel)}>
@@ -387,6 +334,7 @@
 			</div>
 		{/if}
 	{/if}
+	<!-- {/if} -->
 </fieldset>
 
 <style>

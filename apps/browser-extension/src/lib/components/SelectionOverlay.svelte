@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+
 	let { bottom, rect = null, textLength = 0 } = $props();
 
 	let isOverLimit = $derived(textLength > 128000);

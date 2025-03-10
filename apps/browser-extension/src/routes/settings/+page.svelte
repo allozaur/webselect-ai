@@ -3,8 +3,14 @@
 	import LlmConfiguration from '$lib/components/LlmConfiguration/LlmConfiguration.svelte';
 	import SelectionConfiguration from '$lib/components/SelectionConfiguration/SelectionConfiguration.svelte';
 
+	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
+
 	function handleSubmit(e: SubmitEvent) {
 		e.preventDefault();
+
+		chrome.storage.local.set({
+			llm_config: llmConfig
+		});
 
 		window.close();
 	}
@@ -14,7 +20,7 @@
 	<h1>Settings</h1>
 
 	<form onsubmit={handleSubmit}>
-		<LlmConfiguration />
+		<LlmConfiguration bind:llmConfig />
 
 		<SelectionConfiguration />
 

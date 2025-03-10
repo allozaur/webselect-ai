@@ -110,6 +110,7 @@
 			{#snippet bottom()}
 				<PromptForm
 					{contentType}
+					placeholder="What do you want to do with this selection?"
 					showSuggestedPrompts
 					bind:isLoading
 					bind:messages
@@ -128,6 +129,7 @@
 
 <style lang="postcss">
 	.webcursor {
+		all: revert;
 		box-sizing: border-box;
 		color: var(--c-text);
 		color-scheme: light dark;

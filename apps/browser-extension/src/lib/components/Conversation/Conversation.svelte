@@ -42,17 +42,12 @@
 		{/if}
 	</div>
 
-	<PromptForm bind:isLoading bind:messages bind:prompt />
+	<div class="bottom">
+		<PromptForm placeholder="Reply to WebCursor..." bind:isLoading bind:messages bind:prompt />
+	</div>
 </div>
 
 <style>
-	nav {
-		display: flex;
-		justify-content: flex-end;
-		padding: 1rem;
-		margin: 0;
-	}
-
 	.webcursor-conversation {
 		position: fixed;
 		top: 1rem;
@@ -62,9 +57,18 @@
 		background: var(--bg-body);
 		border-radius: 1rem;
 		pointer-events: all;
-		width: min(36rem, 50vw);
-		display: grid;
+		width: 36vw;
+		display: flex;
+		flex-direction: column;
 		gap: 1.5rem;
+		box-shadow: #00000050 0 0 12px 12px;
+	}
+
+	nav {
+		display: flex;
+		justify-content: flex-end;
+		padding: 1rem;
+		margin: 0;
 	}
 
 	.messages {
@@ -72,5 +76,11 @@
 		flex-direction: column;
 		gap: 1rem;
 		padding: 1rem;
+	}
+
+	.bottom {
+		padding: 1rem;
+		position: sticky;
+		bottom: 0;
 	}
 </style>

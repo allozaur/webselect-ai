@@ -34,6 +34,7 @@
 		border-radius: 1rem;
 		background: var(--bg-surface-1);
 		color: var(--c-text);
+		margin-top: 1rem;
 	}
 
 	details {

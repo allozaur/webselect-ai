@@ -13,7 +13,8 @@
 		isLoading = $bindable(false),
 		prompt = $bindable(''),
 		selectedContent = $bindable({ text: '', html: '' }),
-		messages = $bindable([]) as Message[],
+		messages = $bindable([]) as LlmMessage[],
+		placeholder = '',
 		promptFormEl = $bindable() as HTMLElement,
 		showSuggestedPrompts = false
 	} = $props();
@@ -104,18 +105,13 @@
 			</div>
 		{/if}
 
-		<textarea
-			onkeydown={handleKeydown}
-			placeholder="What do you want to do with this selection?"
-			rows="1"
-			bind:value={prompt}
-		></textarea>
+		<fieldset>
+			<textarea onkeydown={handleKeydown} {placeholder} rows="1" bind:value={prompt}></textarea>
 
-		{#if prompt}
-			<Button type="submit" disabled={isLoading}>
+			<Button disabled={!prompt.length} type="submit">
 				{isLoading ? 'Processing...' : 'Submit'}
 			</Button>
-		{/if}
+		</fieldset>
 	</form>
 </div>
 
@@ -126,13 +122,32 @@
 		width: 300px;
 		z-index: 10000;
 		pointer-events: all;
-		width: min(80vw, 48rem, 100%);
+		min-width: 48rem;
+		width: 100%;
+		display: grid;
+		gap: 1rem;
+	}
+
+	form,
+	textarea {
+		margin: 0;
+	}
+
+	form {
+		display: grid;
+		gap: 1rem;
+	}
+
+	fieldset {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		margin: 0;
+		padding: 0;
+		gap: 1rem;
 	}
 
 	.prompt-form textarea {
-		width: 100%;
 		padding: 8px;
-		margin-bottom: 8px;
 		border: 1px solid #ccc;
 		border-radius: 4px;
 		resize: vertical;
