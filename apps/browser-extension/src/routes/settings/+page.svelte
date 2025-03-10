@@ -1,13 +1,19 @@
-<script>
+<script lang="ts">
 	import { Button } from '@webcursor/ui';
 	import LlmConfiguration from '$lib/components/LlmConfiguration/LlmConfiguration.svelte';
 	import SelectionConfiguration from '$lib/components/SelectionConfiguration/SelectionConfiguration.svelte';
+
+	function handleSubmit(e: SubmitEvent) {
+		e.preventDefault();
+
+		window.close();
+	}
 </script>
 
 <main>
 	<h1>Settings</h1>
 
-	<form>
+	<form onsubmit={handleSubmit}>
 		<LlmConfiguration />
 
 		<SelectionConfiguration />
