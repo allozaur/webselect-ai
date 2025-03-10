@@ -73,6 +73,9 @@ export default async function handleLlmRequest(
 		});
 	} catch (error) {
 		console.error('Error in handleLlmRequest:', error);
-		throw error;
+		chrome.tabs.sendMessage(sender.tab!.id!, {
+			action: 'streamError',
+			error: error instanceof Error ? error.message : String(error)
+		} as StreamMessage);
 	}
 }
