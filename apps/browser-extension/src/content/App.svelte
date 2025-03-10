@@ -8,12 +8,20 @@
 	let llmContent = $state('');
 	let isLoading = $state(false);
 	let messages: Message[] = $state([]);
-	let prompt = $state('');
 	let overlayPrompt = $state('');
+	let prompt = $state('');
+	let promptFormEl: HTMLElement | undefined = $state();
 	let selectionRect: DOMRect | null = $state(null);
 	let selectedContent = $state({ text: '', html: '' });
-	// let showInitialPrompt = $state(true);
-	let promptFormEl: HTMLElement | undefined = $state();
+
+	function cleanup() {
+		isLoading = false;
+		prompt = '';
+		overlayPrompt = '';
+		llmContent = '';
+		selectedContent = { text: '', html: '' };
+		selectionRect = null;
+	}
 
 	function getSelectionContent(selection: Selection): { text: string; html: string } {
 		const text = selection.toString();
@@ -27,15 +35,6 @@
 		}
 
 		return { text, html };
-	}
-
-	function cleanup() {
-		isLoading = false;
-		prompt = '';
-		overlayPrompt = '';
-		llmContent = '';
-		selectedContent = { text: '', html: '' };
-		selectionRect = null;
 	}
 
 	function handleCloseConversation() {
@@ -78,7 +77,6 @@
 
 		if (!selection || !selection.toString().trim()) {
 			selectionRect = null;
-			// showInitialPrompt = true;
 			return;
 		}
 
@@ -103,7 +101,6 @@
 			switch (message.action) {
 				case 'streamStart':
 					messages = [...messages, { role: 'assistant', content: '' }];
-					// showInitialPrompt = false;
 					prompt = '';
 					break;
 				case 'streamUpdate':
@@ -146,7 +143,6 @@
 	{#if selectionRect}
 		<SelectionOverlay rect={selectionRect} textLength={selectedContent.text.length}>
 			{#snippet bottom()}
-				<!-- {#if showInitialPrompt} -->
 				<PromptForm
 					{contentType}
 					showSuggestedPrompts
@@ -156,7 +152,6 @@
 					bind:promptFormEl
 					bind:selectedContent
 				/>
-				<!-- {/if} -->
 			{/snippet}
 		</SelectionOverlay>
 	{/if}
@@ -180,6 +175,7 @@
 		-webkit-font-smoothing: antialiased;
 
 		position: fixed;
+		/* display: contents; */
 		top: 0;
 		left: 0;
 		right: 0;

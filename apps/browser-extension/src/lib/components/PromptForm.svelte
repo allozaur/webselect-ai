@@ -3,9 +3,9 @@
 	import { Button } from '@webcursor/ui';
 
 	const suggestedPrompts = [
-		'Summarize this thread',
-		'Breakdown this text into bullet points',
-		'Extract the keywords from this text'
+		'Summarize this text',
+		'Break down this text into bullet points',
+		'Extract keywords from this text'
 	];
 
 	let {
@@ -17,16 +17,6 @@
 		promptFormEl = $bindable() as HTMLElement,
 		showSuggestedPrompts = false
 	} = $props();
-
-	let localPrompt = $state('');
-
-	$effect(() => {
-		localPrompt = prompt;
-	});
-
-	$effect(() => {
-		prompt = localPrompt;
-	});
 
 	let formElement: HTMLFormElement;
 
@@ -80,26 +70,25 @@
 
 			prompt = '';
 
-			await sendMessage({
-				action: 'sendPrompt',
-				messages: messages
+			await new Promise((resolve, reject) => {
+				chrome.runtime.sendMessage(
+					{
+						action: 'sendPrompt',
+						messages: messages
+					},
+					(response) => {
+						if (chrome.runtime.lastError) {
+							reject(chrome.runtime.lastError);
+						} else {
+							resolve(response);
+						}
+					}
+				);
 			});
 		} catch (error: any) {
 			console.error(error.message);
 			isLoading = false;
 		}
-	}
-
-	function sendMessage<T = unknown>(message: ChromeMessage): Promise<T> {
-		return new Promise((resolve, reject) => {
-			chrome.runtime.sendMessage(message, (response) => {
-				if (chrome.runtime.lastError) {
-					reject(chrome.runtime.lastError);
-				} else {
-					resolve(response);
-				}
-			});
-		});
 	}
 </script>
 
@@ -114,14 +103,15 @@
 				{/each}
 			</div>
 		{/if}
+
 		<textarea
 			onkeydown={handleKeydown}
 			placeholder="What do you want to do with this selection?"
 			rows="1"
-			bind:value={localPrompt}
+			bind:value={prompt}
 		></textarea>
 
-		{#if localPrompt}
+		{#if prompt}
 			<Button type="submit" disabled={isLoading}>
 				{isLoading ? 'Processing...' : 'Submit'}
 			</Button>
@@ -152,9 +142,5 @@
 		display: flex;
 		gap: 0.5rem;
 		flex-wrap: wrap;
-	}
-
-	.continuation {
-		width: 100%;
 	}
 </style>
