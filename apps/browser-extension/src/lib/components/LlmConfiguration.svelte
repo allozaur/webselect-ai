@@ -119,11 +119,12 @@
 	}
 
 	async function handleChangeProvider() {
-		handleChangeValue();
 		llmConfig.model = '';
+		handleChangeValue();
 	}
 
 	async function handleChangeHosting() {
+		llmConfig.model = '';
 		handleChangeValue();
 
 		if (llmConfig.hosting === 'local') {
@@ -167,13 +168,13 @@
 	}
 
 	async function handleModelSelect() {
-		handleChangeValue();
-
 		if (llmConfig.provider === 'ollama' && llmConfig.model) {
 			await fetchModelInfo(llmConfig.model);
 		} else {
 			selectedModelInfo = null;
 		}
+
+		handleChangeValue();
 	}
 </script>
 
@@ -276,7 +277,7 @@
 		</label>
 	{:else if llmConfig.hosting === 'local'}
 		<div class="ollama-container relative">
-			<div class={!isOllamaAvailable ? 'opacity-50 pointer-events-none' : ''}>
+			<div>
 				{#if ollamaModels.length > 0}
 					<label>
 						<span>Model</span>
@@ -379,7 +380,7 @@
 				{/if}
 			</div>
 
-			{#if !isOllamaAvailable}
+			<!-- {#if !isOllamaAvailable}
 				<div class="ollama-overlay">
 					<div class="overlay-content">
 						<h3>Ollama Not Detected</h3>
@@ -394,7 +395,7 @@
 						</a>
 					</div>
 				</div>
-			{/if}
+			{/if} -->
 		</div>
 	{/if}
 </fieldset>
