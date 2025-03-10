@@ -2,28 +2,14 @@
 	import { Button } from '@webcursor/ui';
 	import { onMount } from 'svelte';
 
+	let customModelName = $state('');
+	let downloadStatus = $state<DownloadStatus | null>(null);
+	let downloadProgress = $state<number>(0);
+	let isOllamaAvailable = $state(false);
 	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
 	let ollamaModels = $state<{ name: string }[]>([]);
-	let customModelName = $state('');
+	let selectedModelInfo = $state<ModelInfo | null>(null);
 	let showDownloadModel = $state(false);
-	let isOllamaAvailable = $state(false);
-
-	onMount(async () => {
-		chrome.storage.local.get('llm_config', async (result) => {
-			llmConfig = result.llm_config ?? {
-				apiKey: '',
-				hosting: 'local',
-				model: '',
-				provider: 'ollama'
-			};
-
-			if (llmConfig.provider === 'ollama') {
-				checkOllamaAvailability();
-
-				await fetchModelInfo(llmConfig.model);
-			}
-		});
-	});
 
 	async function checkOllamaAvailability() {
 		try {
@@ -53,9 +39,6 @@
 			showDownloadModel = true;
 		}
 	}
-
-	let downloadStatus = $state<DownloadStatus | null>(null);
-	let downloadProgress = $state<number>(0);
 
 	async function downloadModel(modelName: string) {
 		downloadStatus = { status: 'Starting download...' };
@@ -145,8 +128,6 @@
 		}
 	}
 
-	let selectedModelInfo = $state<ModelInfo | null>(null);
-
 	async function fetchModelInfo(modelName: string) {
 		try {
 			const response = await fetch('http://localhost:11434/api/show', {
@@ -176,6 +157,23 @@
 
 		handleChangeValue();
 	}
+
+	onMount(async () => {
+		chrome.storage.local.get('llm_config', async (result) => {
+			llmConfig = result.llm_config ?? {
+				apiKey: '',
+				hosting: 'local',
+				model: '',
+				provider: 'ollama'
+			};
+
+			if (llmConfig.provider === 'ollama') {
+				checkOllamaAvailability();
+
+				await fetchModelInfo(llmConfig.model);
+			}
+		});
+	});
 </script>
 
 <fieldset class="llm-configuration">

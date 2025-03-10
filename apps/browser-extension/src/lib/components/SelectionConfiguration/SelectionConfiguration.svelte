@@ -7,6 +7,7 @@
 	<legend>Selection Preferences</legend>
 
 	<AutoselectionChoice />
+
 	<ContentTypeChoice />
 </fieldset>
 

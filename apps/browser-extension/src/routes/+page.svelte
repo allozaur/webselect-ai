@@ -1,16 +1,23 @@
 <script>
-	import Settings from '$lib/components/Settings.svelte';
+	import { goto } from '$app/navigation';
+	import { Button } from '@webcursor/ui';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		goto('/settings');
+	});
 </script>
 
 <main>
 	<h1>WebCursor</h1>
 
-	<Settings />
+	<nav>
+		<Button href="/settings">Settings</Button>
+	</nav>
 </main>
 
 <style>
 	main {
-		min-width: 36rem;
 		padding: 1rem;
 		display: grid;
 		gap: 1.5rem;

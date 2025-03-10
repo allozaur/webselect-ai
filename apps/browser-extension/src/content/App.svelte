@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import Conversation from '$lib/components/Conversation.svelte';
+	import Conversation from '$lib/components/Conversation/Conversation.svelte';
 	import PromptForm from '$lib/components/PromptForm.svelte';
 	import SelectionOverlay from '$lib/components/SelectionOverlay.svelte';
 	import clickOutside from '$lib/utils/click-outside';
@@ -8,7 +8,7 @@
 
 	let contentType = $state('text');
 	let isLoading = $state(false);
-	let messages: Message[] = $state([]);
+	let messages: LlmMessage[] = $state([]);
 	let overlayPrompt = $state('');
 	let prompt = $state('');
 	let promptFormEl: HTMLElement | undefined = $state();

@@ -16,7 +16,7 @@ declare global {
 		completed?: number;
 	}
 
-	interface Message {
+	interface LlmMessage {
 		role: 'assistant' | 'system' | 'user';
 		content: string;
 	}

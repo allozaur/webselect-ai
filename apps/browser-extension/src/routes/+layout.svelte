@@ -15,6 +15,7 @@
 		background: var(--bg-body);
 		margin: 0;
 		padding: 0;
+		min-width: 36rem;
 	}
 	.webcursor-popup {
 		color-scheme: light dark;
