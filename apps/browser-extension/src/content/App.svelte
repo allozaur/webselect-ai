@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import Conversation from '$lib/components/Conversation.svelte';
 	import PromptForm from '$lib/components/PromptForm.svelte';
 	import SelectionOverlay from '$lib/components/SelectionOverlay.svelte';
-	import Conversation from '$lib/components/Conversation.svelte';
+	import clickOutside from '$lib/utils/click-outside';
+	import getSelectionContent from './get-selection-content';
 
 	let contentType = $state('text');
-	let llmContent = $state('');
 	let isLoading = $state(false);
 	let messages: Message[] = $state([]);
 	let overlayPrompt = $state('');
@@ -18,53 +19,14 @@
 		isLoading = false;
 		prompt = '';
 		overlayPrompt = '';
-		llmContent = '';
 		selectedContent = { text: '', html: '' };
 		selectionRect = null;
 	}
 
-	function getSelectionContent(selection: Selection): { text: string; html: string } {
-		const text = selection.toString();
-		let html = '';
-
-		if (selection.rangeCount > 0) {
-			const container = document.createElement('div');
-			const range = selection.getRangeAt(0);
-			container.appendChild(range.cloneContents());
-			html = container.innerHTML;
-		}
-
-		return { text, html };
-	}
-
 	function handleCloseConversation() {
 		messages = [];
+
 		cleanup();
-	}
-
-	function handleMouseDown(e: MouseEvent) {
-		const target = e.target as Node;
-		const components = document.querySelector('.webcursor');
-		const conversationComponent = document.querySelector('.webcursor-conversation');
-
-		if (promptFormEl?.contains(target)) {
-			return;
-		}
-
-		if (
-			components &&
-			!components.contains(target) &&
-			conversationComponent &&
-			!conversationComponent.contains(target)
-		) {
-			if (
-				!llmContent.trim() ||
-				(llmContent.trim().length > 0 &&
-					window.confirm('Are you sure you want to clear the response and start over?'))
-			) {
-				cleanup();
-			}
-		}
 	}
 
 	function handleSelectionRect(e: Event) {
@@ -122,13 +84,9 @@
 	});
 </script>
 
-<svelte:document onselectionchange={handleSelectionRect} />
+<svelte:window onresize={handleSelectionRect} onscroll={handleSelectionRect} />
 
-<svelte:window
-	onmousedown={handleMouseDown}
-	onresize={handleSelectionRect}
-	onscroll={handleSelectionRect}
-/>
+<svelte:document onselectionchange={handleSelectionRect} />
 
 <svelte:head>
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -139,7 +97,14 @@
 	/>
 </svelte:head>
 
-<div class="webcursor">
+<div
+	class="webcursor"
+	use:clickOutside={() => {
+		if (selectedContent && selectionRect && prompt) {
+			cleanup();
+		}
+	}}
+>
 	{#if selectionRect}
 		<SelectionOverlay rect={selectionRect} textLength={selectedContent.text.length}>
 			{#snippet bottom()}
@@ -175,7 +140,6 @@
 		-webkit-font-smoothing: antialiased;
 
 		position: fixed;
-		/* display: contents; */
 		top: 0;
 		left: 0;
 		right: 0;
