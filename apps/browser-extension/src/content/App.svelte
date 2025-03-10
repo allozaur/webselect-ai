@@ -9,9 +9,10 @@
 	let isLoading = $state(false);
 	let messages: Message[] = $state([]);
 	let prompt = $state('');
+	let overlayPrompt = $state('');
 	let selectionRect: DOMRect | null = $state(null);
 	let selectedContent = $state({ text: '', html: '' });
-	let showInitialPrompt = $state(true);
+	// let showInitialPrompt = $state(true);
 	let promptFormEl: HTMLElement | undefined = $state();
 
 	function getSelectionContent(selection: Selection): { text: string; html: string } {
@@ -31,6 +32,7 @@
 	function cleanup() {
 		isLoading = false;
 		prompt = '';
+		overlayPrompt = '';
 		llmContent = '';
 		selectedContent = { text: '', html: '' };
 		selectionRect = null;
@@ -76,7 +78,7 @@
 
 		if (!selection || !selection.toString().trim()) {
 			selectionRect = null;
-			showInitialPrompt = true;
+			// showInitialPrompt = true;
 			return;
 		}
 
@@ -101,7 +103,7 @@
 			switch (message.action) {
 				case 'streamStart':
 					messages = [...messages, { role: 'assistant', content: '' }];
-					showInitialPrompt = false;
+					// showInitialPrompt = false;
 					prompt = '';
 					break;
 				case 'streamUpdate':
@@ -144,17 +146,17 @@
 	{#if selectionRect}
 		<SelectionOverlay rect={selectionRect} textLength={selectedContent.text.length}>
 			{#snippet bottom()}
-				{#if showInitialPrompt}
-					<PromptForm
-						{contentType}
-						showSuggestedPrompts
-						bind:isLoading
-						bind:messages
-						bind:prompt
-						bind:promptFormEl
-						bind:selectedContent
-					/>
-				{/if}
+				<!-- {#if showInitialPrompt} -->
+				<PromptForm
+					{contentType}
+					showSuggestedPrompts
+					bind:isLoading
+					bind:messages
+					bind:prompt={overlayPrompt}
+					bind:promptFormEl
+					bind:selectedContent
+				/>
+				<!-- {/if} -->
 			{/snippet}
 		</SelectionOverlay>
 	{/if}

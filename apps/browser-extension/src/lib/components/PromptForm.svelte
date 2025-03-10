@@ -18,6 +18,16 @@
 		showSuggestedPrompts = false
 	} = $props();
 
+	let localPrompt = $state('');
+
+	$effect(() => {
+		localPrompt = prompt;
+	});
+
+	$effect(() => {
+		prompt = localPrompt;
+	});
+
 	let formElement: HTMLFormElement;
 
 	function handleKeydown(e: KeyboardEvent) {
@@ -108,10 +118,10 @@
 			onkeydown={handleKeydown}
 			placeholder="What do you want to do with this selection?"
 			rows="1"
-			bind:value={prompt}
+			bind:value={localPrompt}
 		></textarea>
 
-		{#if prompt}
+		{#if localPrompt}
 			<Button type="submit" disabled={isLoading}>
 				{isLoading ? 'Processing...' : 'Submit'}
 			</Button>

@@ -1,16 +1,13 @@
 <script>
 	import { Button } from '@webcursor/ui';
-	import AutoselectionChoice from './AutoselectionChoice.svelte';
-	import ContentTypeChoice from '$lib/components/ContentTypeChoice.svelte';
-	import LlmChoice from '$lib/components/LlmChoice.svelte';
+	import LlmConfiguration from '$lib/components/LlmConfiguration.svelte';
+	import SelectionPreferences from './SelectionPreferences.svelte';
 </script>
 
 <form>
-	<AutoselectionChoice />
+	<LlmConfiguration />
 
-	<LlmChoice />
-
-	<ContentTypeChoice />
+	<SelectionPreferences />
 
 	<Button type="submit">Save settings</Button>
 </form>

@@ -21,6 +21,15 @@ declare global {
 		content: string;
 	}
 
+	interface ModelInfo {
+		license: string;
+		modelfile: string;
+		parameters: string;
+		template: string;
+		size: number;
+		digest: string;
+	}
+
 	interface ChromeMessage {
 		action: 'streamUpdate' | 'streamComplete' | 'streamError' | 'streamStart' | 'sendPrompt';
 		messages: Message[];
