@@ -2,7 +2,7 @@
 	import PromptForm from '../PromptForm.svelte';
 	import { Button } from '@webcursor/ui';
 	import Message from './Message.svelte';
-	import SelectedContentMessage from '../SelectedContentMessage.svelte';
+	import SelectedContentMessage from './SelectedContentMessage.svelte';
 
 	let {
 		messages = $bindable([]),
@@ -50,6 +50,7 @@
 		display: flex;
 		justify-content: flex-end;
 		padding: 1rem;
+		margin: 0;
 	}
 
 	.webcursor-conversation {

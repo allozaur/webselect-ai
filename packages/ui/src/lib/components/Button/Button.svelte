@@ -21,11 +21,11 @@
 </script>
 
 {#if href}
-	<a {href} {target}>
+	<a class="button" {href} {target}>
 		{@render children?.()}
 	</a>
 {:else}
-	<button {disabled} {onclick} {type}>
+	<button class="button" {disabled} {onclick} {type}>
 		{@render children?.()}
 	</button>
 {/if}
