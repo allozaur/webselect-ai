@@ -129,10 +129,6 @@
 
 <style lang="postcss">
 	.webcursor {
-		:global(*) {
-			all: revert;
-		}
-
 		box-sizing: border-box;
 		color: var(--c-text);
 		color-scheme: light dark;
