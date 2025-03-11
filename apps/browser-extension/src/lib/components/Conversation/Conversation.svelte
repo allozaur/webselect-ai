@@ -58,6 +58,7 @@
 		border-radius: 1rem;
 		pointer-events: all;
 		width: 36vw;
+		max-width: 36rem;
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;

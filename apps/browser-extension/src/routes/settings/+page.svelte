@@ -24,7 +24,9 @@
 
 		<SelectionConfiguration />
 
-		<Button type="submit">Save settings</Button>
+		<div class="bottom">
+			<Button type="submit">Save settings</Button>
+		</div>
 	</form>
 </main>
 
@@ -42,5 +44,13 @@
 	form {
 		display: grid;
 		gap: 1.5rem;
+
+		.bottom {
+			display: grid;
+			position: sticky;
+			bottom: 0;
+			padding: 1rem 0;
+			background: var(--bg-body);
+		}
 	}
 </style>
