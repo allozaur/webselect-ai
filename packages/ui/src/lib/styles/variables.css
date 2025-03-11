@@ -10,6 +10,7 @@
 	--bg-body: light-dark(#fafafa, #131111);
 	--bg-highlight: light-dark(var(--hex-primary-20), var(--hex-primary-40));
 	--bg-surface-1: light-dark(#eee, #1a1a1a);
+	--bg-backdrop: light-dark(#00000050, #00000050);
 
 	--c-text: light-dark(#000, #efefef);
 }
