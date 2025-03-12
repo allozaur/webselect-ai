@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@webcursor/ui';
+	import { Button } from '@webselect/ui';
 	import LlmConfiguration from '$lib/components/LlmConfiguration/LlmConfiguration.svelte';
 	import SelectionConfiguration from '$lib/components/SelectionConfiguration/SelectionConfiguration.svelte';
 

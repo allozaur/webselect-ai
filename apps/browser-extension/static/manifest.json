@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "WebCursor",
+  "name": "WebSelect",
   "version": "0.0.1",
   "description": "Select anything on website and instantly chat with AI",
   "icons": {
@@ -25,7 +25,7 @@
       "128": "png/icons/icon128.png"
     },
     "default_popup": "index.html",
-    "default_title": "WebCursor"
+    "default_title": "WebSelect"
   },
   "content_scripts": [
     {
@@ -42,6 +42,5 @@
   ],
   "background": {
     "service_worker": "background.js"
-  },
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1H642KOOlT1hkG2klb7+R6IuUJPOZTssX8wEfpBB+4ZaMiPiiLSVGjLC5nzb3frbEHDFzfayijoMjWxcx9hzi2YdQVhoj+1aOqVDW0VtyPZaxKkfX+k+eFBWVtVAB5FUWLO5AuU+bLSCkd6Bm8ZJxheYdndIlOX4rztx9jl7nZF/Yf2PVi0cnU2bMQSgZtDehBLFC1LUSGdspYQvw3HTfEi1RPiH9vTS2vE3CZaV22EK3p46dkXIZHFVooCylEi4JNgl64/ebL0MP3uZ5tQ8/VfAHMQXdNKMn8NMBZ7jtD59uQesN+HJIzoLc/obdQeTU6fWGOnFan7NLvfuRXu+zQIDAQAB"
+  }
 }

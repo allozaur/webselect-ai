@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@webcursor/ui';
+	import { Button } from '@webselect/ui';
 
 	let customModelName = $state('');
 	let downloadStatus = $state<DownloadStatus | null>(null);

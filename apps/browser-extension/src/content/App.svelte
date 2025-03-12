@@ -98,7 +98,7 @@
 </svelte:head>
 
 <div
-	class="webcursor"
+	class="webselect"
 	use:clickOutside={() => {
 		if (selectedContent && selectionRect && prompt) {
 			cleanup();
@@ -128,7 +128,7 @@
 </div>
 
 <style lang="postcss">
-	.webcursor {
+	.webselect {
 		box-sizing: border-box;
 		color: var(--c-text);
 		color-scheme: light dark;

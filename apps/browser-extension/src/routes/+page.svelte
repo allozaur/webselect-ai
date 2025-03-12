@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { Button } from '@webcursor/ui';
+	import { Button } from '@webselect/ui';
 	import { onMount } from 'svelte';
 
 	onMount(() => {
@@ -9,7 +9,7 @@
 </script>
 
 <main>
-	<h1>WebCursor</h1>
+	<h1>WebSelect</h1>
 
 	<nav>
 		<Button href="/settings">Settings</Button>

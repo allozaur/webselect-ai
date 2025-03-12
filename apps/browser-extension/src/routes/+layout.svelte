@@ -1,10 +1,10 @@
 <script>
-	import '@webcursor/ui/styles/index.css';
+	import '@webselect/ui/styles/index.css';
 
 	let { children } = $props();
 </script>
 
-<div class="webcursor-popup">
+<div class="webselect-popup">
 	{#if children}
 		{@render children()}
 	{/if}
@@ -17,7 +17,7 @@
 		padding: 0;
 		min-width: 36rem;
 	}
-	.webcursor-popup {
+	.webselect-popup {
 		color-scheme: light dark;
 		background-color: var(--bg-body);
 		box-sizing: border-box;

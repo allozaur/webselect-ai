@@ -37,7 +37,7 @@
 
 	{#if !enabled}
 		<p>
-			WebCursor will only activate when you press the <kbd>Alt</kbd> key.
+			WebSelect will only activate when you press the <kbd>Alt</kbd> key.
 		</p>
 	{/if}
 </fieldset>

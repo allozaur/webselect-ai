@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PromptForm from '../PromptForm.svelte';
-	import { Button } from '@webcursor/ui';
+	import { Button } from '@webselect/ui';
 	import Message from './Message.svelte';
 	import SelectedContentMessage from './SelectedContentMessage.svelte';
 
@@ -23,7 +23,7 @@
 	});
 </script>
 
-<div class="webcursor-conversation" bind:this={conversationContainer}>
+<div class="webselect-conversation" bind:this={conversationContainer}>
 	<nav>
 		<Button onclick={onClose}>Close</Button>
 	</nav>
@@ -43,12 +43,12 @@
 	</div>
 
 	<div class="bottom">
-		<PromptForm placeholder="Reply to WebCursor..." bind:isLoading bind:messages bind:prompt />
+		<PromptForm placeholder="Reply to WebSelect..." bind:isLoading bind:messages bind:prompt />
 	</div>
 </div>
 
 <style>
-	.webcursor-conversation {
+	.webselect-conversation {
 		position: fixed;
 		top: 1rem;
 		right: 1rem;

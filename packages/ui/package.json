@@ -1,5 +1,5 @@
 {
-	"name": "@webcursor/ui",
+	"name": "@webselect/ui",
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "svelte-kit sync && svelte-package -w & vite optimize & storybook dev -p 6006 --ci",
