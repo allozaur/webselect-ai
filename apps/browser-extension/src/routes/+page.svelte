@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { Button } from '@webselect/ui';
+	import { Button } from '@webselect-ai/ui';
 	import { onMount } from 'svelte';
 
 	onMount(() => {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@webselect/ui';
+	import { Button } from '@webselect-ai/ui';
 	import { marked } from 'marked';
 
 	interface Props {

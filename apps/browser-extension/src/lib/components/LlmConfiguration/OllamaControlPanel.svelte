@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@webselect/ui';
+	import { Button } from '@webselect-ai/ui';
 
 	let customModelName = $state('');
 	let downloadStatus = $state<DownloadStatus | null>(null);

@@ -1,5 +1,5 @@
 <script>
-	import '@webselect/ui/styles/index.css';
+	import '@webselect-ai/ui/styles/index.css';
 
 	let { children } = $props();
 </script>

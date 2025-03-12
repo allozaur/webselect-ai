@@ -1,5 +1,5 @@
 {
-	"name": "@webselect/browser-extension",
+	"name": "@webselect-ai/browser-extension",
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
@@ -21,7 +21,7 @@
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@types/chrome": "^0.0.307",
 		"@types/eslint": "^9.6.0",
-		"@webselect/ui": "workspace:*",
+		"@webselect-ai/ui": "workspace:*",
 		"eslint": "^9.7.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.36.0",

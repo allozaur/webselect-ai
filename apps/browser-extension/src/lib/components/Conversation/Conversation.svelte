@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PromptForm from '../PromptForm.svelte';
-	import { Button } from '@webselect/ui';
+	import { Button } from '@webselect-ai/ui';
 	import Message from './Message.svelte';
 	import SelectedContentMessage from './SelectedContentMessage.svelte';
 

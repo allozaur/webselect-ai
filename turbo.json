@@ -3,15 +3,56 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".svelte-kit/**", ".vercel/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        ".cloudflare/**",
+        ".svelte-kit/**",
+        "build/**"
+      ]
+    },
+    "build:browser-extension": {
+      "dependsOn": [
+        "@webselect-ai/ui#build",
+        "@webselect-ai/browser-extension#build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        ".svelte-kit/**",
+        "build/**"
+      ]
+    },
+    "build:website": {
+      "dependsOn": [
+        "@webselect-ai/ui#build",
+        "@webselect-ai/website#build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env*"
+      ],
+      "outputs": [
+        ".cloudflare/**",
+        ".svelte-kit/**"
+      ]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": [
+        "^lint"
+      ]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": [
+        "^check-types"
+      ]
     },
     "dev": {
       "cache": false,

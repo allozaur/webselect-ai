@@ -38,7 +38,7 @@ importers:
       '@types/eslint':
         specifier: ^9.6.0
         version: 9.6.1
-      '@webselect/ui':
+      '@webselect-ai/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       eslint:

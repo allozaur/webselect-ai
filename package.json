@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "build:browser-extension": "turbo run build:browser-extension",
+    "build:website": "turbo run build:website",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write .",

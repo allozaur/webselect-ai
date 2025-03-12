@@ -1,6 +1,6 @@
 <script lang="ts">
-	import '@webselect/ui/styles/variables.css';
-	import { Button } from '@webselect/ui';
+	import '@webselect-ai/ui/styles/variables.css';
+	import { Button } from '@webselect-ai/ui';
 
 	const suggestedPrompts = [
 		'Summarize this text',
