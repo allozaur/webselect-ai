@@ -6,3 +6,4 @@ pages_build_output_dir= ".svelte-kit/cloudflare"
 [vars]
 
 NODE_VERSION = "20"
+CF_PAGES = "true"
