@@ -1,0 +1,132 @@
+# Terms & Conditions for WebSelect.ai
+
+**Last Updated: March 13, 2025**
+
+## 1. Introduction
+
+Welcome to WebSelect.ai. These Terms & Conditions ("Terms") govern your use of the WebSelect.ai browser extension ("Service"), including all features and functionalities, software, and user interfaces. By using our Service, you agree to these Terms. If you do not agree, please do not use our Service.
+
+## 2. Definitions
+
+- **"Service"** refers to the WebSelect.ai browser extension.
+- **"User"** or **"you"** refers to any individual who installs and uses the Service.
+- **"We"**, **"us"**, or **"our"** refers to WebSelect.ai, the operator of the Service.
+- **"API Keys"** refers to authentication credentials required to access third-party Large Language Models (LLMs).
+- **"Content"** refers to any text or HTML selected from web pages processed through the Service.
+
+## 3. Account Registration and Payment
+
+### 3.1 Trial Period
+
+WebSelect.ai offers a 30-day free trial period. No payment information is required to start your trial.
+
+### 3.2 Subscription Plans
+
+Following your trial period, we offer the following subscription options:
+- Monthly Plan: $5 per month
+- Annual Plan: $39 per year
+- Lifetime License: $99 one-time payment
+
+### 3.3 Payment Processing
+
+All payments are processed securely through our payment processors. By purchasing a subscription, you authorize us to charge the applicable fees to your selected payment method.
+
+### 3.4 Refunds
+
+We offer a 14-day money-back guarantee for all subscription plans. To request a refund, please contact us through our support channels.
+
+## 4. Service Description
+
+### 4.1 Functionality
+
+WebSelect.ai is a browser extension that enables users to:
+- Select web content (text or HTML)
+- Process the selected content through third-party Large Language Models (LLMs)
+- Interact with these models through a chat interface without leaving the current webpage
+
+### 4.2 Third-Party Services
+
+Our Service integrates with third-party LLM providers including:
+- OpenAI
+- Google (Gemini)
+- Ollama (for local LLM deployment)
+
+You are responsible for obtaining and maintaining valid API keys for these services where required.
+
+## 5. User Responsibilities
+
+### 5.1 API Keys
+
+You are solely responsible for:
+- Obtaining valid API keys for third-party services
+- Maintaining the security of your API keys
+- Any charges incurred through your use of third-party services
+
+### 5.2 Acceptable Use
+
+You agree not to use the Service to:
+- Violate any laws or regulations
+- Infringe upon intellectual property rights
+- Process or generate harmful, offensive, or illegal content
+- Attempt to reverse engineer, decompile, or modify the Service
+- Interfere with the Service's operation or security
+
+## 6. Data and Privacy
+
+### 6.1 Local Storage
+
+WebSelect.ai stores your settings and API keys locally on your device. We do not transmit your API keys to our servers.
+
+### 6.2 Content Processing
+
+All content processing occurs through the third-party LLM providers you select. The handling of your data by these providers is governed by their respective privacy policies.
+
+## 7. Intellectual Property
+
+### 7.1 Ownership
+
+WebSelect.ai and its associated trademarks, service marks, and logos are owned by us. Nothing in these Terms grants you any right to use our trademarks, service marks, or logos.
+
+### 7.2 License
+
+We grant you a limited, non-exclusive, non-transferable, revocable license to use the Service for personal or business purposes in accordance with these Terms.
+
+## 8. Limitations of Liability
+
+### 8.1 Service Availability
+
+We strive to maintain Service availability, but we do not guarantee uninterrupted access. The Service may be temporarily unavailable due to maintenance, updates, or factors beyond our control.
+
+### 8.2 Disclaimer of Warranties
+
+THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+### 8.3 Limitation of Liability
+
+TO THE FULLEST EXTENT PERMITTED BY LAW, IN NO EVENT SHALL WE BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS OR REVENUES, WHETHER INCURRED DIRECTLY OR INDIRECTLY, OR ANY LOSS OF DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM YOUR ACCESS TO OR USE OF OR INABILITY TO ACCESS OR USE THE SERVICE.
+
+## 9. Changes to Terms
+
+We may modify these Terms at any time by posting the revised Terms on our website or within the Service. Your continued use of the Service after such changes constitutes your acceptance of the new Terms.
+
+## 10. Termination
+
+### 10.1 Termination by You
+
+You may terminate your use of the Service at any time by uninstalling the browser extension.
+
+### 10.2 Termination by Us
+
+We may terminate or suspend your access to the Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.
+
+## 11. Governing Law
+
+These Terms shall be governed by and construed in accordance with the laws of [Jurisdiction], without regard to its conflict of law principles.
+
+## 12. Contact Information
+
+For questions about these Terms, please contact us at support@webselect.ai.
+
+## 13. Entire Agreement
+
+These Terms constitute the entire agreement between you and WebSelect.ai regarding your use of the Service and supersede all prior agreements and understandings.

@@ -1,0 +1,130 @@
+# Privacy Policy for WebSelect.ai
+
+**Last Updated: March 13, 2025**
+
+## 1. Introduction
+
+WebSelect.ai ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our WebSelect.ai browser extension ("Service").
+
+Please read this Privacy Policy carefully. By using the Service, you consent to the practices described in this policy.
+
+## 2. Information We Collect
+
+### 2.1 Information You Provide
+
+- **API Keys**: If you choose to use third-party LLM providers (OpenAI or Google), you will need to provide your API keys. These keys are stored locally on your device and are not transmitted to our servers.
+
+- **Payment Information**: If you purchase a subscription, your payment information is processed by our third-party payment processors and is not stored on our servers.
+
+- **Support Communications**: When you contact us for support, we may collect information you provide in your communications.
+
+### 2.2 Information Collected Automatically
+
+- **Usage Data**: We collect anonymous usage statistics to help us improve the Service, including feature usage patterns and error reports.
+
+- **Device Information**: We may collect information about your browser and device to ensure compatibility and optimize performance.
+
+### 2.3 Web Content
+
+- **Selected Content**: The Service processes text or HTML content that you select on web pages. This content is:
+  - Processed locally on your device
+  - Transmitted directly to the third-party LLM provider you have selected (OpenAI, Google, or Ollama)
+  - Not stored on our servers
+
+## 3. How We Use Your Information
+
+We use the information we collect to:
+
+- Provide, maintain, and improve the Service
+- Process your transactions
+- Respond to your inquiries and provide customer support
+- Monitor and analyze usage patterns and trends
+- Detect, prevent, and address technical issues
+
+## 4. Data Storage and Security
+
+### 4.1 Local Storage
+
+WebSelect.ai stores the following information locally on your device:
+- Your selected LLM provider
+- Your API keys
+- Your preference for processing text or HTML content
+
+This information never leaves your device unless you choose to transmit it to third-party LLM providers.
+
+### 4.2 Security Measures
+
+We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, accidental loss, or destruction. However, no method of transmission over the Internet or electronic storage is 100% secure.
+
+## 5. Data Sharing and Disclosure
+
+### 5.1 Third-Party LLM Providers
+
+When you use the Service, your selected web content and prompts are sent directly to the third-party LLM provider you have chosen (OpenAI, Google, or Ollama). The processing of this data is governed by the privacy policies of these providers:
+
+- [OpenAI Privacy Policy](https://openai.com/privacy/)
+- [Google Privacy Policy](https://policies.google.com/privacy)
+- For Ollama, data processing occurs locally on your device
+
+### 5.2 Payment Processors
+
+If you purchase a subscription, your payment information is processed by our third-party payment processors, whose use of your personal information is governed by their respective privacy policies.
+
+### 5.3 Legal Requirements
+
+We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or government agency).
+
+## 6. Your Rights and Choices
+
+### 6.1 Access and Control
+
+You can access and control your information in the following ways:
+- View and modify your settings through the extension's popup interface
+- Delete your local data by uninstalling the extension
+
+### 6.2 Data Retention
+
+We retain your information only for as long as necessary to fulfill the purposes outlined in this Privacy Policy, unless a longer retention period is required or permitted by law.
+
+### 6.3 Do Not Track
+
+WebSelect.ai does not track your browsing activity across third-party websites. We respect "Do Not Track" signals transmitted by web browsers.
+
+## 7. Children's Privacy
+
+The Service is not intended for use by individuals under the age of 16. We do not knowingly collect personal information from children. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.
+
+## 8. International Data Transfers
+
+Your information may be transferred to and processed in countries other than the country in which you reside. These countries may have data protection laws that are different from the laws of your country.
+
+## 9. Changes to This Privacy Policy
+
+We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.
+
+## 10. Third-Party Links and Services
+
+The Service may contain links to third-party websites or services that are not owned or controlled by WebSelect.ai. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.
+
+## 11. Contact Information
+
+If you have any questions about this Privacy Policy or our data practices, please contact us at:
+
+- Email: alek@webselect.ai
+
+## 12. California Privacy Rights
+
+If you are a California resident, you have specific rights regarding your personal information under the California Consumer Privacy Act (CCPA). For more information about your California privacy rights, please visit our California Privacy Rights page or contact us.
+
+## 13. EU/EEA User Rights
+
+If you are located in the European Union or European Economic Area, you have certain rights under the General Data Protection Regulation (GDPR), including:
+
+- Right to access
+- Right to rectification
+- Right to erasure
+- Right to restrict processing
+- Right to data portability
+- Right to object
+
+To exercise these rights, please contact us using the information provided in Section 11.
