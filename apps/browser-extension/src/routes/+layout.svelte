@@ -1,11 +1,54 @@
-<script>
+<script lang="ts">
 	import '@webselect-ai/ui/styles/index.css';
+	import AuthBox from '$lib/components/AuthBox.svelte';
+	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/supabase';
+	import { onMount } from 'svelte';
+	import type { AuthSession } from '@supabase/supabase-js';
+	import WebSelectLogo from '$lib/components/WebSelectLogo.svelte';
+	import { Button } from '@webselect-ai/ui';
+	import { page } from '$app/state';
 
 	let { children } = $props();
+
+	let isAuthenticated = $state(false);
+	let session: AuthSession | null = $state(null);
+
+	onMount(async () => {
+		const { data } = await supabase.auth.getSession();
+
+		isAuthenticated = typeof data.session !== undefined && data.session !== null;
+		session = data.session;
+
+		chrome.storage.local.set({ session, isAuthenticated });
+
+		supabase.auth.onAuthStateChange(async (_event, _session) => {
+			chrome.storage.local.set({
+				session: _session,
+				isAuthenticated: typeof _session !== undefined && _session !== null
+			});
+		});
+
+		if (!isAuthenticated) {
+			goto('/');
+		}
+	});
 </script>
 
 <div class="webselect-popup">
-	{#if children}
+	{#if !isAuthenticated}
+		<AuthBox />
+	{:else}
+		<header>
+			<WebSelectLogo --height="2.5rem" />
+
+			{#if page.url.pathname === '/settings'}
+				<Button kind="secondary" href="/">Close</Button>
+			{:else}
+				<Button kind="secondary" href="/settings">Settings</Button>
+			{/if}
+		</header>
+
 		{@render children()}
 	{/if}
 </div>
@@ -29,5 +72,12 @@
 		padding: 0;
 		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
+	}
+
+	header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.75rem;
 	}
 </style>

@@ -49,7 +49,7 @@
 	}
 
 	.secondary {
-		background: #333;
+		background: var(--bg-surface-2);
 		color: #fff;
 	}
 

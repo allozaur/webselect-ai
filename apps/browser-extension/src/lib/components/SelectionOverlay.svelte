@@ -85,6 +85,10 @@
 		z-index: 9999;
 	}
 
+	.highlight-overlay :global(.prompt-form) {
+		min-width: 48rem;
+	}
+
 	.token-counter {
 		position: absolute;
 		bottom: 0;

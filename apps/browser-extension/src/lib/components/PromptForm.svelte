@@ -10,6 +10,7 @@
 
 	let {
 		contentType = 'text',
+		isAuthenticated = false,
 		isLoading = $bindable(false),
 		prompt = $bindable(''),
 		selectedContent = $bindable({ text: '', html: '' }),
@@ -94,6 +95,7 @@
 </script>
 
 <div class="prompt-form" bind:this={promptFormEl}>
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<form onsubmit={handleSubmit} bind:this={formElement}>
 		{#if !prompt && showSuggestedPrompts}
 			<div class="suggested-prompts">
@@ -105,12 +107,26 @@
 			</div>
 		{/if}
 
-		<fieldset>
-			<textarea onkeydown={handleKeydown} {placeholder} rows="1" bind:value={prompt}></textarea>
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<fieldset
+			onclick={() =>
+				!isAuthenticated && chrome.runtime.sendMessage({ action: 'openWebSelectPopup' })}
+		>
+			<textarea
+				disabled={!isAuthenticated}
+				onkeydown={handleKeydown}
+				{placeholder}
+				rows="1"
+				bind:value={prompt}
+			></textarea>
 
-			<Button disabled={!prompt.length} type="submit">
-				{isLoading ? 'Processing...' : 'Submit'}
-			</Button>
+			{#if isAuthenticated}
+				<Button disabled={!prompt.length} type="submit">
+					{isLoading ? 'Processing...' : 'Submit'}
+				</Button>
+			{:else}
+				<Button onclick={(e) => e.preventDefault()}>Sign in to start chatting!</Button>
+			{/if}
 		</fieldset>
 	</form>
 </div>
@@ -119,13 +135,11 @@
 	.prompt-form {
 		font-family: 'Space Grotesk', sans-serif;
 		position: relative;
-		width: 300px;
 		z-index: 10000;
 		pointer-events: all;
-		min-width: 48rem;
-		width: 100%;
 		display: grid;
 		gap: 1rem;
+		padding: 0.75rem;
 	}
 
 	form,
@@ -151,6 +165,10 @@
 		border: 1px solid #ccc;
 		border-radius: 4px;
 		resize: vertical;
+
+		&[disabled] {
+			pointer-events: none;
+		}
 	}
 
 	.suggested-prompts {

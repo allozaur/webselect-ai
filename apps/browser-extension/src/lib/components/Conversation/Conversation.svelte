@@ -3,10 +3,12 @@
 	import { Button } from '@webselect-ai/ui';
 	import Message from './Message.svelte';
 	import SelectedContentMessage from './SelectedContentMessage.svelte';
+	import WebSelectLogo from '../WebSelectLogo.svelte';
 
 	let {
 		messages = $bindable([]),
 		isLoading = $bindable(false),
+		isAuthenticated = false,
 		onClose,
 		prompt = $bindable('')
 	} = $props();
@@ -25,6 +27,8 @@
 
 <div class="webselect-conversation" bind:this={conversationContainer}>
 	<nav>
+		<WebSelectLogo />
+
 		<Button onclick={onClose}>Close</Button>
 	</nav>
 
@@ -43,7 +47,13 @@
 	</div>
 
 	<div class="bottom">
-		<PromptForm placeholder="Reply to WebSelect..." bind:isLoading bind:messages bind:prompt />
+		<PromptForm
+			{isAuthenticated}
+			placeholder="Reply to WebSelect..."
+			bind:isLoading
+			bind:messages
+			bind:prompt
+		/>
 	</div>
 </div>
 
@@ -67,7 +77,8 @@
 
 	nav {
 		display: flex;
-		justify-content: flex-end;
+		align-items: center;
+		justify-content: space-between;
 		padding: 1rem;
 		margin: 0;
 	}

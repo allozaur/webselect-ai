@@ -20,7 +20,7 @@
 
 	<div class="actions">
 		{#if message.role === 'assistant'}
-			<Button onclick={copyToClipboard}>Copy to clipboard</Button>
+			<Button kind="secondary" onclick={copyToClipboard}>Copy to clipboard</Button>
 		{/if}
 	</div>
 </div>

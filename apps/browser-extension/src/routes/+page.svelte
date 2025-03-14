@@ -1,19 +1,5 @@
-<script>
-	import { goto } from '$app/navigation';
-	import { Button } from '@webselect-ai/ui';
-	import { onMount } from 'svelte';
-
-	onMount(() => {
-		goto('/settings');
-	});
-</script>
-
 <main>
-	<h1>WebSelect</h1>
-
-	<nav>
-		<Button href="/settings">Settings</Button>
-	</nav>
+	<h1>Select any content on the page and start chatting with AI!</h1>
 </main>
 
 <style>

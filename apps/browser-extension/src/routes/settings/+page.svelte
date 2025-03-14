@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { Button } from '@webselect-ai/ui';
+	import { signOut } from '$lib/auth';
 	import LlmConfiguration from '$lib/components/LlmConfiguration/LlmConfiguration.svelte';
 	import SelectionConfiguration from '$lib/components/SelectionConfiguration/SelectionConfiguration.svelte';
+	import { goto } from '$app/navigation';
 
 	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
 
@@ -28,6 +30,12 @@
 			<Button type="submit">Save settings</Button>
 		</div>
 	</form>
+
+	<Button
+		onclick={() => {
+			signOut();
+		}}>Sign out</Button
+	>
 </main>
 
 <style>

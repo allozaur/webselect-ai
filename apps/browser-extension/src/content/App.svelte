@@ -5,15 +5,19 @@
 	import SelectionOverlay from '$lib/components/SelectionOverlay.svelte';
 	import clickOutside from '$lib/utils/click-outside';
 	import getSelectionContent from './get-selection-content';
+	import type { AuthSession } from '@supabase/supabase-js';
 
 	let contentType = $state('text');
+	let isAuthenticated = $state(false);
 	let isLoading = $state(false);
 	let messages: LlmMessage[] = $state([]);
 	let overlayPrompt = $state('');
 	let prompt = $state('');
 	let promptFormEl: HTMLElement | undefined = $state();
 	let selectionRect: DOMRect | null = $state(null);
+	let signInCta: HTMLElement | undefined = $state();
 	let selectedContent = $state({ text: '', html: '' });
+	let session: AuthSession | null = $state(null);
 
 	function cleanup() {
 		isLoading = false;
@@ -33,7 +37,7 @@
 		const target = e.target as Node;
 		const selection = window.getSelection();
 
-		if (promptFormEl?.contains(target)) {
+		if (promptFormEl?.contains(target) || signInCta?.contains(target)) {
 			return;
 		}
 
@@ -58,7 +62,18 @@
 		selectionRect = range.getBoundingClientRect();
 	}
 
-	onMount(() => {
+	onMount(async () => {
+		chrome.storage.local.get(['isAuthenticated', 'session'], (result) => {
+			isAuthenticated = result.isAuthenticated ?? false;
+			session = result.session;
+		});
+
+		chrome.storage.onChanged.addListener((changes) => {
+			if (changes.isAuthenticated) {
+				isAuthenticated = changes.isAuthenticated.newValue;
+			}
+		});
+
 		chrome.runtime.onMessage.addListener((message: ChromeMessage) => {
 			switch (message.action) {
 				case 'streamStart':
@@ -110,6 +125,7 @@
 			{#snippet bottom()}
 				<PromptForm
 					{contentType}
+					{isAuthenticated}
 					placeholder="What do you want to do with this selection?"
 					showSuggestedPrompts
 					bind:isLoading
@@ -123,7 +139,13 @@
 	{/if}
 
 	{#if messages.length > 0}
-		<Conversation {messages} onClose={handleCloseConversation} bind:isLoading bind:prompt />
+		<Conversation
+			{isAuthenticated}
+			{messages}
+			onClose={handleCloseConversation}
+			bind:isLoading
+			bind:prompt
+		/>
 	{/if}
 </div>
 

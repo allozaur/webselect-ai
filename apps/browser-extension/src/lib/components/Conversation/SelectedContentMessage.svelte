@@ -20,7 +20,9 @@
 			</Button>
 		</summary>
 
-		{@html message.content.replace('!THIS IS MY SELECTED WEB PAGE CONTENT!', '')}
+		<div class="content">
+			{@html message.content.replace('!THIS IS MY SELECTED WEB PAGE CONTENT!', '')}
+		</div>
 	</details>
 </div>
 
@@ -32,7 +34,7 @@
 		gap: 1rem;
 		padding: 1rem;
 		border-radius: 1rem;
-		background: var(--bg-surface-1);
+		background: var(--bg-surface-2);
 		color: var(--c-text);
 		margin-top: 1rem;
 	}
@@ -50,6 +52,12 @@
 
 		:global(.button) {
 			pointer-events: none;
+		}
+	}
+
+	.content {
+		[open] & {
+			padding-block: 1rem;
 		}
 	}
 </style>
