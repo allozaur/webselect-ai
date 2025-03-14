@@ -5,7 +5,7 @@
 		children?: () => any;
 		disabled?: boolean;
 		href?: string;
-		kind?: 'primary' | 'secondary' | 'tertiary';
+		kind?: 'primary' | 'secondary' | 'tertiary' | 'danger';
 		onclick?: (e: MouseEvent) => void;
 		size?: 'sm' | 'md' | 'lg';
 		target?: '_blank' | '_self' | '_parent' | '_top';
@@ -42,6 +42,7 @@
 		text-decoration: none;
 		line-height: 1;
 		display: flex;
+		justify-content: center;
 		align-items: center;
 		gap: 0.5rem;
 		cursor: pointer;
@@ -60,6 +61,11 @@
 	.tertiary {
 		background: transparent;
 		color: #333;
+	}
+
+	.danger {
+		background: var(--hex-danger);
+		color: var(--hex-white);
 	}
 
 	.sm {
