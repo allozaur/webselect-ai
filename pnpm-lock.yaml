@@ -110,6 +110,9 @@ importers:
       '@types/eslint':
         specifier: ^9.6.0
         version: 9.6.1
+      '@webselect-ai/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       eslint:
         specifier: ^9.7.0
         version: 9.21.0

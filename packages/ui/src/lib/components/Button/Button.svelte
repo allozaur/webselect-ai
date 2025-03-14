@@ -41,6 +41,10 @@
 		border-radius: 1rem;
 		text-decoration: none;
 		line-height: 1;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		cursor: pointer;
 	}
 
 	.primary {
