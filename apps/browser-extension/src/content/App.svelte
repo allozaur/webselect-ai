@@ -10,6 +10,7 @@
 	let contentType = $state('text');
 	let isAuthenticated = $state(false);
 	let isLoading = $state(false);
+	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
 	let messages: LlmMessage[] = $state([]);
 	let overlayPrompt = $state('');
 	let prompt = $state('');
@@ -63,14 +64,30 @@
 	}
 
 	onMount(async () => {
-		chrome.storage.local.get(['isAuthenticated', 'session'], (result) => {
+		chrome.storage.local.get(['isAuthenticated', 'session', 'llm_config'], (result) => {
 			isAuthenticated = result.isAuthenticated ?? false;
 			session = result.session;
+			llmConfig = result.llm_config ?? {
+				apiKey: '',
+				hosting: '',
+				model: '',
+				provider: ''
+			};
 		});
 
 		chrome.storage.onChanged.addListener((changes) => {
-			if (changes.isAuthenticated) {
-				isAuthenticated = changes.isAuthenticated.newValue;
+			for (const [key, { newValue }] of Object.entries(changes)) {
+				switch (key) {
+					case 'isAuthenticated':
+						isAuthenticated = newValue;
+						break;
+					case 'session':
+						session = newValue;
+						break;
+					case 'llm_config':
+						llmConfig = newValue;
+						break;
+				}
 			}
 		});
 
@@ -126,6 +143,7 @@
 				<PromptForm
 					{contentType}
 					{isAuthenticated}
+					{llmConfig}
 					placeholder="What do you want to do with this selection?"
 					showSuggestedPrompts
 					bind:isLoading

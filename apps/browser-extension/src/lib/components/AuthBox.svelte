@@ -10,13 +10,14 @@
 	<Button kind="secondary" onclick={signInWithGoogle}>
 		Sign in with Google
 
-		<Logo name="google" --size="1.5rem" />
+		<Logo name="google" --size="1rem" />
 	</Button>
 </nav>
 
 <style>
 	.auth-box {
 		display: grid;
+		place-items: center;
 		gap: 2rem;
 		place-content: center;
 		display: grid;

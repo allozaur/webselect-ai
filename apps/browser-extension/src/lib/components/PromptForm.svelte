@@ -12,11 +12,12 @@
 		contentType = 'text',
 		isAuthenticated = false,
 		isLoading = $bindable(false),
-		prompt = $bindable(''),
-		selectedContent = $bindable({ text: '', html: '' }),
+		llmConfig = $bindable({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' }),
 		messages = $bindable([]) as LlmMessage[],
 		placeholder = '',
+		prompt = $bindable(''),
 		promptFormEl = $bindable() as HTMLElement,
+		selectedContent = $bindable({ text: '', html: '' }),
 		showSuggestedPrompts = false
 	} = $props();
 
@@ -94,8 +95,18 @@
 	}
 </script>
 
-<div class="prompt-form" bind:this={promptFormEl}>
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<div
+	class="prompt-form"
+	bind:this={promptFormEl}
+	onclick={(e) => {
+		if (!isAuthenticated) {
+			e.preventDefault();
+			chrome.runtime.sendMessage({ action: 'openWebSelectPopup' });
+		}
+	}}
+>
 	<form onsubmit={handleSubmit} bind:this={formElement}>
 		{#if !prompt && showSuggestedPrompts}
 			<div class="suggested-prompts">
@@ -107,11 +118,7 @@
 			</div>
 		{/if}
 
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<fieldset
-			onclick={() =>
-				!isAuthenticated && chrome.runtime.sendMessage({ action: 'openWebSelectPopup' })}
-		>
+		<fieldset>
 			<textarea
 				disabled={!isAuthenticated}
 				onkeydown={handleKeydown}
@@ -120,12 +127,23 @@
 				bind:value={prompt}
 			></textarea>
 
-			{#if isAuthenticated}
-				<Button disabled={!prompt.length} type="submit">
-					{isLoading ? 'Processing...' : 'Submit'}
-				</Button>
-			{:else}
-				<Button onclick={(e) => e.preventDefault()}>Sign in to start chatting!</Button>
+			{#if prompt.length}
+				{#if !isAuthenticated}
+					<Button onclick={(e) => e.preventDefault()}>Sign in to start chatting!</Button>
+				{:else if !llmConfig.model}
+					<Button
+						onclick={(e) => {
+							e.preventDefault();
+							chrome.runtime.sendMessage({ action: 'openWebSelectPopup' });
+						}}
+					>
+						Select a model to start chatting!
+					</Button>
+				{:else}
+					<Button disabled={!prompt.length} type="submit">
+						{isLoading ? 'Processing...' : 'Submit'}
+					</Button>
+				{/if}
 			{/if}
 		</fieldset>
 	</form>

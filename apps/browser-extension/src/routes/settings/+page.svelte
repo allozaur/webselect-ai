@@ -3,7 +3,6 @@
 	import { signOut } from '$lib/auth';
 	import LlmConfiguration from '$lib/components/LlmConfiguration/LlmConfiguration.svelte';
 	import SelectionConfiguration from '$lib/components/SelectionConfiguration/SelectionConfiguration.svelte';
-	import { goto } from '$app/navigation';
 
 	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
 
@@ -32,8 +31,11 @@
 	</form>
 
 	<Button
-		onclick={() => {
-			signOut();
+		kind="danger"
+		onclick={async () => {
+			await signOut();
+
+			window.close();
 		}}>Sign out</Button
 	>
 </main>

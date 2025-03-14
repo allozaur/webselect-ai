@@ -22,6 +22,10 @@
 
 		chrome.storage.local.set({ session, isAuthenticated });
 
+		if (isAuthenticated && chrome?.runtime?.id) {
+			chrome.runtime.sendMessage({ type: 'AUTH_SUCCESS' });
+		}
+
 		supabase.auth.onAuthStateChange(async (_event, _session) => {
 			chrome.storage.local.set({
 				session: _session,

@@ -1,17 +1,14 @@
 import { browser } from '$app/environment';
 import { page } from '$app/state';
 import { supabase } from '$lib/supabase';
-// import type { AuthSession } from '@supabase/supabase-js';
-
-// async function updateAuthState(session: AuthSession | null) {
-// 	await chrome.storage.local.set({
-// 		session,
-// 		isAuthenticated: typeof session !== undefined && session !== null
-// 	});
-// }
 
 async function initializeExtensionAuth(provider: 'github' | 'google') {
 	try {
+		const currentTab = await chrome.tabs.query({ active: true, currentWindow: true });
+		const originTabId = currentTab[0]?.id;
+
+		await chrome.storage.local.set({ originTabId });
+
 		const { data, error } = await supabase.auth.signInWithOAuth({
 			provider,
 			options: {
@@ -45,19 +42,14 @@ export async function signInWithGoogle() {
 		if (browser && chrome?.runtime?.id) {
 			const session = await initializeExtensionAuth('google');
 			if (!session) throw new Error('Authentication failed');
-			// await updateAuthState(session);
 		} else {
-			const {
-				// data,
-				error
-			} = await supabase.auth.signInWithOAuth({
+			const { error } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
 				options: {
 					redirectTo: page.url.origin
 				}
 			});
 			if (error) throw error;
-			// await updateAuthState(data.session);
 		}
 	} catch (error) {
 		console.error('Google auth error:', error);

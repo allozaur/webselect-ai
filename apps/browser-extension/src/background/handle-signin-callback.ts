@@ -1,39 +1,32 @@
 import { supabase } from '$lib/supabase';
 
-export default async function handleSignInCallback() {
-	chrome.runtime.onMessage.addListener((request) => {
-		if (request.action === 'openWebSelectPopup') {
-			chrome.action.openPopup();
+export default function handleSignInCallback() {
+	chrome.runtime.onMessage.addListener(async (message, sender) => {
+		if (message.type === 'AUTH_SUCCESS') {
+			const { originTabId } = await chrome.storage.local.get('originTabId');
+
+			if (originTabId) {
+				// Focus the original tab
+				await chrome.tabs.update(originTabId, { active: true });
+
+				// Close the auth tab
+				if (sender.tab?.id) {
+					await chrome.tabs.remove(sender.tab.id);
+				}
+
+				// Update storage to trigger content script
+				const { data } = await supabase.auth.getSession();
+				await chrome.storage.local.set({
+					session: data.session,
+					isAuthenticated: !!data.session
+				});
+
+				// Reopen the popup
+				await chrome.action.openPopup();
+
+				// Clean up
+				await chrome.storage.local.remove('originTabId');
+			}
 		}
-	});
-
-	chrome.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
-		const { data } = supabase.auth.onAuthStateChange(async (_event) => {
-			setTimeout(
-				async () => {
-					if (changeInfo.url?.startsWith('chrome-extension://')) {
-						if (_event === 'INITIAL_SESSION') {
-							if (typeof tabId === 'number') {
-								chrome.tabs.get(tabId, async (tab) => {
-									if (chrome.runtime.lastError || !tab) {
-										console.log('Tab does not exist.');
-										return;
-									}
-
-									await chrome.tabs.remove(tabId);
-									await chrome.action
-										.openPopup
-										// todo - add window id
-										();
-								});
-							}
-						}
-
-						data.subscription.unsubscribe();
-					}
-				},
-				Number(import.meta.env.VITE_AUTH_STATE_SYNC_DELAY_MS)
-			);
-		});
 	});
 }

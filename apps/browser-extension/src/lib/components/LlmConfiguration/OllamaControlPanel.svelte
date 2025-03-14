@@ -30,14 +30,9 @@
 			const data = await response.json();
 
 			ollamaModels = data.models;
-
-			if (ollamaModels.length === 0) {
-				showDownloadModel = true;
-			}
 		} catch (error) {
 			console.error('Failed to fetch Ollama models:', error);
 			ollamaModels = [];
-			showDownloadModel = true;
 		}
 	}
 
