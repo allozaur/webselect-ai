@@ -60,6 +60,42 @@ declare global {
 		chunk?: string;
 		error?: string;
 	}
+
+	interface OllamaChatMessage {
+		role: 'system' | 'user' | 'assistant';
+		content: string;
+	}
+
+	interface OllamaChatRequest {
+		model: string;
+		messages: OllamaChatMessage[];
+		stream?: boolean;
+		options?: {
+			num_ctx?: number;
+			temperature?: number;
+			// Add other options as needed
+		};
+	}
+
+	interface OllamaChatResponse {
+		model: string;
+		message: {
+			role: string;
+			content: string;
+		};
+		done: boolean;
+	}
+
+	interface AnthropicChatMessage {
+		role: 'user' | 'assistant' | 'system';
+		content: string;
+	}
+
+	interface AnthropicChatResponse {
+		role: string;
+		content: string;
+		type: string;
+	}
 }
 
 export {};

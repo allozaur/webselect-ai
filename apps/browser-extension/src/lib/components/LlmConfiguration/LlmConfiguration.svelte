@@ -29,12 +29,12 @@
 
 	<LlmProviderChoice bind:llmConfig />
 
-	{#if llmConfig.hosting === 'cloud'}
-		<LlmApiKeySetting bind:llmConfig />
-	{/if}
-
 	{#if ollamaModels.length > 0 || llmConfig.hosting === 'cloud'}
 		<LlmModelSelector {ollamaModels} bind:llmConfig />
+	{/if}
+
+	{#if llmConfig.hosting === 'cloud'}
+		<LlmApiKeySetting bind:llmConfig />
 	{/if}
 
 	{#if llmConfig.hosting === 'local'}

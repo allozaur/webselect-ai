@@ -1,4 +1,14 @@
 <script>
+	import cloudLlmModels from '$lib/config/cloud-llm-models';
+
+	const cloudLlmProviders = [...new Set(cloudLlmModels.map(({ provider }) => provider))].map(
+		(provider) => ({
+			provider,
+			providerName:
+				cloudLlmModels.find((model) => model.provider === provider)?.providerName || provider
+		})
+	);
+
 	let { llmConfig = $bindable() } = $props();
 
 	async function handleChangeProvider() {
@@ -13,9 +23,9 @@
 		<option value="" selected disabled>Choose provider</option>
 
 		{#if llmConfig.hosting === 'cloud'}
-			<option value="anthropic" disabled>Anthropic</option>
-			<option value="google">Google</option>
-			<option value="openai">OpenAI</option>
+			{#each cloudLlmProviders as { provider, providerName }}
+				<option value={provider}>{providerName}</option>
+			{/each}
 		{:else if llmConfig.hosting === 'local'}
 			<option selected value="ollama">Ollama</option>
 		{/if}
