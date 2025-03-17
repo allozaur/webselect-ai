@@ -1,4 +1,5 @@
 <script>
+	import Footer from '$lib/components/Footer/Footer.svelte';
 	import Header from '$lib/components/Header/Header.svelte';
 	import '@webselect-ai/ui/styles/index.css';
 
@@ -8,6 +9,8 @@
 <Header />
 
 {@render children()}
+
+<Footer />
 
 <style>
 	:global(body) {

@@ -1,0 +1,13 @@
+<script>
+  import { Button } from '@webselect-ai/ui';
+</script>
+
+# Select, Chat, Done
+
+Browse smarter, not harder. Turn any text selection into an AI conversation without ever leaving your current tab.
+
+<style>
+  h1 {
+    margin: 0;
+  }
+</style>
