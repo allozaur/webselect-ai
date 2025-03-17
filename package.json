@@ -1,5 +1,5 @@
 {
-  "name": "with-svelte",
+  "name": "@webselect-ai/frontend",
   "private": true,
   "scripts": {
     "build": "turbo run build",
