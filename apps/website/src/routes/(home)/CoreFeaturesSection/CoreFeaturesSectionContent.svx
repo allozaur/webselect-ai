@@ -1,0 +1,13 @@
+
+  ### Choose your preferred LLM for content analysis
+  Connect any major AI model (OpenAI, Google's Gemini, or Ollama) using your own API key. Maintain complete control over your LLM usage and costs while ensuring data privacy. Direct, secure interaction with your chosen AI through WebSelect.ai's clean interface.
+
+
+
+  ### Browser-Based Privacy By Design
+  Your selected content never leaves your browser unnecessarily. All content is processed locally and then passed to LLM using your own API credentials – no external data storage, maximum privacy protection.
+
+
+
+  ### Flexible Content Processing Options
+  Choose between analyzing just the text or the full HTML structure of your selection. Get precise results tailored to your specific needs – whether you require raw content analysis or context-aware processing.

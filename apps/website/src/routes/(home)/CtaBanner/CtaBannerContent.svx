@@ -1,0 +1,9 @@
+<script>
+  import { Button } from '@webselect-ai/ui';
+</script>
+
+## Transform web content into interactive knowledge sources with contextual AI assistance.
+
+Add WebSelect.ai to your browser  Enhance your research efficiency.
+
+<Button>Get the extension</Button>
