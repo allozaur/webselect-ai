@@ -3,7 +3,7 @@
 		'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
 		sans-serif;
 
-	--hex-primary: #1e56ff;
+	--hex-primary: light-dark(#1e56ff, #1e56ff);
 	--hex-primary-20: #1e56ff20;
 	--hex-primary-40: #1e56ff40;
 	--hex-danger: #ff3434;
@@ -16,4 +16,5 @@
 	--bg-backdrop: light-dark(#00000050, #00000050);
 
 	--c-text: light-dark(#000, #efefef);
+	--c-text-light: light-dark(#999, #aaa);
 }

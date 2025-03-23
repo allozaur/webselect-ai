@@ -11,6 +11,10 @@
 </footer>
 
 <style>
+	footer {
+		padding-block: 2rem;
+	}
+
 	menu {
 		display: flex;
 		justify-content: center;

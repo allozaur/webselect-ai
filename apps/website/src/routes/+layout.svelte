@@ -19,5 +19,6 @@
 		color: var(--c-text);
 		color-scheme: light dark;
 		font-family: var(--ff);
+		margin: 0;
 	}
 </style>

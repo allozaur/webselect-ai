@@ -10,7 +10,7 @@
 
 <style>
 	header {
-		padding: 1rem;
+		padding: 2rem 1.5rem;
 		display: grid;
 		place-items: center;
 	}

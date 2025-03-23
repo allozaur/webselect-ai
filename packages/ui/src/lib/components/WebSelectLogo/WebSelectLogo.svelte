@@ -53,6 +53,6 @@
 	}
 
 	rect {
-		fill: light-dark(#1e56ff, #1e56ff40);
+		fill: light-dark(#1e56ff20, #1e56ff40);
 	}
 </style>
