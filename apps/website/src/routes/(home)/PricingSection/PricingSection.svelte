@@ -1,5 +1,6 @@
 <script>
 	import { Button } from '@webselect-ai/ui';
+	import PricingCard from './PricingCard.svelte';
 </script>
 
 <section>
@@ -7,29 +8,30 @@
 		<h2>Straightforward Pricing Options</h2>
 
 		<div class="pricing-cards">
-			<div class="card">
-				<h3>Monthly Subscription</h3>
-				<div class="price">$5<span>/month</span></div>
-				<p>Flexible monthly billing</p>
-				<Button>Try 7 days for free</Button>
-				<p class="note">Cancel anytime.</p>
-			</div>
+			<PricingCard
+				title="Monthly Subscription"
+				price="$5"
+				period="month"
+				description="Flexible monthly billing"
+				note="Cancel anytime."
+			/>
 
-			<div class="card">
-				<h3>Annual Subscription</h3>
-				<div class="price">$39 <span class="strikethrough">$60</span><span>/year</span></div>
-				<p>35% savings with annual commitment</p>
-				<Button>Try 7 days for free</Button>
-				<p class="note">One payment for full year access.</p>
-			</div>
+			<PricingCard
+				title="Annual Subscription"
+				price="$39"
+				oldPrice="$60"
+				period="year"
+				description="35% savings with annual commitment"
+				note="One payment for full year access."
+			/>
 
-			<div class="card">
-				<h3>Lifetime License</h3>
-				<div class="price">$59 <span class="strikethrough">$99</span></div>
-				<p>Launch Special: 40% discount for first 100 users</p>
-				<Button>Try 7 days for free</Button>
-				<p class="note">Permanent access to all features.</p>
-			</div>
+			<PricingCard
+				title="Lifetime License"
+				price="$59"
+				oldPrice="$99"
+				description="Launch Special: 40% discount for first 100 users"
+				note="Permanent access to all features."
+			/>
 		</div>
 
 		<div class="trial-info">
@@ -49,8 +51,11 @@
 <style>
 	.pricing-cards {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
 		gap: 2rem;
+
+		@media (width > 768px) {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	.card {
@@ -69,7 +74,12 @@
 		display: grid;
 		place-items: center;
 		gap: 2rem;
-		padding: 4rem;
+		padding-block: 2rem;
+		text-align: center;
+
+		@media (width > 768px) {
+			padding: 4rem;
+		}
 
 		h2,
 		p {
@@ -80,6 +90,7 @@
 			display: grid;
 			gap: 1rem;
 			place-items: center;
+			padding: 1rem;
 		}
 	}
 </style>

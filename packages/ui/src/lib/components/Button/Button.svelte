@@ -38,7 +38,7 @@
 	:is(button, a) {
 		appearance: none;
 		border: none;
-		border-radius: 1rem;
+		border-radius: 0.625rem;
 		text-decoration: none;
 		line-height: 1;
 		display: flex;
@@ -46,11 +46,13 @@
 		align-items: center;
 		gap: 0.5rem;
 		cursor: pointer;
+		font-size: 1rem;
+		font-weight: 500;
 	}
 
 	.primary {
-		background: #ddd;
-		color: #333;
+		background: var(--hex-primary);
+		color: var(--hex-white);
 	}
 
 	.secondary {
@@ -69,14 +71,14 @@
 	}
 
 	.sm {
-		padding: 0.25rem 0.5rem;
-	}
-
-	.md {
 		padding: 0.5rem 1rem;
 	}
 
-	.lg {
+	.md {
 		padding: 0.75rem 1.5rem;
+	}
+
+	.lg {
+		padding: 0.875rem 1.75rem;
 	}
 </style>

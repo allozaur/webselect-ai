@@ -4,6 +4,6 @@
 
 ## Transform web content into interactive knowledge sources with contextual AI assistance.
 
-Add WebSelect.ai to your browser  Enhance your research efficiency.
+Add WebSelect.ai to your browser and enhance your research efficiency.
 
 <Button>Get the extension</Button>

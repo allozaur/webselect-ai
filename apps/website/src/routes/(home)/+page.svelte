@@ -31,5 +31,6 @@
 		display: grid;
 		gap: 5rem;
 		margin: auto;
+		padding: 2rem;
 	}
 </style>

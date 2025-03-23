@@ -130,16 +130,20 @@
 	.faq {
 		display: flex;
 		flex-direction: column;
-		gap: 1rem;
+		gap: 2.5rem;
 	}
 
 	h2 {
 		text-align: center;
-		font-size: 3rem;
+		font-size: 2rem;
+		margin: 0;
+
+		@media (width > 768px) {
+			font-size: 3rem;
+		}
 	}
 
 	details {
-		padding: 1rem;
 		border-radius: 0.5rem;
 		background-color: var(--surface-2);
 	}
@@ -152,14 +156,18 @@
 	summary {
 		cursor: pointer;
 		font-weight: bold;
-		font-size: 1.625rem;
+		font-size: 1.375rem;
 		font-weight: 500;
 		list-style: none;
 		color: var(--c-text-light);
+
+		@media (width > 768px) {
+			font-size: 1.625rem;
+		}
 	}
 
 	details[open] summary {
-		color: var(--c-text);
+		color: var(--hex-primary);
 		margin-bottom: 1rem;
 	}
 </style>
