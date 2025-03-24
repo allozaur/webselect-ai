@@ -16,7 +16,12 @@
 			<strong>Access insights about web content right where you're reading it.</strong>
 		</p>
 
-		<Button>Get the extension</Button>
+		<Button
+			href="https://chromewebstore.google.com/detail/webselect/ggfejamdpmmmicibglgeldllgihkciie"
+			target="_blank"
+		>
+			Get the extension
+		</Button>
 	</div>
 </section>
 

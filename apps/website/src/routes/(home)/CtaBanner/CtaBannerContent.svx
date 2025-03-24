@@ -6,4 +6,9 @@
 
 Add WebSelect.ai to your browser and enhance your research efficiency.
 
-<Button>Get the extension</Button>
+<Button
+  href="https://chromewebstore.google.com/detail/webselect/ggfejamdpmmmicibglgeldllgihkciie"
+  target="_blank"
+>
+  Get the extension
+</Button>

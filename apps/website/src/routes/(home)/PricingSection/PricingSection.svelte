@@ -33,18 +33,6 @@
 				note="Permanent access to all features."
 			/>
 		</div>
-
-		<div class="trial-info">
-			<h2>Experience WebSelect.ai with our 30-day extended trial (special launch offer).</h2>
-			<p>
-				Test the extension across various websites and determine which plan best suits your needs.
-			</p>
-
-			<div class="cta">
-				<Button>Start your free trial</Button>
-				<span class="no-payment">No payment information required</span>
-			</div>
-		</div>
 	</div>
 </section>
 

@@ -40,8 +40,8 @@
 	<details>
 		<summary>Which AI models are compatible with WebSelect.ai?</summary>
 		<p>
-			WebSelect.ai supports major AI platforms including OpenAI models, Google's Gemini, and local
-			models via Ollama. You'll need to provide your own API key for cloud models, giving you
+			WebSelect.ai supports major AI platforms including Google, Anthropic & OpenAI models and local
+			models via Ollama. For cloud models you'll need to provide your own API key, giving you
 			complete control over usage costs and privacy settings.
 		</p>
 	</details>
@@ -72,6 +72,7 @@
 
 	<details>
 		<summary>Does WebSelect.ai retain my selected content?</summary>
+
 		<p>
 			No. As a browser extension, WebSelect.ai operates entirely within your browser environment. We
 			maintain no servers for content storage or processing. Data transmission occurs exclusively
@@ -108,7 +109,8 @@
 		<summary>What are the content volume limitations?</summary>
 		<p>
 			Content processing limits depend on your chosen LLM's context window. For optimal results with
-			most models, we recommend limiting selections to approximately 40,000 words.
+			most models, we recommend limiting selections to approximately 10,000 words, but you can
+			naturally select much larger text up to the context window limit.
 		</p>
 	</details>
 
@@ -118,6 +120,11 @@
 			WebSelect.ai can process content in any language supported by your selected LLM. Contemporary
 			models generally offer robust multilingual capabilities.
 		</p>
+	</details>
+
+	<details>
+		<summary>Does it work with images as well?</summary>
+		<p>Not yet, but we are working on that!</p>
 	</details>
 
 	<details>
@@ -131,6 +138,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 2.5rem;
+		max-width: 40rem;
+		margin: 0 auto;
 	}
 
 	h2 {
@@ -146,6 +155,7 @@
 	details {
 		border-radius: 0.5rem;
 		background-color: var(--surface-2);
+		max-width: 48rem;
 	}
 
 	details p {
