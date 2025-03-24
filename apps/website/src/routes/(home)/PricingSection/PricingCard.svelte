@@ -24,12 +24,17 @@
 		{/if}
 	</div>
 
-	<p>{description}</p>
+	<p class="description">{description}</p>
 
 	<div class="cta">
-		<Button>Try 7 days for free</Button>
+		<Button
+			href="https://chromewebstore.google.com/detail/webselect/ggfejamdpmmmicibglgeldllgihkciie"
+			target="_blank"
+		>
+			Try 7 days for free
+		</Button>
 
-		<p class="note">{note}</p>
+		<span class="note">{note}</span>
 	</div>
 </div>
 
@@ -41,10 +46,17 @@
 		border-radius: 1rem;
 		display: grid;
 		gap: 1rem;
+		text-align: center;
 	}
 
 	.title {
 		font-size: 1.25rem;
+	}
+
+	.description {
+		font-size: 0.875rem;
+		max-width: 16rem;
+		margin: auto;
 	}
 
 	.price {
@@ -67,9 +79,13 @@
 
 	.cta {
 		display: grid;
-		gap: 2rem;
+		gap: 0.5rem;
 		place-items: center;
 		text-align: center;
 		margin-top: 1rem;
+
+		span {
+			font-size: 0.875rem;
+		}
 	}
 </style>
