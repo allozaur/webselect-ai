@@ -74,11 +74,6 @@ export default {
 				customer = customerRes.data[0];
 			}
 
-			const charges = await stripe.charges.list({
-				customer: customer.id,
-				limit: 100,
-			});
-
 			const invoices = await stripe.invoices.list({
 				customer: customer.id,
 				limit: 100,
@@ -100,7 +95,38 @@ export default {
 				}
 			}
 
-			return new Response(JSON.stringify({ success: true, customer, charges, products }), {
+			const subscriptions = [];
+
+			const subscriptionsRes = await stripe.subscriptions.list({
+				customer: customer.id,
+				limit: 100,
+			});
+
+			for (const subscription of subscriptionsRes.data) {
+				subscriptions.push(subscription);
+			}
+
+			const charges = (await stripe.charges.list({
+				customer: customer.id,
+				limit: 100,
+			}))
+				.data
+
+
+			const sessions = (await stripe.checkout.sessions.list({
+				customer: customer.id,
+				limit: 100,
+				expand: ['data.line_items', 'data.payment_intent'],
+			}))
+				.data
+				.filter((session) => session.payment_status === 'paid')
+				.map((session) => ({
+					...session,
+					charges: charges.filter((charge) => charge.payment_intent === (typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id)),
+				}))
+
+
+			return new Response(JSON.stringify({ success: true, customer, subscriptions, sessions }), {
 				headers: {
 					'Content-Type': 'application/json',
 					...corsHeaders(env),
