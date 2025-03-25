@@ -1,0 +1,18 @@
+#:schema node_modules/wrangler/config-schema.json
+
+account_id = "bb7357f233619f55fc52060622f4eed7"
+name = "stripe-checkout"
+main = "src/index.ts"
+
+compatibility_date = "2025-03-21"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
+
+[env.preview.vars]
+CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
+name = "stripe-checkout-preview"
+
+[observability]
+enabled = true
