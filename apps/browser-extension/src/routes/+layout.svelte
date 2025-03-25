@@ -8,6 +8,8 @@
 	import WebSelectLogo from '$lib/components/WebSelectLogo.svelte';
 	import { Button } from '@webselect-ai/ui';
 	import { page } from '$app/state';
+	import { getStripeCustomer } from '$lib/stripe';
+	import customer from '$lib/stores/stripe-customer';
 
 	let { children } = $props();
 
@@ -31,6 +33,16 @@
 				session: _session,
 				isAuthenticated: typeof _session !== undefined && _session !== null
 			});
+
+			if (_session?.user?.id) {
+				try {
+					$customer = await getStripeCustomer(_session?.user?.email);
+					console.log($customer);
+				} catch (error) {
+					// TODO: Handle error
+					console.error(error);
+				}
+			}
 		});
 
 		if (!isAuthenticated) {
