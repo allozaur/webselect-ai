@@ -1,7 +1,10 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-
+	import customer, { hasActiveSubscription } from '$lib/stores/stripe-customer';
+	import isLoading from '$lib/stores/is-loading';
+	import { getStripeCheckoutURL } from '$lib/stripe';
+	import { PRICE_IDS } from '$lib/config/price-ids';
 	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
 
 	onMount(() => {
@@ -18,10 +21,46 @@
 			}
 		});
 	});
+
+	const handleSubscriptionClick = async (
+		productId: string,
+		paymentType: 'subscription' | 'one-time'
+	) => {
+		if (!$customer?.customer) {
+			return;
+		}
+
+		try {
+			await getStripeCheckoutURL($customer.customer.id, productId, paymentType);
+		} catch (error) {
+			// TODO: Handle error
+			console.error(error);
+		}
+	};
 </script>
 
 <main>
-	<h1>Select any content on the page and start chatting with AI!</h1>
+	{#if $isLoading}
+		<!-- TODO: Put some nice animation here? -->
+		<p>Loading...</p>
+	{:else if $customer?.customer}
+		{#if $hasActiveSubscription}
+			<h1>Select any content on the page and start chatting with AI!</h1>
+		{:else}
+			<h1>Select a subscription or lifetime license to get started</h1>
+			{#each PRICE_IDS as product}
+				<ul>
+					<li>
+						<button onclick={() => handleSubscriptionClick(product.id, product.paymentType)}>
+							{product.name}
+						</button>
+					</li>
+				</ul>
+			{/each}
+		{/if}
+	{:else}
+		<p>No customer found</p>
+	{/if}
 </main>
 
 <style>

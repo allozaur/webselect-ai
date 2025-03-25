@@ -10,7 +10,7 @@
 	import { page } from '$app/state';
 	import { getStripeCustomer } from '$lib/stripe';
 	import customer from '$lib/stores/stripe-customer';
-
+	import isLoading from '$lib/stores/is-loading';
 	let { children } = $props();
 
 	let isAuthenticated = $state(false);
@@ -41,6 +41,8 @@
 				} catch (error) {
 					// TODO: Handle error
 					console.error(error);
+				} finally {
+					$isLoading = false;
 				}
 			}
 		});
