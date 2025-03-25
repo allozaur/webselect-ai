@@ -5,7 +5,10 @@
 
 <section>
 	<div class="pricing">
-		<h2>Straightforward Pricing Options</h2>
+		<div class="description">
+			<h2>Straightforward Pricing Options</h2>
+			<p><strong>Special launch pricing</strong> available for a limited time!</p>
+		</div>
 
 		<div class="pricing-cards">
 			<PricingCard
@@ -18,17 +21,17 @@
 
 			<PricingCard
 				title="Annual Subscription"
-				price="$39"
-				oldPrice="$60"
+				price="$19"
+				oldPrice="$49"
 				period="year"
-				description="35% savings with annual commitment"
+				description="Save 61% with special offer"
 				note="One payment for full year access."
 			/>
 
 			<PricingCard
 				title="Lifetime License"
 				price="$59"
-				oldPrice="$99"
+				oldPrice="$129"
 				description="Launch Special: 40% discount for first 100 users"
 				note="Permanent access to all features."
 			/>
@@ -37,6 +40,11 @@
 </section>
 
 <style>
+	.pricing {
+		display: grid;
+		gap: 2rem;
+	}
+
 	.pricing-cards {
 		display: grid;
 		gap: 2rem;
@@ -46,39 +54,24 @@
 		}
 	}
 
-	.card {
-		background: var(--bg-surface-1);
-		padding: 2rem;
-		border: 1px solid var(--color-border);
-		border-radius: 1rem;
-	}
-
-	.strikethrough {
-		opacity: 0.5;
-		text-decoration: line-through;
-	}
-
-	.trial-info {
+	.description {
 		display: grid;
-		place-items: center;
-		gap: 2rem;
+		gap: 1rem;
+		place-content: center;
+		max-width: 32rem;
+		margin: auto;
 		padding-block: 2rem;
 		text-align: center;
-
-		@media (width > 768px) {
-			padding: 4rem;
-		}
 
 		h2,
 		p {
 			margin: 0;
 		}
 
-		.cta {
-			display: grid;
-			gap: 1rem;
-			place-items: center;
-			padding: 1rem;
+		strong {
+			color: var(--hex-primary);
+			background: var(--bg-highlight);
+			padding-inline: 0.125rem;
 		}
 	}
 </style>

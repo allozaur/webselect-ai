@@ -4,7 +4,7 @@
 
 <header>
 	<a href="/">
-		<WebSelectLogo --height="3rem" />
+		<WebSelectLogo --height="2.5rem" />
 	</a>
 </header>
 
@@ -13,6 +13,12 @@
 		padding: 2rem 1.5rem;
 		display: grid;
 		place-items: center;
+
+		@media (width > 768px) {
+			:global(svg) {
+				--height: 3rem;
+			}
+		}
 	}
 
 	a {
