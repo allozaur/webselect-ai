@@ -12,7 +12,7 @@
 
 <style>
 	footer {
-		padding-block: 2rem;
+		padding-block: 6rem;
 	}
 
 	menu {
