@@ -1,22 +1,20 @@
-import { PUBLIC_STRIPE_CUSTOMER_VERIFICATION_WORKER_URL } from "$env/static/public";
-
 export async function getStripeCustomer(email?: string) {
-    if (!email) {
-        throw new Error('Email is required');
-    }
+	if (!email) {
+		throw new Error('Email is required');
+	}
 
-    const res = await fetch(PUBLIC_STRIPE_CUSTOMER_VERIFICATION_WORKER_URL, {
-        method: 'POST',
-        body: JSON.stringify({
-            email
-        })
-    })
+	const res = await fetch(import.meta.env.VITE_STRIPE_CUSTOMER_VERIFICATION_WORKER_ORIGIN, {
+		method: 'POST',
+		body: JSON.stringify({
+			email
+		})
+	});
 
-    if (!res.ok) {
-        throw new Error('Failed to get stripe customer');
-    }
+	if (!res.ok) {
+		throw new Error('Failed to get stripe customer');
+	}
 
-    const data = await res.json();
+	const data = await res.json();
 
-    return data;
+	return data;
 }
