@@ -3,7 +3,15 @@ import type Stripe from "stripe";
 export async function getStripeCustomer(email?: string): Promise<{
 	customer: Stripe.Customer;
 	subscriptions: Stripe.Subscription[];
-	sessions: (Stripe.Checkout.Session & { charges: Stripe.Charge[] })[];
+	activeSubscription: {
+		subscriptionType: 'day' | 'week' | 'month' | 'year' | 'lifetime' | null;
+		isActive: boolean;
+		url: string | null;
+		period: {
+			start: number;
+			end: number;
+		} | null;
+	} | null;
 }> {
 	if (!email) {
 		throw new Error('Email is required');
@@ -22,9 +30,7 @@ export async function getStripeCustomer(email?: string): Promise<{
 
 	const data = await res.json();
 
-	return {
-		...data
-	};
+	return data;
 }
 
 export async function getStripeCheckoutURL(customerId: string, priceId: string, paymentType: 'subscription' | 'one-time') {
