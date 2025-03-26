@@ -51,14 +51,14 @@
 	});
 </script>
 
-<div class="webselect-popup">
+<div class="webselect-sidebar">
 	{#if !isAuthenticated}
 		<AuthBox />
 	{:else}
 		<header>
 			<WebSelectLogo --height="2.5rem" />
 
-			{#if page.url.pathname === '/settings'}
+			{#if page.url.pathname === '/'}
 				<Button kind="secondary" href="/">Close</Button>
 			{:else}
 				<Button kind="secondary" href="/settings">Settings</Button>
@@ -71,12 +71,12 @@
 
 <style>
 	:global(body) {
+		color-scheme: light dark;
 		background: var(--bg-body);
 		margin: 0;
 		padding: 0;
-		min-width: 36rem;
 	}
-	.webselect-popup {
+	.webselect-sidebar {
 		color-scheme: light dark;
 		background-color: var(--bg-body);
 		box-sizing: border-box;
@@ -88,6 +88,7 @@
 		padding: 0;
 		text-rendering: optimizeLegibility;
 		-webkit-font-smoothing: antialiased;
+		min-height: 100vh;
 	}
 
 	header {

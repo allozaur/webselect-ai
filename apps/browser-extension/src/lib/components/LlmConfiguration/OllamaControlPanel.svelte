@@ -142,7 +142,7 @@
 						<p>{downloadStatus.status}</p>
 
 						<span>
-							WARNING: Please keep the extension popup open until the model download is complete
+							WARNING: Please keep the extension sidebar open until the model download is complete
 						</span>
 
 						{#if downloadStatus.total}

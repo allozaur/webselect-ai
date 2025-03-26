@@ -39,10 +39,14 @@ async function initializeExtensionAuth(provider: 'github' | 'google') {
 
 export async function signInWithGoogle() {
 	try {
-		if (browser && chrome?.runtime?.id) {
-			const session = await initializeExtensionAuth('google');
-			if (!session) throw new Error('Authentication failed');
-		} else {
+		const session = await initializeExtensionAuth('google');
+
+		if (!session) {
+			// if (browser && chrome?.runtime?.id) {
+			// 	if (!session) throw new Error('Authentication failed');
+			// } else {
+			// await chrome.sidePanel.setOptions({ enabled: false });
+			// await chrome.sidePanel.setOptions({ enabled: true, path: 'index.html' });
 			const { error } = await supabase.auth.signInWithOAuth({
 				provider: 'google',
 				options: {
