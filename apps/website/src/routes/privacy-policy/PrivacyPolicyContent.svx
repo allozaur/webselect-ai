@@ -79,7 +79,7 @@ We may disclose your information if required to do so by law or in response to v
 ### 6.1 Access and Control
 
 You can access and control your information in the following ways:
-- View and modify your settings through the extension's popup interface
+- View and modify your settings through the extension's sidebar interface
 - Delete your local data by uninstalling the extension
 
 ### 6.2 Data Retention

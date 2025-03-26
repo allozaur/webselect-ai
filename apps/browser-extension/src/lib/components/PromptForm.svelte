@@ -103,7 +103,7 @@
 	onclick={(e) => {
 		if (!isAuthenticated) {
 			e.preventDefault();
-			chrome.runtime.sendMessage({ action: 'openWebSelectPopup' });
+			chrome.runtime.sendMessage({ action: 'openSideWebSelectPanel' });
 		}
 	}}
 >
@@ -134,7 +134,7 @@
 					<Button
 						onclick={(e) => {
 							e.preventDefault();
-							chrome.runtime.sendMessage({ action: 'openWebSelectPopup' });
+							chrome.runtime.sendMessage({ action: 'openSideWebSelectPanel' });
 						}}
 					>
 						Select a model to start chatting!

@@ -21,8 +21,8 @@ export default function handleSignInCallback() {
 					isAuthenticated: !!data.session
 				});
 
-				// Reopen the popup
-				await chrome.action.openPopup();
+				// Reopen the sidebar
+				chrome.sidePanel.open({ windowId: originTabId });
 
 				// Clean up
 				await chrome.storage.local.remove('originTabId');
