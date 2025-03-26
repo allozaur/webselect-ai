@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import customer, { hasActiveSubscription } from '$lib/stores/stripe-customer';
+	import customer from '$lib/stores/stripe-customer';
 	import isLoading from '$lib/stores/is-loading';
 	import { getStripeCheckoutURL } from '$lib/stripe';
 	import { PRICE_IDS } from '$lib/config/price-ids';
@@ -37,6 +37,18 @@
 			console.error(error);
 		}
 	};
+
+	const formatDateAndTimeToString = (date: number) => {
+		const dateObject = new Date(date * 1000);
+		return dateObject.toLocaleDateString('en-US', {
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric',
+			hour: 'numeric',
+			minute: 'numeric',
+			second: 'numeric'
+		});
+	};
 </script>
 
 <main>
@@ -44,8 +56,19 @@
 		<!-- TODO: Put some nice animation here? -->
 		<p>Loading...</p>
 	{:else if $customer?.customer}
-		{#if $hasActiveSubscription}
+		{#if $customer?.activeSubscription?.isActive}
 			<h1>Select any content on the page and start chatting with AI!</h1>
+			<p>Subscription type: {$customer?.activeSubscription?.subscriptionType}</p>
+			{#if $customer?.activeSubscription?.period}
+				<p>
+					Subscription period: {formatDateAndTimeToString(
+						$customer.activeSubscription.period.start
+					)} - {formatDateAndTimeToString($customer.activeSubscription.period.end)}
+				</p>
+			{/if}
+			{#if $customer?.activeSubscription?.url}
+				<a href={$customer?.activeSubscription?.url} target="_blank">Manage subscription</a>
+			{/if}
 		{:else}
 			<h1>Select a subscription or lifetime license to get started</h1>
 			{#each PRICE_IDS as product}
