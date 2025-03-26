@@ -5,7 +5,7 @@
 		</li>
 
 		<li>
-			<a href="/terms-and-conditions">Terms & Conditions</a>
+			<a href="/terms-of-service">Terms of Service</a>
 		</li>
 	</menu>
 </footer>
