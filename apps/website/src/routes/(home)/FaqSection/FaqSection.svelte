@@ -145,7 +145,7 @@
 	h2 {
 		text-align: center;
 		font-size: 2rem;
-		margin: 0;
+		margin: 2rem 0;
 
 		@media (width > 768px) {
 			font-size: 3rem;

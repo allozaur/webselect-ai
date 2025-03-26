@@ -17,11 +17,15 @@
 	<h3 class="title">{title}</h3>
 
 	<div class="prices">
-		<span class="price">{price}</span>
-		<span class="price old-price"> {oldPrice}</span>
-		{#if period}
-			<span class="period">/{period}</span>
-		{/if}
+		<div class="prices-values">
+			<span class="price">{price}</span>
+			<span class="price old-price"> {oldPrice}</span>
+
+			{#if period}
+				<span class="period">/ {period}</span>
+			{/if}
+		</div>
+		<span class="trial-info">after a free 7 day trial</span>
 	</div>
 
 	<p class="description">{description}</p>
@@ -50,7 +54,9 @@
 	}
 
 	.title {
-		font-size: 1.25rem;
+		font-size: 1.125rem;
+		font-weight: 600;
+		margin-bottom: 1.25rem;
 	}
 
 	.description {
@@ -59,8 +65,16 @@
 		margin: auto;
 	}
 
+	.prices-values {
+		justify-content: center;
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+
 	.price {
-		font-size: 1.5rem;
+		font-size: 1.625rem;
 
 		&:not(.old-price) {
 			font-weight: 700;
@@ -87,5 +101,14 @@
 		span {
 			font-size: 0.875rem;
 		}
+	}
+
+	.trial-info {
+		display: inline-block;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--c-text-light);
+		padding-block: 0.5rem;
+		width: 100%;
 	}
 </style>
