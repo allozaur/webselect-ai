@@ -5,14 +5,14 @@
 		</li>
 
 		<li>
-			<a href="/terms-and-conditions">Terms & Conditions</a>
+			<a href="/terms-of-service">Terms of Service</a>
 		</li>
 	</menu>
 </footer>
 
 <style>
 	footer {
-		padding-block: 2rem;
+		padding-block: 6rem;
 	}
 
 	menu {

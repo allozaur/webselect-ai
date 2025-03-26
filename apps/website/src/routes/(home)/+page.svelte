@@ -8,7 +8,12 @@
 </script>
 
 <svelte:head>
-	<title>WebSelect.ai</title>
+	<title>WebSelect — AI Chat with any web content directly on the page</title>
+
+	<meta
+		name="description"
+		content="WebSelect AI helps you summarize, extract information and analyse data without leaving the page. Get started with a free 7-day trial."
+	/>
 </svelte:head>
 
 <main>
