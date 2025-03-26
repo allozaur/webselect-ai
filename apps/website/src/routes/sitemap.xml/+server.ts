@@ -12,21 +12,21 @@ export async function GET() {
 		>
 			<url>
         <loc>https://webselect.ai/</loc>
-        <lastmod>26.03.2025</lastmod>
+        <lastmod>26-03-2025</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
       </url>
 
       <url>
         <loc>https://webselect.ai/privacy-policy</loc>
-        <lastmod>26.03.2025</lastmod>
+        <lastmod>26-03-2025</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
       </url>
 
       <url>
         <loc>https://webselect.ai/terms-of-service</loc>
-        <lastmod>26.03.2025</lastmod>
+        <lastmod>26-03-2025</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.8</priority>
       </url>
