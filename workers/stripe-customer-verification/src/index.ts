@@ -130,7 +130,8 @@ export default {
 					),
 				}));
 
-			const subscription = subscriptions.find((subscription) => subscription.status === 'active');
+			const subscription = subscriptions.find((subscription) => subscription.status === 'active' || subscription.status === 'trialing');
+			const isTrial = subscription?.status === 'trialing';
 			const isLifeTime = sessions.some(
 				(session) =>
 					session.line_items?.data?.some((item) => item?.price?.id === env.STRIPE_LIFETIME_PRICE_ID) &&
@@ -147,12 +148,18 @@ export default {
 					start: number;
 					end: number;
 				} | null;
+				isTrial: boolean;
+				hadFinishedTrialsBefore: boolean;
 			} = {
 				subscriptionType: (isLifeTime ? 'lifetime' : subscription?.items.data[0].plan.interval) || null,
 				isActive: hasActiveSubscription,
 				url: null,
 				period: null,
+				isTrial: isTrial,
+				hadFinishedTrialsBefore: false,
 			};
+
+			const hadFinishedTrialsBefore = subscriptions.some((subscription) => subscription.status === 'trialing' && subscription.current_period_end < Date.now());
 
 			if (subscription) {
 				const session = await stripe.billingPortal.sessions.create({
@@ -168,6 +175,7 @@ export default {
 				};
 
 				activeSubscription.url = session.url;
+				activeSubscription.hadFinishedTrialsBefore = hadFinishedTrialsBefore;
 			}
 
 			return new Response(JSON.stringify({ success: true, customer, subscriptions, activeSubscription, sessions }), {
