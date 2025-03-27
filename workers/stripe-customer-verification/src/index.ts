@@ -157,7 +157,6 @@ export default {
 			if (subscription) {
 				const session = await stripe.billingPortal.sessions.create({
 					customer: customer.id,
-					return_url: env.CORS_ORIGIN,
 				});
 
 				const subscribptionFrom = subscription?.current_period_start;
