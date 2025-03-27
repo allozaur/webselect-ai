@@ -9,10 +9,13 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
+STRIPE_CHECKOUT_SUCCESS_URL = "https://webselect.ai/checkout-success"
 
 [env.preview.vars]
-CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
 name = "stripe-checkout-preview"
+
+CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
+STRIPE_CHECKOUT_SUCCESS_URL = "https://webselect.ai/checkout-success"
 
 [observability]
 enabled = true

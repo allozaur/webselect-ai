@@ -4,7 +4,6 @@ interface Env {
 	CORS_ORIGIN: string;
 	STRIPE_SECRET_KEY: string;
 	STRIPE_LIFETIME_PRICE_ID: string;
-	CHANGE_SUBSCRIPTION_REDIRECT_URL: string;
 }
 
 interface RequestBody {
@@ -108,29 +107,37 @@ export default {
 				subscriptions.push(subscription);
 			}
 
-			const charges = (await stripe.charges.list({
-				customer: customer.id,
-				limit: 100,
-			}))
-				.data
+			const charges = (
+				await stripe.charges.list({
+					customer: customer.id,
+					limit: 100,
+				})
+			).data;
 
-			const sessions = (await stripe.checkout.sessions.list({
-				customer: customer.id,
-				limit: 100,
-				expand: ['data.line_items', 'data.payment_intent'],
-			}))
-				.data
+			const sessions = (
+				await stripe.checkout.sessions.list({
+					customer: customer.id,
+					limit: 100,
+					expand: ['data.line_items', 'data.payment_intent'],
+				})
+			).data
 				.filter((session) => session.payment_status === 'paid')
 				.map((session) => ({
 					...session,
-					charges: charges.filter((charge) => charge.payment_intent === (typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id)),
-				}))
+					charges: charges.filter(
+						(charge) =>
+							charge.payment_intent === (typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id),
+					),
+				}));
 
-			const subscription = subscriptions.find((subscription) => subscription.status === 'active')
-			const isLifeTime = sessions.some((session) => (session.line_items?.data?.some((item) => item?.price?.id === env.STRIPE_LIFETIME_PRICE_ID)
-				&& session?.charges?.every((charge) => !charge.refunded)))
+			const subscription = subscriptions.find((subscription) => subscription.status === 'active');
+			const isLifeTime = sessions.some(
+				(session) =>
+					session.line_items?.data?.some((item) => item?.price?.id === env.STRIPE_LIFETIME_PRICE_ID) &&
+					session?.charges?.every((charge) => !charge.refunded),
+			);
 
-			const hasActiveSubscription = subscription || isLifeTime
+			const hasActiveSubscription = subscription || isLifeTime;
 
 			const activeSubscription: {
 				subscriptionType: 'day' | 'week' | 'month' | 'year' | 'lifetime' | null;
@@ -139,29 +146,29 @@ export default {
 				period: {
 					start: number;
 					end: number;
-				} | null
+				} | null;
 			} = {
 				subscriptionType: (isLifeTime ? 'lifetime' : subscription?.items.data[0].plan.interval) || null,
 				isActive: hasActiveSubscription,
 				url: null,
 				period: null,
-			}
+			};
 
 			if (subscription) {
 				const session = await stripe.billingPortal.sessions.create({
 					customer: customer.id,
-					return_url: env.CHANGE_SUBSCRIPTION_REDIRECT_URL,
-				})
+					return_url: env.CORS_ORIGIN,
+				});
 
-				const subscribptionFrom = subscription?.current_period_start
-				const subscribptionTo = subscription?.current_period_end
+				const subscribptionFrom = subscription?.current_period_start;
+				const subscribptionTo = subscription?.current_period_end;
 
 				activeSubscription.period = {
 					start: subscribptionFrom,
 					end: subscribptionTo,
-				}
+				};
 
-				activeSubscription.url = session.url
+				activeSubscription.url = session.url;
 			}
 
 			return new Response(JSON.stringify({ success: true, customer, subscriptions, activeSubscription, sessions }), {
