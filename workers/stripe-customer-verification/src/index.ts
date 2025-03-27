@@ -101,6 +101,7 @@ export default {
 			const subscriptionsRes = await stripe.subscriptions.list({
 				customer: customer.id,
 				limit: 100,
+				status: 'all',
 			});
 
 			for (const subscription of subscriptionsRes.data) {
@@ -159,7 +160,9 @@ export default {
 				hadFinishedTrialsBefore: false,
 			};
 
-			const hadFinishedTrialsBefore = subscriptions.some((subscription) => subscription.status === 'trialing' && subscription.current_period_end < Date.now());
+			activeSubscription.hadFinishedTrialsBefore = subscriptions.some((subscription) => subscription.trial_end && subscription.trial_end * 1000 < Date.now());
+
+			console.log(subscriptions);
 
 			if (subscription) {
 				const session = await stripe.billingPortal.sessions.create({
@@ -175,7 +178,6 @@ export default {
 				};
 
 				activeSubscription.url = session.url;
-				activeSubscription.hadFinishedTrialsBefore = hadFinishedTrialsBefore;
 			}
 
 			return new Response(JSON.stringify({ success: true, customer, subscriptions, activeSubscription, sessions }), {

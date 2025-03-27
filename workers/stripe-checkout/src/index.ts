@@ -75,9 +75,10 @@ export default {
 
 			const customerSubscriptions = await stripe.subscriptions.list({
 				customer: body.customerId,
+				status: 'all',
 			});
 
-			const hasFinishedTrial = customerSubscriptions.data.some((subscription) => subscription.status === 'trialing' && subscription.current_period_end < Date.now());
+			const hasFinishedTrial = customerSubscriptions.data.some((subscription) => subscription.trial_end && subscription.trial_end * 1000 < Date.now());
 
 			const { url } = await stripe.checkout.sessions.create({
 				customer: body.customerId,
