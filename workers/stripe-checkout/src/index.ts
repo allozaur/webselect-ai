@@ -4,6 +4,7 @@ interface Env {
 	STRIPE_SECRET_KEY: string;
 	CORS_ORIGIN: string;
 	STRIPE_CHECKOUT_SUCCESS_URL: string;
+	STRIPE_LIFETIME_PRICE_ID: string;
 }
 
 interface RequestBody {
@@ -72,6 +73,12 @@ export default {
 
 			const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
+			const customerSubscriptions = await stripe.subscriptions.list({
+				customer: body.customerId,
+			});
+
+			const hasFinishedTrial = customerSubscriptions.data.some((subscription) => subscription.status === 'trialing' && subscription.current_period_end < Date.now());
+
 			const { url } = await stripe.checkout.sessions.create({
 				customer: body.customerId,
 				discounts: body.promotionCode ? [{ promotion_code: body.promotionCode }] : undefined,
@@ -82,7 +89,11 @@ export default {
 						quantity: 1,
 					},
 				],
+				subscription_data: !hasFinishedTrial && env.STRIPE_LIFETIME_PRICE_ID !== body.priceId ? {
+					trial_period_days: 7,
+				} : undefined,
 				mode: body.paymentType === 'subscription' ? 'subscription' : 'payment',
+				payment_method_collection: env.STRIPE_LIFETIME_PRICE_ID !== body.priceId ? 'if_required' : undefined,
 			});
 
 			return new Response(
