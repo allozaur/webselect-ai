@@ -37,6 +37,9 @@
 			if (_session?.user?.id) {
 				try {
 					$customer = await getStripeCustomer(_session?.user?.email);
+					chrome.storage.local.set({
+						customerId: $customer?.customer?.id
+					});
 					console.log($customer);
 				} catch (error) {
 					// TODO: Handle error

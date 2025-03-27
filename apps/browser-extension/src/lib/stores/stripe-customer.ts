@@ -12,6 +12,8 @@ const customer: Writable<{
             start: number;
             end: number;
         } | null;
+        isTrial: boolean;
+        hadFinishedTrialsBefore: boolean;
     } | null;
 } | null> = writable(null);
 

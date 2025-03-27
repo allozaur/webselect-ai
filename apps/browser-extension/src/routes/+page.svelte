@@ -49,6 +49,12 @@
 			second: 'numeric'
 		});
 	};
+
+	const daysLeftToDate = (date: number) => {
+		const dateObject = new Date(date * 1000);
+		const daysLeft = Math.ceil((dateObject.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+		return daysLeft;
+	};
 </script>
 
 <main>
@@ -58,13 +64,22 @@
 	{:else if $customer?.customer}
 		{#if $customer?.activeSubscription?.isActive}
 			<h1>Select any content on the page and start chatting with AI!</h1>
-			<p>Subscription type: {$customer?.activeSubscription?.subscriptionType}</p>
+			<p>
+				Subscription type: {$customer?.activeSubscription?.subscriptionType}
+				{$customer?.activeSubscription?.isTrial ? `(Trial)` : ``}
+			</p>
 			{#if $customer?.activeSubscription?.period}
-				<p>
-					Subscription period: {formatDateAndTimeToString(
-						$customer.activeSubscription.period.start
-					)} - {formatDateAndTimeToString($customer.activeSubscription.period.end)}
-				</p>
+				{#if $customer?.activeSubscription?.isTrial}
+					<p>Trial ends on {formatDateAndTimeToString($customer.activeSubscription.period.end)}</p>
+					<p>Days left: {daysLeftToDate($customer.activeSubscription.period.end)}</p>
+				{:else}
+					<p>
+						Subscription ends on {formatDateAndTimeToString(
+							$customer.activeSubscription.period.end
+						)}
+					</p>
+					<p>Days left: {daysLeftToDate($customer.activeSubscription.period.end)}</p>
+				{/if}
 			{/if}
 			{#if $customer?.activeSubscription?.url}
 				<a href={$customer?.activeSubscription?.url} target="_blank">Manage subscription</a>

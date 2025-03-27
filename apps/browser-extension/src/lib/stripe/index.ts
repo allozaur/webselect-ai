@@ -11,6 +11,8 @@ export async function getStripeCustomer(email?: string): Promise<{
 			start: number;
 			end: number;
 		} | null;
+		isTrial: boolean;
+		hadFinishedTrialsBefore: boolean;
 	} | null;
 }> {
 	if (!email) {
@@ -42,7 +44,8 @@ export async function getStripeCheckoutURL(customerId: string, priceId: string, 
 		body: JSON.stringify({
 			customerId,
 			priceId,
-			paymentType
+			paymentType,
+			trial: import.meta.env.VITE_STRIPE_LIFETIME_PRICE_ID !== priceId
 		})
 	}).then((res) => res.json());
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import '@webselect-ai/ui/styles/variables.css';
 	import { Button } from '@webselect-ai/ui';
+	import { getStripeCustomer } from '$lib/stripe';
 
 	const suggestedPrompts = [
 		'Summarize this text',
@@ -18,7 +19,8 @@
 		prompt = $bindable(''),
 		promptFormEl = $bindable() as HTMLElement,
 		selectedContent = $bindable({ text: '', html: '' }),
-		showSuggestedPrompts = false
+		showSuggestedPrompts = false,
+		customerId = $bindable('')
 	} = $props();
 
 	let formElement: HTMLFormElement;
@@ -33,6 +35,18 @@
 
 	async function handleSubmit(e?: SubmitEvent) {
 		e?.preventDefault();
+
+		if (!customerId) {
+			alert('Missing customer ID');
+			return;
+		}
+
+		const customer = await getStripeCustomer(customerId);
+
+		if (!customer?.activeSubscription?.isActive) {
+			alert('You need an active subscription to use WebSelect');
+			return;
+		}
 
 		if (!selectedContent && !prompt) {
 			alert('Please select text or enter a prompt');

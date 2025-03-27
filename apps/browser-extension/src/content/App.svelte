@@ -6,11 +6,12 @@
 	import clickOutside from '$lib/utils/click-outside';
 	import getSelectionContent from './get-selection-content';
 	import type { AuthSession } from '@supabase/supabase-js';
-
+	import { getStripeCustomer } from '$lib/stripe';
 	let contentType = $state('text');
 	let isAuthenticated = $state(false);
 	let isLoading = $state(false);
 	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
+	let customerId = $state('');
 	let messages: LlmMessage[] = $state([]);
 	let overlayPrompt = $state('');
 	let prompt = $state('');
@@ -64,16 +65,20 @@
 	}
 
 	onMount(async () => {
-		chrome.storage.local.get(['isAuthenticated', 'session', 'llm_config'], (result) => {
-			isAuthenticated = result.isAuthenticated ?? false;
-			session = result.session;
-			llmConfig = result.llm_config ?? {
-				apiKey: '',
-				hosting: '',
-				model: '',
-				provider: ''
-			};
-		});
+		chrome.storage.local.get(
+			['isAuthenticated', 'session', 'llm_config', 'customerId'],
+			(result) => {
+				isAuthenticated = result.isAuthenticated ?? false;
+				session = result.session;
+				llmConfig = result.llm_config ?? {
+					apiKey: '',
+					hosting: '',
+					model: '',
+					provider: ''
+				};
+				customerId = result.customerId;
+			}
+		);
 
 		chrome.storage.onChanged.addListener((changes) => {
 			for (const [key, { newValue }] of Object.entries(changes)) {
@@ -151,6 +156,7 @@
 					bind:prompt={overlayPrompt}
 					bind:promptFormEl
 					bind:selectedContent
+					bind:customerId
 				/>
 			{/snippet}
 		</SelectionOverlay>
