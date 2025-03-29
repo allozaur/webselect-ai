@@ -6,11 +6,11 @@
 	import clickOutside from '$lib/utils/click-outside';
 	import getSelectionContent from './get-selection-content';
 	import type { AuthSession } from '@supabase/supabase-js';
-	import { getStripeCustomer } from '$lib/stripe';
 	let contentType = $state('text');
 	let isAuthenticated = $state(false);
 	let isLoading = $state(false);
 	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
+	let customerEmail = $state('');
 	let customerId = $state('');
 	let messages: LlmMessage[] = $state([]);
 	let overlayPrompt = $state('');
@@ -77,6 +77,7 @@
 					provider: ''
 				};
 				customerId = result.customerId;
+				customerEmail = session?.user?.email ?? '';
 			}
 		);
 
@@ -156,6 +157,7 @@
 					bind:prompt={overlayPrompt}
 					bind:promptFormEl
 					bind:selectedContent
+					bind:customerEmail
 					bind:customerId
 				/>
 			{/snippet}

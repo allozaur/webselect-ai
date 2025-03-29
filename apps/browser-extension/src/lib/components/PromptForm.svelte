@@ -20,7 +20,8 @@
 		promptFormEl = $bindable() as HTMLElement,
 		selectedContent = $bindable({ text: '', html: '' }),
 		showSuggestedPrompts = false,
-		customerId = $bindable('')
+		customerId = $bindable(''),
+		customerEmail = $bindable(''),
 	} = $props();
 
 	let formElement: HTMLFormElement;
@@ -41,9 +42,14 @@
 			return;
 		}
 
-		const customer = await getStripeCustomer(customerId);
+		if (!customerEmail) {
+			alert('Missing customer email');
+			return;
+		}
 
-		if (!customer?.activeSubscription?.isActive) {
+		const fetchedCustomer = await getStripeCustomer(customerEmail);
+
+		if (!fetchedCustomer?.activeSubscription?.isActive) {
 			alert('You need an active subscription to use WebSelect');
 			return;
 		}
