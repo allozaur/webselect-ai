@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '@webselect-ai/ui/styles/variables.css';
 	import { Button } from '@webselect-ai/ui';
-	import { getStripeCustomer } from '$lib/stripe';
+	import type Stripe from 'stripe';
 
 	const suggestedPrompts = [
 		'Summarize this text',
@@ -47,67 +47,89 @@
 			return;
 		}
 
-		const fetchedCustomer = await getStripeCustomer(customerEmail);
-
-		if (!fetchedCustomer?.activeSubscription?.isActive) {
-			alert('You need an active subscription to use WebSelect');
-			return;
-		}
-
-		if (!selectedContent && !prompt) {
-			alert('Please select text or enter a prompt');
-			return;
-		}
-
-		if (selectedContent && selectedContent.length > 128000) {
-			alert('Selection exceeds 128k character limit');
-			return;
-		}
-
-		if (isLoading) {
-			alert('Responding in progress');
-			return;
-		}
-
-		isLoading = true;
-
 		try {
-			if (!messages.some((message) => message.role === 'system')) {
-				messages.push({
-					role: 'system',
-					content: `You are a helpful assistant that works as a web content selection analyzer. My copied web content will ALWAYS begin with "!THIS IS MY SELECTED WEB PAGE CONTENT!", otherwise ALWAYS treat other message as user's input.`
-				});
-			}
-
-			if (selectedContent.text.length > 0) {
-				messages.push({
-					role: 'user',
-					content: `!THIS IS MY SELECTED WEB PAGE CONTENT! ${selectedContent[contentType]}`
-				});
-			}
-
-			messages.push({
-				role: 'user',
-				content: prompt
-			});
-
-			prompt = '';
-
-			await new Promise((resolve, reject) => {
+			const fetchedCustomer: Stripe.Customer = await new Promise((resolve, reject) => {
 				chrome.runtime.sendMessage(
-					{
-						action: 'sendPrompt',
-						messages: messages
-					},
+					{ action: 'verifyStripeCustomer', email: customerEmail },
 					(response) => {
-						if (chrome.runtime.lastError) {
-							reject(chrome.runtime.lastError);
+						if (response.error) {
+							reject(new Error(response.error));
 						} else {
 							resolve(response);
 						}
 					}
 				);
 			});
+
+			if (!fetchedCustomer?.activeSubscription?.isActive) {
+				chrome.runtime.sendMessage({ action: 'openWebSelectPopup' });
+				
+				return;
+			}
+
+			if (!selectedContent && !prompt) {
+				alert('Please select text or enter a prompt');
+				return;
+			}
+
+			if (selectedContent && selectedContent.length > 128000) {
+				alert('Selection exceeds 128k character limit');
+				return;
+			}
+
+			if (isLoading) {
+				alert('Responding in progress');
+				return;
+			}
+
+			isLoading = true;
+
+			try {
+				if (!messages.some((message) => message.role === 'system')) {
+					messages.push({
+						role: 'system',
+						content: `You are a helpful assistant that works as a web content selection analyzer. My copied web content will ALWAYS begin with "!THIS IS MY SELECTED WEB PAGE CONTENT!", otherwise ALWAYS treat other message as user's input.`
+					});
+				}
+
+				if (selectedContent.text.length > 0) {
+					messages.push({
+						role: 'user',
+						content: `!THIS IS MY SELECTED WEB PAGE CONTENT! ${selectedContent[contentType]}`
+					});
+				}
+
+				messages.push({
+					role: 'user',
+					content: prompt
+				});
+
+				const response = await new Promise((resolve, reject) => {
+					chrome.runtime.sendMessage(
+						{
+							action: 'sendPrompt',
+							messages: messages
+						},
+						(response) => {
+							if (chrome.runtime.lastError) {
+								reject(chrome.runtime.lastError);
+							} else if (response?.error) {
+								reject(new Error(response.error));
+							} else {
+								resolve(response);
+							}
+						}
+					);
+				});
+
+				// Reset prompt after successful submission
+				prompt = '';
+			} catch (error: any) {
+				console.error('Error sending prompt:', error);
+				alert(error.message || 'Error sending prompt');
+			} finally {
+				isLoading = false;
+			}
 		} catch (error: any) {
 			console.error(error.message);
 			isLoading = false;
