@@ -1,5 +1,5 @@
 {
-	"name": "stripe-customer-verification",
+	"name": "@webselect-ai/stripe-customer-verification",
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
