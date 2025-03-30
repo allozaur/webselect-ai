@@ -60,7 +60,7 @@ export default {
 
 			const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
-			let customer: Stripe.Customer | undefined;
+			let customer: Stripe.Customer;
 
 			const customerRes = await stripe.customers.list({
 				email: body.email,
@@ -75,53 +75,34 @@ export default {
 				customer = customerRes.data[0];
 			}
 
-			const invoices = await stripe.invoices.list({
-				customer: customer.id,
-				limit: 100,
-			});
-
-			const products = [];
-
-			for (const invoice of invoices.data) {
-				const invoiceItems = await stripe.invoiceItems.list({
-					invoice: invoice.id,
-				});
-
-				for (const item of invoiceItems.data) {
-					products.push({
-						description: item.description,
-						amount: item.amount,
-						currency: item.currency,
-					});
-				}
-			}
-
-			const subscriptions = [];
-
-			const subscriptionsRes = await stripe.subscriptions.list({
-				customer: customer.id,
-				limit: 100,
-				status: 'all',
-			});
-
-			for (const subscription of subscriptionsRes.data) {
-				subscriptions.push(subscription);
-			}
-
-			const charges = (
-				await stripe.charges.list({
-					customer: customer.id,
-					limit: 100,
-				})
-			).data;
-
-			const sessions = (
-				await stripe.checkout.sessions.list({
+			// Fetch all data concurrently
+			const [invoicesRes, subscriptionsRes, chargesRes, sessionsRes] = await Promise.all([
+				stripe.invoices.list({ customer: customer.id, limit: 100 }),
+				stripe.subscriptions.list({ customer: customer.id, limit: 100, status: 'all' }),
+				stripe.charges.list({ customer: customer.id, limit: 100 }),
+				stripe.checkout.sessions.list({
 					customer: customer.id,
 					limit: 100,
 					expand: ['data.line_items', 'data.payment_intent'],
-				})
-			).data
+				}),
+			]);
+
+			// Process invoice items concurrently
+			const products = await Promise.all(
+				invoicesRes.data.map(async (invoice) => {
+					const items = await stripe.invoiceItems.list({ invoice: invoice.id });
+					return items.data.map((item) => ({
+						description: item.description,
+						amount: item.amount,
+						currency: item.currency,
+					}));
+				}),
+			).then((results) => results.flat());
+
+			const subscriptions = subscriptionsRes.data;
+			const charges = chargesRes.data;
+
+			const sessions = sessionsRes.data
 				.filter((session) => session.payment_status === 'paid')
 				.map((session) => ({
 					...session,
