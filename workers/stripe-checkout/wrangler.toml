@@ -10,11 +10,11 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
 STRIPE_CHECKOUT_SUCCESS_URL = "https://webselect.ai/checkout-success"
-STRIPE_LIFETIME_PRICE_ID = "price_1R6WR5K3nWBBzoipUyKmdUQt"
+STRIPE_LIFETIME_PRICE_ID = "price_1R74LRK3nWBBzoip8aFFXwYq"
 
 [env.preview.vars]
 name = "stripe-checkout-preview"
-STRIPE_LIFETIME_PRICE_ID = "price_1R6WR5K3nWBBzoipUyKmdUQt"
+STRIPE_LIFETIME_PRICE_ID = "price_1R74LRK3nWBBzoip8aFFXwYq"
 CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
 STRIPE_CHECKOUT_SUCCESS_URL = "https://webselect.ai/checkout-success"
 

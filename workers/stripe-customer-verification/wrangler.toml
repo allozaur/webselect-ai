@@ -9,13 +9,13 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
-STRIPE_LIFETIME_PRICE_ID = "price_1R6WR5K3nWBBzoipUyKmdUQt"
+STRIPE_LIFETIME_PRICE_ID = "price_1R74LRK3nWBBzoip8aFFXwYq"
 CHANGE_SUBSCRIPTION_REDIRECT_URL = "http://localhost:5877"
 
 [env.preview.vars]
 CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
 name = "stripe-customer-verification-preview"
-STRIPE_LIFETIME_PRICE_ID = "price_1R6WR5K3nWBBzoipUyKmdUQt"
+STRIPE_LIFETIME_PRICE_ID = "price_1R74LRK3nWBBzoip8aFFXwYq"
 CHANGE_SUBSCRIPTION_REDIRECT_URL = "http://localhost:5877"
 
 [observability]
