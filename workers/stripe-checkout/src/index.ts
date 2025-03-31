@@ -78,7 +78,7 @@ export default {
 				status: 'all',
 			});
 
-			const hasFinishedTrial = customerSubscriptions.data.some((subscription) => subscription.trial_end && subscription.trial_end * 1000 < Date.now());
+			const hasFinishedTrial = customerSubscriptions.data.length > 0
 
 			const { url } = await stripe.checkout.sessions.create({
 				customer: body.customerId,
