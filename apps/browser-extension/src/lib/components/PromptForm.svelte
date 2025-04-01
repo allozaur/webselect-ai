@@ -88,14 +88,16 @@
 				if (!messages.some((message) => message.role === 'system')) {
 					messages.push({
 						role: 'system',
-						content: `You are a helpful assistant that works as a web content selection analyzer. My copied web content will ALWAYS begin with "!THIS IS MY SELECTED WEB PAGE CONTENT!", otherwise ALWAYS treat other message as user's input.`
+						content: `You are a sidebar AI chat assistant called webselect.ai. Your main job is to work as a web content selection analyzer and a web browsing assistant. The extracted web content that comes from the selection will ALWAYS begin with "!MY SELECTED WEB PAGE CONTENT IS BELOW THIS LINE!" and end with "!MY SELECTED WEB PAGE CONTENT IS ABOVE THIS LINE!", otherwise ALWAYS treat other message as user's input.`
 					});
 				}
 
 				if (selectedContent.text.length > 0) {
 					messages.push({
 						role: 'user',
-						content: `!THIS IS MY SELECTED WEB PAGE CONTENT! ${selectedContent[contentType]}`
+						content: `!MY SELECTED WEB PAGE CONTENT IS BELOW THIS LINE!
+${selectedContent[contentType]}
+!MY SELECTED WEB PAGE CONTENT IS ABOVE THIS LINE!`
 					});
 				}
 
