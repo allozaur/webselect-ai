@@ -22,8 +22,8 @@
 
 			<PricingCard
 				title="Lifetime License"
-				price="$29"
-				oldPrice="$59"
+				price="$39"
+				oldPrice="$69"
 				description="51% discount for first 100 users"
 				note="Permanent access to all features."
 			/>
