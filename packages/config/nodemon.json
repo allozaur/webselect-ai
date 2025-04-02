@@ -1,0 +1,11 @@
+{
+  "watch": [
+    "src"
+  ],
+  "ext": "ts,svelte,js,css,json,html,md,svx",
+  "ignore": [
+    "node_modules",
+    "build"
+  ],
+  "exec": "vite build --mode development"
+}

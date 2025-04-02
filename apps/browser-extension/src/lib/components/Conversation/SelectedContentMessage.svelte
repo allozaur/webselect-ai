@@ -21,7 +21,7 @@
 		</summary>
 
 		<div class="content">
-			{@html message.content.replace('!THIS IS MY SELECTED WEB PAGE CONTENT!', '')}
+			{@html message.content.replace('!MY SELECTED WEB PAGE CONTENT IS BELOW THIS LINE!', '').replace('!MY SELECTED WEB PAGE CONTENT IS ABOVE THIS LINE!', '')}
 		</div>
 	</details>
 </div>

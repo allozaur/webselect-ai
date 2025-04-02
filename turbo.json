@@ -55,6 +55,11 @@
       ]
     },
     "dev": {
+      "dependsOn": [
+        "@webselect-ai/config#build",
+        "@webselect-ai/ui#build",
+        "@webselect-ai/utils#build"
+      ],
       "cache": false,
       "persistent": true
     }

@@ -8,7 +8,9 @@
 	import WebSelectLogo from '$lib/components/WebSelectLogo.svelte';
 	import { Button } from '@webselect-ai/ui';
 	import { page } from '$app/state';
-
+	import { getStripeCustomer } from '$lib/stripe';
+	import customer from '$lib/stores/stripe-customer';
+	import isLoading from '$lib/stores/is-loading';
 	let { children } = $props();
 
 	let isAuthenticated = $state(false);
@@ -31,6 +33,21 @@
 				session: _session,
 				isAuthenticated: typeof _session !== undefined && _session !== null
 			});
+
+			if (_session?.user?.id) {
+				try {
+					$customer = await getStripeCustomer(_session?.user?.email);
+					chrome.storage.local.set({
+						customerId: $customer?.customer?.id
+					});
+					console.log($customer);
+				} catch (error) {
+					// TODO: Handle error
+					console.error(error);
+				} finally {
+					$isLoading = false;
+				}
+			}
 		});
 
 		if (!isAuthenticated) {
@@ -47,9 +64,9 @@
 			<WebSelectLogo --height="2.5rem" />
 
 			{#if page.url.pathname === '/settings'}
-				<Button kind="secondary" href="/">Close</Button>
+				<Button href="/" kind="secondary" size="sm">Close</Button>
 			{:else}
-				<Button kind="secondary" href="/settings">Settings</Button>
+				<Button href="/settings" kind="secondary" size="sm">Settings</Button>
 			{/if}
 		</header>
 

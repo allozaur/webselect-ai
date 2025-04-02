@@ -1,0 +1,20 @@
+#:schema node_modules/wrangler/config-schema.json
+
+account_id = "bb7357f233619f55fc52060622f4eed7"
+name = "stripe-customer-verification"
+main = "src/index.ts"
+
+compatibility_date = "2025-03-19"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
+STRIPE_LIFETIME_PRICE_ID = "price_1R9SPFK3nWBBzoip4uGxWiFp"
+
+[env.preview.vars]
+CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
+name = "stripe-customer-verification-preview"
+STRIPE_LIFETIME_PRICE_ID = "price_1R9OqqK3nWBBzoipBn6aJOQQ"
+
+[observability.logs]
+enabled = true

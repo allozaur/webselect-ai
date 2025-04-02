@@ -1,40 +1,26 @@
 <script>
-	import { Button } from '@webselect-ai/ui';
-	import PricingCard from './PricingCard.svelte';
+	import { PricingCard } from '@webselect-ai/ui';
+	import { stripeProducts } from '@webselect-ai/config';
 </script>
 
 <section>
 	<div class="pricing">
 		<div class="description">
 			<h2>Straightforward Pricing Options</h2>
-			<p><strong>Special launch pricing</strong> available for a limited time!</p>
+			<p><strong>Special launch pricing</strong> available for a first 100 users!</p>
 		</div>
 
 		<div class="pricing-cards">
-			<PricingCard
-				title="Monthly Subscription"
-				price="$5"
-				period="month"
-				description="Flexible monthly billing"
-				note="Cancel anytime."
-			/>
-
-			<PricingCard
-				title="Annual Subscription"
-				price="$19"
-				oldPrice="$49"
-				period="year"
-				description="Save 61% with special offer"
-				note="One payment for full year access."
-			/>
-
-			<PricingCard
-				title="Lifetime License"
-				price="$59"
-				oldPrice="$129"
-				description="Launch Special: 40% discount for first 100 users"
-				note="Permanent access to all features."
-			/>
+			{#each stripeProducts as product}
+				<PricingCard
+					title={product.name}
+					description={product.description}
+					price={product.price}
+					discountPrice={product.discountPrice}
+					period={product.period}
+					note={product.note}
+				/>
+			{/each}
 		</div>
 	</div>
 </section>
@@ -48,9 +34,11 @@
 	.pricing-cards {
 		display: grid;
 		gap: 2rem;
+		max-width: 48rem;
+		margin: auto;
 
 		@media (width > 768px) {
-			grid-template-columns: repeat(3, 1fr);
+			grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
 		}
 	}
 

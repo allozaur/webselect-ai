@@ -19,6 +19,11 @@
 		color: var(--c-text);
 		color-scheme: light dark;
 		font-family: var(--ff);
+		font-optical-sizing: auto;
+		letter-spacing: -0.01em;
 		margin: 0;
+		padding: 0;
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
 	}
 </style>

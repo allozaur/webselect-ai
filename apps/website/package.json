@@ -1,9 +1,9 @@
 {
 	"name": "@webselect-ai/website",
-	"version": "0.0.5",
+	"version": "0.0.8",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --port 5173",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -20,6 +20,7 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@types/eslint": "^9.6.0",
+		"@webselect-ai/config": "workspace:*",
 		"@webselect-ai/ui": "workspace:*",
 		"eslint": "^9.7.0",
 		"eslint-config-prettier": "^9.1.0",

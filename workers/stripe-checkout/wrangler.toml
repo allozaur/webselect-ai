@@ -1,0 +1,22 @@
+#:schema node_modules/wrangler/config-schema.json
+
+account_id = "bb7357f233619f55fc52060622f4eed7"
+name = "stripe-checkout"
+main = "src/index.ts"
+
+compatibility_date = "2025-03-21"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
+STRIPE_CHECKOUT_SUCCESS_URL = "https://webselect.ai/checkout-success"
+STRIPE_LIFETIME_PRICE_ID = "price_1R9SPFK3nWBBzoip4uGxWiFp"
+
+[env.preview.vars]
+name = "stripe-checkout-preview"
+CORS_ORIGIN = "chrome-extension://ggfejamdpmmmicibglgeldllgihkciie"
+STRIPE_CHECKOUT_SUCCESS_URL = "https://webselect.ai/checkout-success"
+STRIPE_LIFETIME_PRICE_ID= "price_1R9OqqK3nWBBzoipBn6aJOQQ"
+
+[observability.logs]
+enabled = true
