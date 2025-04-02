@@ -87,18 +87,6 @@ export default {
 				}),
 			]);
 
-			// Process invoice items concurrently
-			const products = await Promise.all(
-				invoicesRes.data.map(async (invoice) => {
-					const items = await stripe.invoiceItems.list({ invoice: invoice.id });
-					return items.data.map((item) => ({
-						description: item.description,
-						amount: item.amount,
-						currency: item.currency,
-					}));
-				}),
-			).then((results) => results.flat());
-
 			const subscriptions = subscriptionsRes.data;
 			const charges = chargesRes.data;
 
@@ -141,7 +129,9 @@ export default {
 				hadFinishedTrialsBefore: false,
 			};
 
-			activeSubscription.hadFinishedTrialsBefore = subscriptions.some((subscription) => subscription.trial_end && subscription.trial_end * 1000 < Date.now());
+			activeSubscription.hadFinishedTrialsBefore = subscriptions.some(
+				(subscription) => subscription.trial_end && subscription.trial_end * 1000 < Date.now(),
+			);
 
 			console.log(subscriptions);
 
