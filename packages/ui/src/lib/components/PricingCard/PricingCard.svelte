@@ -1,16 +1,18 @@
 <script lang="ts">
 	import { Button } from '@webselect-ai/ui';
+	import type { Snippet } from 'svelte';
 
 	interface Props {
+		ctaButton?: Snippet;
 		description: string;
-		oldPrice?: string;
+		discountPrice?: string;
 		note: string;
 		period?: string;
 		price: string;
 		title: string;
 	}
 
-	let { description, oldPrice, note, period, price, title }: Props = $props();
+	let { ctaButton, description, discountPrice, note, period, price, title }: Props = $props();
 </script>
 
 <div class="pricing-card">
@@ -18,8 +20,11 @@
 
 	<div class="prices">
 		<div class="prices-values">
-			<span class="price">{price}</span>
-			<span class="price old-price"> {oldPrice}</span>
+			<span class="price"> {discountPrice ?? price}</span>
+
+			{#if discountPrice}
+				<span class="price old-price">{price}</span>
+			{/if}
 
 			{#if period}
 				<span class="period">/ {period}</span>
@@ -31,12 +36,16 @@
 	<p class="description">{description}</p>
 
 	<div class="cta">
-		<Button
-			href="https://chromewebstore.google.com/detail/webselect/ggfejamdpmmmicibglgeldllgihkciie"
-			target="_blank"
-		>
-			Try 7 days for free
-		</Button>
+		{#if ctaButton && typeof ctaButton === 'function'}
+			{@render ctaButton()}
+		{:else}
+			<Button
+				href="https://chromewebstore.google.com/detail/webselect/ggfejamdpmmmicibglgeldllgihkciie"
+				target="_blank"
+			>
+				Try 7 days for free
+			</Button>
+		{/if}
 
 		<span class="note">{note}</span>
 	</div>
@@ -54,13 +63,14 @@
 	}
 
 	.title {
-		font-size: 1.125rem;
-		font-weight: 600;
+		font-size: 1.25rem;
+		font-weight: 700;
 		margin-bottom: 1.25rem;
 	}
 
 	.description {
 		font-size: 0.875rem;
+		font-weight: 600;
 		max-width: 16rem;
 		margin: auto;
 	}
@@ -93,7 +103,7 @@
 
 	.cta {
 		display: grid;
-		gap: 0.5rem;
+		gap: 0.875rem;
 		place-items: center;
 		text-align: center;
 		margin-top: 1rem;
@@ -103,11 +113,18 @@
 		}
 	}
 
+	.note {
+		color: var(--c-text-light);
+		max-width: 15rem;
+		line-height: 1.5;
+		font-weight: 500;
+	}
+
 	.trial-info {
 		display: inline-block;
 		font-size: 0.875rem;
 		font-weight: 500;
-		color: var(--c-text-light);
+		color: var(--c-text-extra-light);
 		padding-block: 0.5rem;
 		width: 100%;
 	}

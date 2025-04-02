@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 interface Env {
 	CORS_ORIGIN: string;
 	STRIPE_SECRET_KEY: string;
+	STRIPE_LIFETIME_PRICE_ID: string;
 }
 
 interface RequestBody {
@@ -59,7 +60,7 @@ export default {
 
 			const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
-			let customer: Stripe.Customer | undefined;
+			let customer: Stripe.Customer;
 
 			const customerRes = await stripe.customers.list({
 				email: body.email,
@@ -74,33 +75,83 @@ export default {
 				customer = customerRes.data[0];
 			}
 
-			const charges = await stripe.charges.list({
-				customer: customer.id,
-				limit: 100,
-			});
+			// Fetch all data concurrently
+			const [invoicesRes, subscriptionsRes, chargesRes, sessionsRes] = await Promise.all([
+				stripe.invoices.list({ customer: customer.id, limit: 100 }),
+				stripe.subscriptions.list({ customer: customer.id, limit: 100, status: 'all' }),
+				stripe.charges.list({ customer: customer.id, limit: 100 }),
+				stripe.checkout.sessions.list({
+					customer: customer.id,
+					limit: 100,
+					expand: ['data.line_items', 'data.payment_intent'],
+				}),
+			]);
 
-			const invoices = await stripe.invoices.list({
-				customer: customer.id,
-				limit: 100,
-			});
+			const subscriptions = subscriptionsRes.data;
+			const charges = chargesRes.data;
 
-			const products = [];
+			const sessions = sessionsRes.data
+				.filter((session) => session.payment_status === 'paid')
+				.map((session) => ({
+					...session,
+					charges: charges.filter(
+						(charge) =>
+							charge.payment_intent === (typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id),
+					),
+				}));
 
-			for (const invoice of invoices.data) {
-				const invoiceItems = await stripe.invoiceItems.list({
-					invoice: invoice.id,
+			const subscription = subscriptions.find((subscription) => subscription.status === 'active' || subscription.status === 'trialing');
+			const isTrial = subscription?.status === 'trialing';
+			const isLifeTime = sessions.some(
+				(session) =>
+					session.line_items?.data?.some((item) => item?.price?.id === env.STRIPE_LIFETIME_PRICE_ID) &&
+					session?.charges?.every((charge) => !charge.refunded),
+			);
+
+			const hasActiveSubscription = subscription || isLifeTime;
+
+			const activeSubscription: {
+				subscriptionType: 'day' | 'week' | 'month' | 'year' | 'lifetime' | null;
+				isActive: any;
+				url: string | null;
+				period: {
+					start: number;
+					end: number;
+				} | null;
+				isTrial: boolean;
+				hadFinishedTrialsBefore: boolean;
+			} = {
+				subscriptionType: (isLifeTime ? 'lifetime' : subscription?.items.data[0].plan.interval) || null,
+				isActive: hasActiveSubscription,
+				url: null,
+				period: null,
+				isTrial: isTrial,
+				hadFinishedTrialsBefore: false,
+			};
+
+			activeSubscription.hadFinishedTrialsBefore = subscriptions.some(
+				(subscription) => subscription.trial_end && subscription.trial_end * 1000 < Date.now(),
+			);
+
+			console.log(subscriptions);
+
+			if (subscription) {
+				const session = await stripe.billingPortal.sessions.create({
+					customer: customer.id,
 				});
 
-				for (const item of invoiceItems.data) {
-					products.push({
-						description: item.description,
-						amount: item.amount,
-						currency: item.currency,
-					});
-				}
+				const subscribptionFrom = subscription?.current_period_start;
+				const subscribptionTo = subscription?.current_period_end;
+
+				activeSubscription.period = {
+					start: subscribptionFrom,
+					end: subscribptionTo,
+				};
+
+				activeSubscription.url = session.url;
 			}
 
-			return new Response(JSON.stringify({ success: true, customer, charges, products }), {
+			return new Response(JSON.stringify({ success: true, customer, subscriptions, activeSubscription, sessions }), {
 				headers: {
 					'Content-Type': 'application/json',
 					...corsHeaders(env),

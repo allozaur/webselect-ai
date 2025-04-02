@@ -6,11 +6,12 @@
 	import clickOutside from '$lib/utils/click-outside';
 	import getSelectionContent from './get-selection-content';
 	import type { AuthSession } from '@supabase/supabase-js';
-
 	let contentType = $state('text');
 	let isAuthenticated = $state(false);
 	let isLoading = $state(false);
 	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
+	let customerEmail = $state('');
+	let customerId = $state('');
 	let messages: LlmMessage[] = $state([]);
 	let overlayPrompt = $state('');
 	let prompt = $state('');
@@ -64,16 +65,21 @@
 	}
 
 	onMount(async () => {
-		chrome.storage.local.get(['isAuthenticated', 'session', 'llm_config'], (result) => {
-			isAuthenticated = result.isAuthenticated ?? false;
-			session = result.session;
-			llmConfig = result.llm_config ?? {
-				apiKey: '',
-				hosting: '',
-				model: '',
-				provider: ''
-			};
-		});
+		chrome.storage.local.get(
+			['isAuthenticated', 'session', 'llm_config', 'customerId'],
+			(result) => {
+				isAuthenticated = result.isAuthenticated ?? false;
+				session = result.session;
+				llmConfig = result.llm_config ?? {
+					apiKey: '',
+					hosting: '',
+					model: '',
+					provider: ''
+				};
+				customerId = result.customerId;
+				customerEmail = session?.user?.email ?? '';
+			}
+		);
 
 		chrome.storage.onChanged.addListener((changes) => {
 			for (const [key, { newValue }] of Object.entries(changes)) {
@@ -143,14 +149,16 @@
 				<PromptForm
 					{contentType}
 					{isAuthenticated}
-					{llmConfig}
 					placeholder="What do you want to do with this selection?"
 					showSuggestedPrompts
 					bind:isLoading
+					bind:llmConfig
 					bind:messages
 					bind:prompt={overlayPrompt}
 					bind:promptFormEl
 					bind:selectedContent
+					bind:customerEmail
+					bind:customerId
 				/>
 			{/snippet}
 		</SelectionOverlay>
@@ -161,7 +169,10 @@
 			{isAuthenticated}
 			{messages}
 			onClose={handleCloseConversation}
+			bind:customerEmail
+			bind:customerId
 			bind:isLoading
+			bind:llmConfig
 			bind:prompt
 		/>
 	{/if}

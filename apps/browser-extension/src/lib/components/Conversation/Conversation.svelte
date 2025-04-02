@@ -6,9 +6,12 @@
 	import WebSelectLogo from '../WebSelectLogo.svelte';
 
 	let {
+		customerEmail = $bindable(''),
+		customerId = $bindable(''),
 		messages = $bindable([]),
 		isLoading = $bindable(false),
 		isAuthenticated = false,
+		llmConfig = $bindable({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' }),
 		onClose,
 		prompt = $bindable('')
 	} = $props();
@@ -36,7 +39,7 @@
 		{#if messages.length > 0}
 			{#each messages as message, i}
 				{#if message.role !== 'system'}
-					{#if message.content.startsWith('!THIS IS MY SELECTED WEB PAGE CONTENT!')}
+					{#if message.content.startsWith('!MY SELECTED WEB PAGE CONTENT IS BELOW THIS LINE!') && message.content.endsWith('!MY SELECTED WEB PAGE CONTENT IS ABOVE THIS LINE!')}
 						<SelectedContentMessage {message} />
 					{:else}
 						<Message {message} />
@@ -51,8 +54,11 @@
 			{isAuthenticated}
 			placeholder="Reply to WebSelect..."
 			bind:isLoading
+			bind:llmConfig
 			bind:messages
 			bind:prompt
+			bind:customerEmail
+			bind:customerId
 		/>
 	</div>
 </div>
