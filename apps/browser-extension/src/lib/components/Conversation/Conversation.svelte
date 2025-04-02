@@ -6,9 +6,12 @@
 	import WebSelectLogo from '../WebSelectLogo.svelte';
 
 	let {
+		customerEmail = $bindable(''),
+		customerId = $bindable(''),
 		messages = $bindable([]),
 		isLoading = $bindable(false),
 		isAuthenticated = false,
+		llmConfig = $bindable({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' }),
 		onClose,
 		prompt = $bindable('')
 	} = $props();
@@ -49,10 +52,13 @@
 	<div class="bottom">
 		<PromptForm
 			{isAuthenticated}
-			placeholder="Reply to WebSelect..."
+			placeholder="What do you want to do with this selection?"
 			bind:isLoading
+			bind:llmConfig
 			bind:messages
 			bind:prompt
+			bind:customerEmail
+			bind:customerId
 		/>
 	</div>
 </div>

@@ -21,7 +21,7 @@
 		selectedContent = $bindable({ text: '', html: '' }),
 		showSuggestedPrompts = false,
 		customerId = $bindable(''),
-		customerEmail = $bindable(''),
+		customerEmail = $bindable('')
 	} = $props();
 
 	let formElement: HTMLFormElement;
@@ -47,8 +47,29 @@
 			return;
 		}
 
+		if (!messages.some((message) => message.role === 'system')) {
+			messages.push({
+				role: 'system',
+				content: `You are a sidebar AI chat assistant called webselect.ai. Your main job is to work as a web content selection analyzer and a web browsing assistant. The extracted web content that comes from the selection will ALWAYS begin with "!MY SELECTED WEB PAGE CONTENT IS BELOW THIS LINE!" and end with "!MY SELECTED WEB PAGE CONTENT IS ABOVE THIS LINE!", otherwise ALWAYS treat other message as user's input.`
+			});
+		}
+
+		if (selectedContent.text.length > 0) {
+			messages.push({
+				role: 'user',
+				content: `!MY SELECTED WEB PAGE CONTENT IS BELOW THIS LINE!
+${selectedContent[contentType]}
+!MY SELECTED WEB PAGE CONTENT IS ABOVE THIS LINE!`
+			});
+		}
+
+		messages.push({
+			role: 'user',
+			content: prompt
+		});
+
 		try {
-			const fetchedCustomer: Stripe.Customer = await new Promise((resolve, reject) => {
+			const fetchedCustomer: CustomerData = await new Promise((resolve, reject) => {
 				chrome.runtime.sendMessage(
 					{ action: 'verifyStripeCustomer', email: customerEmail },
 					(response) => {
@@ -63,7 +84,7 @@
 
 			if (!fetchedCustomer?.activeSubscription?.isActive) {
 				chrome.runtime.sendMessage({ action: 'openWebSelectPopup' });
-				
+
 				return;
 			}
 
@@ -85,28 +106,7 @@
 			isLoading = true;
 
 			try {
-				if (!messages.some((message) => message.role === 'system')) {
-					messages.push({
-						role: 'system',
-						content: `You are a sidebar AI chat assistant called webselect.ai. Your main job is to work as a web content selection analyzer and a web browsing assistant. The extracted web content that comes from the selection will ALWAYS begin with "!MY SELECTED WEB PAGE CONTENT IS BELOW THIS LINE!" and end with "!MY SELECTED WEB PAGE CONTENT IS ABOVE THIS LINE!", otherwise ALWAYS treat other message as user's input.`
-					});
-				}
-
-				if (selectedContent.text.length > 0) {
-					messages.push({
-						role: 'user',
-						content: `!MY SELECTED WEB PAGE CONTENT IS BELOW THIS LINE!
-${selectedContent[contentType]}
-!MY SELECTED WEB PAGE CONTENT IS ABOVE THIS LINE!`
-					});
-				}
-
-				messages.push({
-					role: 'user',
-					content: prompt
-				});
-
-				const response = await new Promise((resolve, reject) => {
+				await new Promise((resolve, reject) => {
 					chrome.runtime.sendMessage(
 						{
 							action: 'sendPrompt',
@@ -171,24 +171,24 @@ ${selectedContent[contentType]}
 				bind:value={prompt}
 			></textarea>
 
-			{#if prompt.length}
-				{#if !isAuthenticated}
-					<Button onclick={(e) => e.preventDefault()}>Sign in to start chatting!</Button>
-				{:else if !llmConfig.model}
-					<Button
-						onclick={(e) => {
-							e.preventDefault();
-							chrome.runtime.sendMessage({ action: 'openWebSelectPopup' });
-						}}
-					>
-						Select a model to start chatting!
-					</Button>
-				{:else}
-					<Button disabled={!prompt.length} type="submit">
-						{isLoading ? 'Processing...' : 'Submit'}
-					</Button>
-				{/if}
+			<!-- {#if prompt.length} -->
+			{#if !isAuthenticated}
+				<Button onclick={(e) => e.preventDefault()}>Sign in to start chatting!</Button>
+			{:else if !llmConfig.model && !prompt}
+				<Button
+					onclick={(e) => {
+						e.preventDefault();
+						chrome.runtime.sendMessage({ action: 'openWebSelectPopup' });
+					}}
+				>
+					Select a model to start chatting!
+				</Button>
+			{:else}
+				<Button disabled={!prompt.length} type="submit">
+					{isLoading ? 'Processing...' : 'Submit'}
+				</Button>
 			{/if}
+			<!-- {/if} -->
 		</fieldset>
 	</form>
 </div>

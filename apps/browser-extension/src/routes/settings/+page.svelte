@@ -76,7 +76,7 @@
 		.bottom {
 			display: grid;
 			position: sticky;
-			bottom: 0;
+			bottom: 1rem;
 			background: var(--bg-body);
 			margin-top: 1rem;
 		}

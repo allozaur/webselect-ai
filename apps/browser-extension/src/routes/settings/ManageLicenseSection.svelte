@@ -13,10 +13,6 @@
 	</p>
 	{#if $customer?.activeSubscription?.period}
 		{#if !$customer?.activeSubscription?.isTrial}
-			<!-- <p>
-      Trial ends in {daysLeftToDate($customer.activeSubscription.period.end)} days
-    </p>
-  {:else} -->
 			<p>
 				Subscription renews in {daysLeftToDate($customer.activeSubscription.period.end)} days
 			</p>

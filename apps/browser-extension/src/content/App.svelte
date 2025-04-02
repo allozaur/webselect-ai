@@ -149,10 +149,10 @@
 				<PromptForm
 					{contentType}
 					{isAuthenticated}
-					{llmConfig}
 					placeholder="What do you want to do with this selection?"
 					showSuggestedPrompts
 					bind:isLoading
+					bind:llmConfig
 					bind:messages
 					bind:prompt={overlayPrompt}
 					bind:promptFormEl
@@ -169,7 +169,10 @@
 			{isAuthenticated}
 			{messages}
 			onClose={handleCloseConversation}
+			bind:customerEmail
+			bind:customerId
 			bind:isLoading
+			bind:llmConfig
 			bind:prompt
 		/>
 	{/if}
