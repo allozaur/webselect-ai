@@ -23,6 +23,7 @@
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@types/chrome": "^0.0.307",
 		"@types/eslint": "^9.6.0",
+		"@webselect-ai/config": "workspace:*",
 		"@webselect-ai/ui": "workspace:*",
 		"@webselect-ai/utils": "workspace:*",
 		"eslint": "^9.7.0",

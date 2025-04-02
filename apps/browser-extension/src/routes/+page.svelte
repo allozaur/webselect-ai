@@ -3,9 +3,8 @@
 	import { onMount } from 'svelte';
 	import customer from '$lib/stores/stripe-customer';
 	import isLoading from '$lib/stores/is-loading';
-	import { getStripeCheckoutURL } from '$lib/stripe';
-	import { PRICE_IDS } from '$lib/config/price-ids';
 	import { formatDateAndTimeToString, daysLeftToDate } from '@webselect-ai/utils';
+	import SelectLicense from '$lib/components/SelectLicense.svelte';
 
 	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
 
@@ -23,22 +22,6 @@
 			}
 		});
 	});
-
-	const handleSubscriptionClick = async (
-		productId: string,
-		paymentType: 'subscription' | 'one-time'
-	) => {
-		if (!$customer?.customer) {
-			return;
-		}
-
-		try {
-			await getStripeCheckoutURL($customer.customer.id, productId, paymentType);
-		} catch (error) {
-			// TODO: Handle error
-			console.error(error);
-		}
-	};
 </script>
 
 <main>
@@ -69,16 +52,7 @@
 				<a href={$customer?.activeSubscription?.url} target="_blank">Manage subscription</a>
 			{/if}
 		{:else}
-			<h1>Select a subscription or lifetime license to get started</h1>
-			{#each PRICE_IDS as product}
-				<ul>
-					<li>
-						<button onclick={() => handleSubscriptionClick(product.id, product.paymentType)}>
-							{product.name}
-						</button>
-					</li>
-				</ul>
-			{/each}
+			<SelectLicense />
 		{/if}
 	{:else}
 		<p>No customer found</p>

@@ -16,5 +16,6 @@
 	--bg-backdrop: light-dark(#00000050, #00000050);
 
 	--c-text: light-dark(#000, #efefef);
-	--c-text-light: light-dark(#999, #aaa);
+	--c-text-light: light-dark(#777, #dadada);
+	--c-text-extra-light: light-dark(#999, #aaa);
 }

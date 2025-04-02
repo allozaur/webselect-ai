@@ -1,5 +1,6 @@
 <script>
-	import PricingCard from './PricingCard.svelte';
+	import { PricingCard } from '@webselect-ai/ui';
+	import { stripeProducts } from '@webselect-ai/config';
 </script>
 
 <section>
@@ -10,23 +11,16 @@
 		</div>
 
 		<div class="pricing-cards">
-
-			<PricingCard
-				title="Yearly License"
-				price="$9"
-				oldPrice="$29"
-				period="year"
-				description="69% discount for first 100 users"
-				note="One payment for full year access."
-			/>
-
-			<PricingCard
-				title="Lifetime License"
-				price="$39"
-				oldPrice="$69"
-				description="51% discount for first 100 users"
-				note="Permanent access to all features."
-			/>
+			{#each stripeProducts as product}
+				<PricingCard
+					title={product.name}
+					description={product.description}
+					price={product.price}
+					discountPrice={product.discountPrice}
+					period={product.period}
+					note={product.note}
+				/>
+			{/each}
 		</div>
 	</div>
 </section>
