@@ -64,9 +64,9 @@
 			<WebSelectLogo --height="2.5rem" />
 
 			{#if page.url.pathname === '/settings'}
-				<Button kind="secondary" href="/">Close</Button>
+				<Button href="/" kind="secondary" size="sm">Close</Button>
 			{:else}
-				<Button kind="secondary" href="/settings">Settings</Button>
+				<Button href="/settings" kind="secondary" size="sm">Settings</Button>
 			{/if}
 		</header>
 
