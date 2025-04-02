@@ -22,7 +22,7 @@ const corsHeaders = (env: Env) => ({
 
 async function handleOptions(request: Request, env: Env): Promise<Response> {
 	const headers = new Headers(request.headers);
-	const originHeader = headers.get('Origin')
+	const originHeader = headers.get('Origin');
 
 	if (
 		originHeader &&
@@ -78,9 +78,10 @@ export default {
 				status: 'all',
 			});
 
-			const hasFinishedTrial = customerSubscriptions.data.length > 0
+			const hasFinishedTrial = customerSubscriptions.data.length > 0;
 
 			const { url } = await stripe.checkout.sessions.create({
+				// allow_promotion_codes: true,
 				customer: body.customerId,
 				discounts: body.promotionCode ? [{ promotion_code: body.promotionCode }] : undefined,
 				success_url: env.STRIPE_CHECKOUT_SUCCESS_URL,
@@ -90,11 +91,13 @@ export default {
 						quantity: 1,
 					},
 				],
-				subscription_data: !hasFinishedTrial && env.STRIPE_LIFETIME_PRICE_ID !== body.priceId ? {
-					trial_period_days: 7,
-				} : undefined,
+				subscription_data:
+					!hasFinishedTrial && env.STRIPE_LIFETIME_PRICE_ID !== body.priceId
+						? {
+								trial_period_days: 7,
+							}
+						: undefined,
 				mode: body.paymentType === 'subscription' ? 'subscription' : 'payment',
-				payment_method_collection: env.STRIPE_LIFETIME_PRICE_ID !== body.priceId ? 'if_required' : undefined,
 			});
 
 			return new Response(

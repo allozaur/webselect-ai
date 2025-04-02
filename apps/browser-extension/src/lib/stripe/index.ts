@@ -1,4 +1,4 @@
-import type Stripe from "stripe";
+import type Stripe from 'stripe';
 
 export async function getStripeCustomer(email?: string): Promise<{
 	customer: Stripe.Customer;
@@ -35,7 +35,11 @@ export async function getStripeCustomer(email?: string): Promise<{
 	return data;
 }
 
-export async function getStripeCheckoutURL(customerId: string, priceId: string, paymentType: 'subscription' | 'one-time') {
+export async function getStripeCheckoutURL(
+	customerId: string,
+	priceId: string,
+	paymentType: 'subscription' | 'one-time'
+) {
 	const { url } = await fetch(import.meta.env.VITE_STRIPE_CHECKOUT_WORKER_ORIGIN, {
 		method: 'POST',
 		headers: {
@@ -43,12 +47,15 @@ export async function getStripeCheckoutURL(customerId: string, priceId: string, 
 		},
 		body: JSON.stringify({
 			customerId,
-			priceId,
 			paymentType,
+			priceId,
+			promotionCode:
+				import.meta.env.VITE_STRIPE_LIFETIME_PRICE_ID !== priceId
+					? import.meta.env.VITE_STRIPE_1_YEAR_PROMOTION_CODE_ID
+					: import.meta.env.VITE_STRIPE_LIFETIME_PROMOTION_CODE_ID,
 			trial: import.meta.env.VITE_STRIPE_LIFETIME_PRICE_ID !== priceId
 		})
 	}).then((res) => res.json());
-
 
 	if (!url) {
 		throw new Error('Failed to get stripe checkout URL');
