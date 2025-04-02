@@ -51,6 +51,9 @@ importers:
       '@webselect-ai/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@webselect-ai/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       eslint:
         specifier: ^9.7.0
         version: 9.21.0
@@ -243,6 +246,8 @@ importers:
       vitest:
         specifier: ^2.0.4
         version: 2.1.9(@types/node@18.19.79)
+
+  packages/utils: {}
 
   workers/stripe-checkout:
     dependencies:

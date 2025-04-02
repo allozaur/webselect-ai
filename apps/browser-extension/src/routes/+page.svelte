@@ -5,6 +5,8 @@
 	import isLoading from '$lib/stores/is-loading';
 	import { getStripeCheckoutURL } from '$lib/stripe';
 	import { PRICE_IDS } from '$lib/config/price-ids';
+	import { formatDateAndTimeToString, daysLeftToDate } from '@webselect-ai/utils';
+
 	let llmConfig = $state({ apiKey: '', hosting: 'local', model: '', provider: 'ollama' });
 
 	onMount(() => {
@@ -36,24 +38,6 @@
 			// TODO: Handle error
 			console.error(error);
 		}
-	};
-
-	const formatDateAndTimeToString = (date: number) => {
-		const dateObject = new Date(date * 1000);
-		return dateObject.toLocaleDateString('en-US', {
-			month: 'long',
-			day: 'numeric',
-			year: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric',
-			second: 'numeric'
-		});
-	};
-
-	const daysLeftToDate = (date: number) => {
-		const dateObject = new Date(date * 1000);
-		const daysLeft = Math.ceil((dateObject.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-		return daysLeft;
 	};
 </script>
 
