@@ -52,7 +52,7 @@
 	<div class="bottom">
 		<PromptForm
 			{isAuthenticated}
-			placeholder="What do you want to do with this selection?"
+			placeholder="Reply to WebSelect..."
 			bind:isLoading
 			bind:llmConfig
 			bind:messages

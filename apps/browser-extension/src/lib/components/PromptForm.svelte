@@ -171,10 +171,9 @@ ${selectedContent[contentType]}
 				bind:value={prompt}
 			></textarea>
 
-			<!-- {#if prompt.length} -->
 			{#if !isAuthenticated}
 				<Button onclick={(e) => e.preventDefault()}>Sign in to start chatting!</Button>
-			{:else if !llmConfig.model && !prompt}
+			{:else if !llmConfig.model}
 				<Button
 					onclick={(e) => {
 						e.preventDefault();
@@ -188,7 +187,6 @@ ${selectedContent[contentType]}
 					{isLoading ? 'Processing...' : 'Submit'}
 				</Button>
 			{/if}
-			<!-- {/if} -->
 		</fieldset>
 	</form>
 </div>
